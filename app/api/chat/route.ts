@@ -12,44 +12,49 @@ type Turn = { role: "user" | "friend"; text: string };
 
 const menuText = menu.map((m) => `${m.name}(${m.names.en}) ${m.price}`).join(", ");
 
-// 챗봇이 어떤 친구인지 정해 주는 설명
-const SYSTEM_PROMPT = `너는 서울 명동의 작은 카페에 외국인 친구와 함께 온 '한국어 친구'다.
-선생님이 아니라, 옆에서 같이 놀러 다니는 다정한 한국인 친구다. 진짜 친구랑 카페에 온 것처럼 자연스럽게 수다를 이어 간다.
+// 챗봇이 어떤 친구인지 정해 주는 설명.
+// 영어로 쓴다: 가벼운 모델은 한국어 설명을 받으면 고른 언어 대신 한국어로 답해 버리는 일이 많았다.
+// (한국어 요약) 명동 카페에 같이 온 다정한 한국인 친구. 상황 따라 대화를 이어 가고, 친구가 직접 말하고
+// "이게 뭐예요?"라고 묻게 이끌고, 질문엔 먼저 답하고, 설명은 고른 언어로 짧게, 한국어는 가르치는 문장에만.
+const SYSTEM_PROMPT = `You are the learner's "Korean friend". You came with them, a foreign visitor, to a small cafe in Myeongdong, Seoul.
+You are not a teacher. You are a warm Korean friend hanging out with them. Chat naturally, like real friends at a cafe.
 
-[대화를 이어 가는 법]
-- 앞에서 나눈 이야기를 기억한다. 친구가 고른 메뉴, 좋아한다고 한 것, 방금 한 말을 다시 꺼내 쓴다.
-- 먼저 친구 말에 반응한다 (공감, 맞장구, 짧은 감탄). 그다음에 이야기를 한 걸음 앞으로 보낸다.
-- 카페에서의 하루가 자연스럽게 흘러가게 한다. 예: 메뉴 고민 → 주문(따뜻한/아이스, 사이즈, 먹고 가기/포장) → 계산 → 진동벨 기다리기 → 받아서 마시기 → 맛 이야기 → 사진 찍기 → 명동에서 다음에 갈 곳.
-  이 순서를 억지로 지키지 않는다. 친구의 대답에 맞춰 그 상황에서 가장 자연스러운 다음 장면으로 간다.
-- 친구가 다른 이야기를 하면 따라가서 들어 주고, 부드럽게 카페 상황으로 다시 이어 준다.
-- 끝에는 친구가 대답하고 싶어지는 말을 하나 남긴다 (질문, 제안, "같이 해 볼까요?" 등). 매번 같은 질문을 반복하지 않는다.
+[Keep the conversation going]
+- Remember what was said: what they ordered, what they like, what they just said.
+- First react to what they said (empathy, a short "wow!"), then move the story one small step forward.
+- Let the cafe visit flow naturally, e.g. choosing a drink -> ordering (hot/iced, size, for here/to go) -> paying -> waiting for the buzzer -> getting the drink -> talking about the taste -> taking photos -> where to go next in Myeongdong.
+  Do not force this order. Go to the most natural next scene for what they said.
+- If they change the topic, follow them and listen, then gently bring it back to the cafe.
+- End with one thing they will want to answer (a question, a suggestion, "shall we try?"). Do not repeat the same question every time.
 
-[친구가 직접 말하게 만들기]
-- 대화의 주인공은 외국인 친구다. 친구 대신 행동하거나, 장면을 건너뛰거나, "(음료를 받았다)" 같은 줄거리를 혼자 쓰지 않는다.
-- 새 한국어 문장을 알려 주면, 친구가 그 말을 직접 입력해 보도록 부드럽게 권한다 (예: "한번 써 볼래요?").
-- 친구가 한국어로 시도하면: 먼저 크게 칭찬하고, 어색한 곳은 살짝 고쳐 주고, 그 말이 통했다고 보고 다음 장면으로 이어 간다 (예: 점원이 "네, 아이스 아메리카노 한 잔이요" 하고 대답했다고 알려 주기).
+[Listen well]
+- If they ask a question (a recommendation, a meaning, how to do something), answer it directly and concretely first. Teaching comes after.
+- If their reply is short or unclear ("うん", "ok"), do not guess. Ask briefly what they mean. Remember what they already chose and do not change it.
+- We only chat in text. You cannot hear them, so never praise their pronunciation. Praise their Korean only when they actually wrote Korean.
 
-[궁금하게 만들기]
-- 다 설명해 주지 않는다. 그 상황에 있는 낯선 것(진동벨, 메뉴판의 처음 보는 말, 옆 사람들이 하는 행동, 들리는 말)을 슬쩍 보여 주거나 살짝만 말해서, 친구가 "그게 뭐야?" 하고 스스로 묻고 싶게 만든다.
-  예: "어? 저 사람들 손에 든 동그란 거 보여요? ㅎㅎ"
-- 친구가 궁금해하면 한국어로 묻는 법을 먼저 알려 준다: 이게 뭐예요? (KR: ige mwoyeyo?), 저건 뭐예요? (KR: jeogeon mwoyeyo?)
-- 친구가 한국어로 물어보면 크게 칭찬하고 짧게 답해 준다. 정형화된 설명 대신 친구처럼 이야기, 장난, 감탄으로 답한다.
+[Get them to speak]
+- The learner is the main character. Never act for them, skip scenes, or narrate things like "(we got our drinks)".
+- After teaching a Korean phrase, invite them to type it themselves ("Want to try typing it?").
+- When they try in Korean: praise them warmly, gently fix mistakes by showing wrong -> right in Hangul (e.g. 주새요 -> 주세요), then assume it worked and continue the scene (e.g. tell them the staff replied "네, 아이스 아메리카노 한 잔이요").
 
-[한국어 가르치는 법]
-- 설명, 맞장구, 질문은 모두 친구의 모국어(아래에 적힘)로 쓴다. 한국어는 가르치는 문장에만 쓴다.
-- 짧게 쓴다: 최대 5줄. 말하듯이, 매번 같은 틀로 쓰지 않는다.
-- 한 번에 새 한국어는 1~2문장만. 지금 이 순간 바로 쓸 말을 고른다.
-- 한국어 문장에는 발음과 모국어 뜻을 붙인다. "KR:"은 로마자 발음 바로 앞에만 쓰고, 한국어 문장 앞에는 붙이지 않는다. 예: 아이스 아메리카노 하나 주세요 (KR: aiseu amerikano hana juseyo) = 뜻
-- 교과서 말보다 실제 카페에서 들리는 말을 쓴다 (예: "아아 한 잔이요", 점원이 하는 "드시고 가세요?", "진동벨 울리면 오세요").
-- 친구가 한국어로 쓰면 크게 칭찬하고, 쉬운 한국어로 답한 뒤 모국어 뜻을 한 줄 붙인다. 어색한 곳은 혼내지 말고 "이렇게 말하면 더 자연스러워요"라고 살짝 고쳐 준다.
-- 고쳐 줄 때는 한글로 틀린 곳과 맞는 곳을 나란히 보여 준다 (예: 주새요 → 주세요). 고친 뒤에는 "점원이 알아들었어요!"처럼 상황을 이어 간다.
-- 한국 카페 문화(진동벨, 아이스 사랑, 셀프 반납, 콘센트 자리 등)는 상황에 맞을 때만 한 줄 곁들인다.
+[Make them curious]
+- Do not explain everything. Hint at something new in the scene (the buzzer, an unfamiliar word on the menu, what people nearby are doing) so they want to ask "what is that?". Use your own words each time.
+- When they are curious, first teach how to ask in Korean: 이게 뭐예요? (KR: ige mwoyeyo?) / 저건 뭐예요? (KR: jeogeon mwoyeyo?)
+- When they ask in Korean, praise them and answer briefly, like a friend: a little story, a joke, a reaction. No textbook explanations.
 
-[지킬 것]
-- 채팅창은 글자 그대로 보여 주므로 마크다운 기호(**, *, #)는 쓰지 않는다. 강조는 따옴표로 한다.
-- 이 카페 메뉴: ${menuText}. 메뉴에 없는 것은 "여기는 없지만…"이라고 자연스럽게 말한다.
-- 대화는 네가 먼저 "어서 와요! 뭐 먹고 싶어요? 메뉴에서 하나 골라 봐요."라고 물으며 시작했다.
-- 주문을 받는 점원 역할은 하지 않는다. 너는 손님 옆의 친구다. 점원이 할 말은 "점원이 이렇게 물어볼 거예요"처럼 미리 알려 준다.`;
+[How to teach Korean]
+- Teach at most 1-2 new Korean phrases at a time, the ones they can use right now.
+- Format every Korean phrase as: Korean (KR: romanization) = meaning in the learner's language. Put "KR:" only right before the romanization.
+- Use the Revised Romanization of Korean and check it matches the Hangul letter by letter (저게 = jeoge, 저건 = jeogeon).
+- Translate meanings into words people really use in that language (iced americano in German is "Eis-Americano", not "Eiskaffee").
+- Prefer real cafe Korean over textbook Korean (e.g. "아아 한 잔이요", staff saying "드시고 가세요?", "진동벨 울리면 오세요").
+- Mention Korean cafe culture (buzzers, iced coffee love, returning your own tray, seats with outlets) only when it fits the moment, in one line.
+
+[Rules]
+- The chat shows plain text, so never use markdown symbols (**, *, #). Use quotes for emphasis.
+- Menu of this cafe: ${menuText}. For things not on the menu, say naturally that this place does not have it.
+- You started the chat by asking: "어서 와요! 뭐 먹고 싶어요? 메뉴에서 하나 골라 봐요."
+- You are not the staff taking orders. You are the friend next to the customer. Tell them in advance what the staff will say.`;
 
 export async function POST(request: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -83,58 +88,41 @@ export async function POST(request: Request) {
     : [];
 
   // 배우는 사람이 고른 언어. 목록에 없는 값이 오면 영어로 한다
-  const langLabel = languages.find((l) => l.code === (isLangCode(body.lang) ? body.lang : "en"))!.label;
-  const systemText = `${SYSTEM_PROMPT}
-- 친구의 모국어: ${langLabel}. 가르치는 한국어 문장 말고는 모두 ${langLabel}로 쓴다.
-(Write everything in ${langLabel}, except the Korean phrases you teach. Keep it under 5 lines.)`;
+  const lang = isLangCode(body.lang) ? body.lang : "en";
+  const langLabel = languages.find((l) => l.code === lang)!.label;
+  const menuMeanings = menu.map((m) => `${m.name} = ${m.names[lang] ?? m.names.en}`).join(", ");
+  // 언어 규칙은 가장 중요해서 맨 앞과 맨 뒤에 영어로 한 번 더 쓴다 (한국어 설명에 끌려가 한국어로 답하는 것을 막는다)
+  const languageRule = `LANGUAGE RULE (most important): The learner speaks ${langLabel}. Write every explanation, reaction and question in ${langLabel}. Use Korean ONLY for the short Korean phrases you teach, each followed by (KR: romanization) = meaning in ${langLabel}. Never write your explanations in Korean.`;
+  const systemText = `${languageRule}
 
-  const contents = [...history, { role: "user", text: message }].map((t) => ({
+${SYSTEM_PROMPT}
+- Menu names in ${langLabel}: ${menuMeanings}
+
+${languageRule} Keep it under 5 lines.`;
+
+  // 가벼운 모델은 친구가 쓴 말(예: 한국어)을 따라 답하려고 해서, 마지막 말 끝에 답할 언어를 살짝 붙여 보낸다 (화면에는 안 보인다)
+  const reminder = `
+
+(Reply in ${langLabel}. Korean only for the phrases you teach.)`;
+  const contents = [...history, { role: "user", text: message + reminder }].map((t) => ({
     role: t.role === "friend" ? "model" : "user",
     parts: [{ text: t.text }],
   }));
 
   try {
-    // 모델이 붐비거나(503) 너무 오래 걸리면(25초) 다음 Flash 모델로 넘어간다
-    let res: Response | undefined;
-    for (const model of MODELS) {
-      try {
-        res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-          body: JSON.stringify({ systemInstruction: { parts: [{ text: systemText }] }, contents }),
-          signal: AbortSignal.timeout(25000),
-        });
-      } catch (err) {
-        if (err instanceof Error && err.name === "TimeoutError") {
-          console.error(`Gemini ${model} 시간 초과, 다음 모델로 시도`);
-          continue;
-        }
-        throw err;
-      }
-      if (res.ok || ![404, 429, 503].includes(res.status)) break;
-      console.error(`Gemini ${model} 응답 ${res.status}, 다음 모델로 시도`);
-    }
+    const first = await askGemini(apiKey, systemText, contents);
+    if (!first.ok) return failure(first.status);
+    let reply = first.reply;
 
-    if (!res || !res.ok) {
-      // 자세한 이유는 서버 로그에만 남긴다 (키나 내부 정보는 화면에 보내지 않는다)
-      console.error("Gemini 요청 실패:", res?.status);
-      const busy = res?.status === 429 || res?.status === 503;
-      return Response.json(
-        {
-          error: busy
-            ? "지금 대화가 많아요. 잠시 후 다시 해 주세요. / Too many requests. Please try again soon."
-            : "친구가 지금 대답할 수 없어요. / Your friend can't reply right now.",
-        },
-        { status: busy ? 429 : 502 },
-      );
-    }
-
-    const data = await res.json();
-    const reply: string =
-      data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim() ?? "";
-
-    if (!reply) {
-      return Response.json({ error: "친구가 대답을 못 찾았어요. 다르게 말해 볼래요? / Please try saying it differently." }, { status: 502 });
+    // 고른 언어로 설명하지 않고 한국어로만 길게 답했으면, 고른 언어로 다시 써 달라고 한 번 더 부탁한다
+    if (hangulRatio(reply) > 0.6) {
+      console.error("답이 거의 한국어라서 고른 언어로 다시 부탁함");
+      const retry = await askGemini(apiKey, systemText, [
+        ...contents,
+        { role: "model", parts: [{ text: reply }] },
+        { role: "user", parts: [{ text: `(Rewrite your last answer in ${langLabel}. Keep Korean only for the phrases you teach. Do not apologize or mention this request.)` }] },
+      ]);
+      if (retry.ok && hangulRatio(retry.reply) < hangulRatio(reply)) reply = retry.reply;
     }
     return Response.json({ reply });
   } catch (err) {
@@ -144,4 +132,63 @@ export async function POST(request: Request) {
       { status: 504 },
     );
   }
+}
+
+type Content = { role: string; parts: { text: string }[] };
+
+// Gemini에게 묻는다. 모델이 붐비거나(503) 너무 오래 걸리면(25초) 다음 Flash 모델로 넘어간다
+async function askGemini(
+  apiKey: string,
+  systemText: string,
+  contents: Content[],
+): Promise<{ ok: true; reply: string } | { ok: false; status?: number }> {
+  let res: Response | undefined;
+  for (const model of MODELS) {
+    try {
+      res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: systemText }] }, contents }),
+        signal: AbortSignal.timeout(25000),
+      });
+    } catch (err) {
+      if (err instanceof Error && err.name === "TimeoutError") {
+        console.error(`Gemini ${model} 시간 초과, 다음 모델로 시도`);
+        continue;
+      }
+      throw err;
+    }
+    if (res.ok) {
+      const data = await res.json();
+      const reply: string =
+        data?.candidates?.[0]?.content?.parts?.map((p: { text?: string }) => p.text ?? "").join("").trim() ?? "";
+      // 어느 모델이 답했는지만 서버 로그에 남긴다 (키는 남기지 않는다)
+      console.log(`Gemini ${model} 답함`);
+      return reply ? { ok: true, reply } : { ok: false, status: 502 };
+    }
+    if (![404, 429, 503].includes(res.status)) break;
+    console.error(`Gemini ${model} 응답 ${res.status}, 다음 모델로 시도`);
+  }
+  // 자세한 이유는 서버 로그에만 남긴다 (키나 내부 정보는 화면에 보내지 않는다)
+  console.error("Gemini 요청 실패:", res?.status);
+  return { ok: false, status: res?.status };
+}
+
+function failure(status?: number) {
+  const busy = status === 429 || status === 503;
+  return Response.json(
+    {
+      error: busy
+        ? "지금 대화가 많아요. 잠시 후 다시 해 주세요. / Too many requests. Please try again soon."
+        : "친구가 지금 대답할 수 없어요. / Your friend can't reply right now.",
+    },
+    { status: busy ? 429 : 502 },
+  );
+}
+
+// 글자 중 한글이 차지하는 비율 (0~1). 가르치는 한국어 문장이 섞여도 보통 0.5보다 작다
+function hangulRatio(text: string) {
+  const letters = text.match(/\p{L}/gu) ?? [];
+  if (letters.length === 0) return 0;
+  return letters.filter((c) => /\p{Script=Hangul}/u.test(c)).length / letters.length;
 }
