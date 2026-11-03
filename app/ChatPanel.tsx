@@ -15,11 +15,11 @@ export default function ChatPanel() {
     e.preventDefault();
     const text = input.trim();
     if (!text) {
-      setNotice("메시지를 입력해 주세요.");
+      setNotice("메시지를 입력해 주세요. / Please type a message.");
       return;
     }
     if (text.length > MAX_LENGTH) {
-      setNotice(`${MAX_LENGTH}자 이하로 써 주세요.`);
+      setNotice(`${MAX_LENGTH}자 이하로 써 주세요. / Max ${MAX_LENGTH} characters.`);
       return;
     }
     setMessages((prev) => [...prev, { id: prev.length, text }]);
@@ -35,13 +35,17 @@ export default function ChatPanel() {
         </div>
         <div>
           <p className="font-semibold">한국어 친구</p>
-          <p className="text-xs text-emerald-600">● 온라인</p>
+          <p className="text-xs text-emerald-600">● 온라인 / Online</p>
         </div>
       </header>
 
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
         {messages.length === 0 ? (
-          <p className="m-auto text-gray-400">대화가 여기에 나와요</p>
+          <p className="m-auto text-center text-gray-400">
+            대화가 여기에 나와요
+            <br />
+            <span className="text-xs">Your chat will appear here</span>
+          </p>
         ) : (
           messages.map((m) => (
             <div
@@ -63,7 +67,7 @@ export default function ChatPanel() {
               setNotice("");
             }}
             maxLength={MAX_LENGTH}
-            placeholder="메시지를 입력하세요"
+            placeholder="메시지를 입력하세요 / Type a message"
             className="min-w-0 flex-1 rounded-full border border-gray-200 px-4 py-2 text-sm outline-none focus:border-amber-400"
           />
           <button
@@ -71,6 +75,7 @@ export default function ChatPanel() {
             className="rounded-full bg-amber-400 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-500"
           >
             보내기
+            <span className="block text-[10px] font-normal">Send</span>
           </button>
         </div>
         <div className="mt-1 flex justify-between px-2 text-xs">

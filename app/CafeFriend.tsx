@@ -44,6 +44,8 @@ export default function CafeFriend() {
       <div className="flex flex-col items-center animate-[bob_2s_ease-in-out_infinite]">
         <div className="mb-2 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-sm text-gray-800 shadow-lg">
           같이 주문해 볼까? ☕
+          <br />
+          <span className="text-xs text-gray-500">Shall we order together?</span>
         </div>
         <div className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-pink-400 to-amber-400 text-3xl shadow-[0_10px_20px_rgba(0,0,0,0.3)]">
           🙂

@@ -27,6 +27,7 @@ export default function Home() {
         <div className="relative z-10 flex flex-col items-center gap-6 px-6 pt-36 sm:pt-48">
           <h1 className="text-3xl font-extrabold text-[#5c3a1c] [text-shadow:0_3px_0_#f8e7cc,0_6px_12px_rgba(0,0,0,0.25)]">
             ☕ 한국어 친구 카페
+            <span className="block text-center text-base font-semibold text-[#7a5230]">Korean Friend Cafe</span>
           </h1>
           <MenuBoard />
         </div>
@@ -35,8 +36,10 @@ export default function Home() {
         <div className="absolute inset-x-0 bottom-0">
           {/* 점원: 계산대 뒤에 서 있어서 아랫부분은 계산대에 가려진다 (지금은 모습만, 대화는 나중 단계) */}
           <div className="absolute bottom-[120px] right-[10%] flex flex-col items-center">
-            <div className="mb-1 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-sm text-gray-800 shadow-lg">
-              어서 오세요! 😊
+            <div className="relative z-20 mb-1 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-center text-sm text-gray-800 shadow-lg">
+              <span className="font-semibold">어서 오세요! 😊</span>
+              <br />
+              <span className="text-xs text-gray-500">Hello! (헬로우)</span>
             </div>
             <span className="text-6xl drop-shadow-[0_6px_4px_rgba(0,0,0,0.3)]">🧑‍🍳</span>
           </div>
