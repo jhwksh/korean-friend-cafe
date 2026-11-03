@@ -1,17 +1,12 @@
 import CafeFriend from "./CafeFriend";
-
-const menu = [
-  { name: "아메리카노", price: "4,500원" },
-  { name: "카페라테", price: "5,000원" },
-  { name: "녹차라테", price: "5,500원" },
-  { name: "치즈케이크", price: "6,000원" },
-];
+import MenuBoard from "./MenuBoard";
+import { menu } from "./menu";
 
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
       {/* 왼쪽: 가상 카페 화면 */}
-      <section className="relative min-h-[620px] flex-1 overflow-hidden bg-gradient-to-b from-[#f8e7cc] to-[#e2bf8f] [perspective:1000px]">
+      <section className="relative min-h-[680px] flex-1 overflow-hidden bg-gradient-to-b from-[#f8e7cc] to-[#e2bf8f] [perspective:1000px]">
         <CafeFriend />
 
         {/* 창문 */}
@@ -32,32 +27,35 @@ export default function Home() {
           <h1 className="text-3xl font-extrabold text-[#5c3a1c] [text-shadow:0_3px_0_#f8e7cc,0_6px_12px_rgba(0,0,0,0.25)]">
             ☕ 한국어 친구 카페
           </h1>
-          <div className="w-full max-w-xs rounded-xl border-8 border-[#6b4423] bg-[#2f3b2f] p-5 text-[#f1f5e9] shadow-[0_25px_40px_rgba(0,0,0,0.4)] transition-transform duration-500 [transform:rotateY(-14deg)_rotateX(4deg)] hover:[transform:rotateY(0deg)_rotateX(0deg)]">
-            <h2 className="mb-3 text-center text-lg font-semibold tracking-widest">MENU · 메뉴</h2>
-            <ul className="space-y-2 font-mono">
-              {menu.map((item) => (
-                <li key={item.name} className="flex justify-between border-b border-dashed border-white/20 pb-1">
-                  <span>{item.name}</span>
-                  <span className="text-amber-200">{item.price}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <MenuBoard />
         </div>
 
         {/* 계산대: 윗면은 기울여서 입체감을 준다 */}
         <div className="absolute inset-x-0 bottom-0">
-          <div className="relative flex justify-center gap-10 pb-1 text-4xl">
-            <div className="relative">
-              <span className="absolute -top-6 left-2 h-6 w-2 rounded-full bg-white/70 blur-[2px] animate-[steam_2.5s_ease-out_infinite]" />
-              <span className="absolute -top-6 left-5 h-6 w-2 rounded-full bg-white/70 blur-[2px] animate-[steam_2.5s_ease-out_0.8s_infinite]" />
-              <span className="drop-shadow-[0_6px_4px_rgba(0,0,0,0.35)]">☕</span>
+          {/* 점원: 계산대 뒤에 서 있어서 아랫부분은 계산대에 가려진다 (지금은 모습만, 대화는 나중 단계) */}
+          <div className="absolute bottom-[120px] right-[10%] flex flex-col items-center">
+            <div className="mb-1 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-sm text-gray-800 shadow-lg">
+              어서 오세요! 😊
             </div>
-            <span className="drop-shadow-[0_6px_4px_rgba(0,0,0,0.35)]">🥐</span>
-            <span className="drop-shadow-[0_6px_4px_rgba(0,0,0,0.35)]">🍰</span>
+            <span className="text-6xl drop-shadow-[0_6px_4px_rgba(0,0,0,0.3)]">🧑‍🍳</span>
           </div>
-          <div className="h-10 origin-bottom bg-gradient-to-b from-[#c48a52] to-[#a86f3c] [transform:perspective(600px)_rotateX(50deg)]" />
-          <div className="h-24 bg-gradient-to-b from-[#8b5a2b] to-[#4a2e15] shadow-[inset_0_8px_12px_rgba(0,0,0,0.3)]" />
+          {/* 계산대 위 음식: 메뉴판과 같은 목록에서 그려서 항상 메뉴와 맞는다 */}
+          <div className="relative z-10 flex justify-center gap-4 pb-1 sm:gap-8">
+            {menu.map((item) => (
+              <div key={item.name} className="relative flex flex-col items-center">
+                {item.hot && (
+                  <>
+                    <span className="absolute -top-6 left-2 h-6 w-2 rounded-full bg-white/70 blur-[2px] animate-[steam_2.5s_ease-out_infinite]" />
+                    <span className="absolute -top-6 left-5 h-6 w-2 rounded-full bg-white/70 blur-[2px] animate-[steam_2.5s_ease-out_0.8s_infinite]" />
+                  </>
+                )}
+                <span className="text-4xl drop-shadow-[0_6px_4px_rgba(0,0,0,0.35)]">{item.emoji}</span>
+                <span className="text-[11px] font-semibold text-[#5c3a1c]">{item.name}</span>
+              </div>
+            ))}
+          </div>
+          <div className="relative z-10 h-10 origin-bottom bg-gradient-to-b from-[#c48a52] to-[#a86f3c] [transform:perspective(600px)_rotateX(50deg)]" />
+          <div className="relative z-10 h-24 bg-gradient-to-b from-[#8b5a2b] to-[#4a2e15] shadow-[inset_0_8px_12px_rgba(0,0,0,0.3)]" />
         </div>
       </section>
 
