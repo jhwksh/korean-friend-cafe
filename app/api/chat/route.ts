@@ -1,5 +1,5 @@
-import { menu } from "../../menu";
 import { isLangCode, languages } from "../../i18n";
+import { isSceneId, scenePrompt, scenes } from "../../scenes";
 
 // 이 파일은 서버에서만 돈다. 그래서 키(GEMINI_API_KEY)가 브라우저로 가지 않는다.
 const MAX_LENGTH = 200;
@@ -10,21 +10,18 @@ const MODELS = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-l
 
 type Turn = { role: "user" | "friend"; text: string };
 
-const menuText = menu.map((m) => `${m.name}(${m.names.en}) ${m.price}`).join(", ");
-
-// 챗봇이 어떤 친구인지 정해 주는 설명.
+// 친구(챗봇)의 성격. 어느 장면에서나 똑같다. 장면마다 다른 내용은 app/scenes.ts의 장면 카드에서 온다.
 // 영어로 쓴다: 가벼운 모델은 한국어 설명을 받으면 고른 언어 대신 한국어로 답해 버리는 일이 많았다.
-// (한국어 요약) 명동 카페에 같이 온 다정한 한국인 친구. 상황 따라 대화를 이어 가고, 친구가 직접 말하고
+// (한국어 요약) 명동을 같이 다니는 다정한 한국인 친구. 상황 따라 대화를 이어 가고, 친구가 직접 말하고
 // "이게 뭐예요?"라고 묻게 이끌고, 질문엔 먼저 답하고, 설명은 고른 언어로 짧게, 한국어는 가르치는 문장에만.
-const SYSTEM_PROMPT = `You are the learner's "Korean friend". You came with them, a foreign visitor, to a small cafe in Myeongdong, Seoul.
-You are not a teacher. You are a warm Korean friend hanging out with them. Chat naturally, like real friends at a cafe.
+const FRIEND_PERSONA = `You are the learner's "Korean friend". You are travelling around Myeongdong, Seoul with them, a foreign visitor. Where you are right now is described in the scene card below.
+You are not a teacher. You are a warm Korean friend hanging out with them. Chat naturally, like real friends.
 
 [Keep the conversation going]
-- Remember what was said: what they ordered, what they like, what they just said.
+- Remember what was said: what they chose, what they like, what they just said.
 - First react to what they said (empathy, a short "wow!"), then move the story one small step forward.
-- Let the cafe visit flow naturally, e.g. choosing a drink -> ordering (hot/iced, size, for here/to go) -> paying -> waiting for the buzzer -> getting the drink -> talking about the taste -> taking photos -> where to go next in Myeongdong.
-  Do not force this order. Go to the most natural next scene for what they said.
-- If they change the topic, follow them and listen, then gently bring it back to the cafe.
+- Let the visit flow naturally, roughly like the flow in the scene card. Do not force it. Go to the most natural next moment for what they said.
+- If they change the topic, follow them and listen, then gently bring it back to the scene.
 - End with one thing they will want to answer (a question, a suggestion, "shall we try?"). Do not repeat the same question every time.
 
 [Listen well]
@@ -35,10 +32,10 @@ You are not a teacher. You are a warm Korean friend hanging out with them. Chat 
 [Get them to speak]
 - The learner is the main character. Never act for them, skip scenes, or narrate things like "(we got our drinks)".
 - After teaching a Korean phrase, invite them to type it themselves ("Want to try typing it?").
-- When they try in Korean: praise them warmly, gently fix mistakes by showing wrong -> right in Hangul (e.g. 주새요 -> 주세요), then assume it worked and continue the scene (e.g. tell them the staff replied "네, 아이스 아메리카노 한 잔이요").
+- When they try in Korean: praise them warmly, gently fix mistakes by showing wrong -> right in Hangul (e.g. 주새요 -> 주세요), then assume it worked and continue the scene (e.g. tell them what the staff replied).
 
 [Make them curious]
-- Do not explain everything. Hint at something new in the scene (the buzzer, an unfamiliar word on the menu, what people nearby are doing) so they want to ask "what is that?". Use your own words each time.
+- Do not explain everything. Hint at something new in the scene (see the scene card) so they want to ask "what is that?". Use your own words each time.
 - When they are curious, first teach how to ask in Korean: 이게 뭐예요? (KR: ige mwoyeyo?) / 저건 뭐예요? (KR: jeogeon mwoyeyo?)
 - When they ask in Korean, praise them and answer briefly, like a friend: a little story, a joke, a reaction. No textbook explanations.
 
@@ -46,15 +43,12 @@ You are not a teacher. You are a warm Korean friend hanging out with them. Chat 
 - Teach at most 1-2 new Korean phrases at a time, the ones they can use right now.
 - Format every Korean phrase as: Korean (KR: romanization) = meaning in the learner's language. Put "KR:" only right before the romanization.
 - Use the Revised Romanization of Korean and check it matches the Hangul letter by letter (저게 = jeoge, 저건 = jeogeon).
-- Translate meanings into words people really use in that language (iced americano in German is "Eis-Americano", not "Eiskaffee").
-- Prefer real cafe Korean over textbook Korean (e.g. "아아 한 잔이요", staff saying "드시고 가세요?", "진동벨 울리면 오세요").
-- Mention Korean cafe culture (buzzers, iced coffee love, returning your own tray, seats with outlets) only when it fits the moment, in one line.
+- Translate meanings into words people really use in that language.
+- Prefer the real Korean heard in this place (see the scene card) over textbook Korean.
+- Mention Korean culture only when it fits the moment, in one line.
 
 [Rules]
-- The chat shows plain text, so never use markdown symbols (**, *, #). Use quotes for emphasis.
-- Menu of this cafe: ${menuText}. For things not on the menu, say naturally that this place does not have it.
-- You started the chat by asking: "어서 와요! 뭐 먹고 싶어요? 메뉴에서 하나 골라 봐요."
-- You are not the staff taking orders. You are the friend next to the customer. Tell them in advance what the staff will say.`;
+- The chat shows plain text, so never use markdown symbols (**, *, #). Use quotes for emphasis.`;
 
 export async function POST(request: Request) {
   const apiKey = process.env.GEMINI_API_KEY;
@@ -64,7 +58,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "친구가 지금 대답할 수 없어요. / Your friend can't reply right now." }, { status: 500 });
   }
 
-  let body: { message?: unknown; history?: unknown; lang?: unknown };
+  let body: { message?: unknown; history?: unknown; lang?: unknown; scene?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -90,13 +84,15 @@ export async function POST(request: Request) {
   // 배우는 사람이 고른 언어. 목록에 없는 값이 오면 영어로 한다
   const lang = isLangCode(body.lang) ? body.lang : "en";
   const langLabel = languages.find((l) => l.code === lang)!.label;
-  const menuMeanings = menu.map((m) => `${m.name} = ${m.names[lang] ?? m.names.en}`).join(", ");
+  // 지금 장면. 목록에 없는 값이 오면 카페로 한다
+  const scene = scenes[isSceneId(body.scene) ? body.scene : "cafe"];
   // 언어 규칙은 가장 중요해서 맨 앞과 맨 뒤에 영어로 한 번 더 쓴다 (한국어 설명에 끌려가 한국어로 답하는 것을 막는다)
   const languageRule = `LANGUAGE RULE (most important): The learner speaks ${langLabel}. Write every explanation, reaction and question in ${langLabel}. Use Korean ONLY for the short Korean phrases you teach, each followed by (KR: romanization) = meaning in ${langLabel}. Never write your explanations in Korean.`;
   const systemText = `${languageRule}
 
-${SYSTEM_PROMPT}
-- Menu names in ${langLabel}: ${menuMeanings}
+${FRIEND_PERSONA}
+
+${scenePrompt(scene, lang, langLabel)}
 
 ${languageRule} Keep it under 5 lines.`;
 

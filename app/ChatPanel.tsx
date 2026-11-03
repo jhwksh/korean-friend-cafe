@@ -3,17 +3,15 @@
 import { useEffect, useState } from "react";
 import LanguagePicker from "./LanguagePicker";
 import { useLanguage } from "./LanguageProvider";
-import { menu } from "./menu";
+import { scenes } from "./scenes";
 
 const MAX_LENGTH = 200;
-// 대화를 이 브라우저(localStorage)에 저장할 때 쓰는 이름. 서버나 DB에는 저장하지 않는다
-const STORAGE_KEY = "kfc-chat";
+// 지금 장면 (나중에 장면이 늘어나면 바꿔 끼운다)
+const scene = scenes.cafe;
+// 대화를 이 브라우저(localStorage)에 저장할 때 쓰는 이름. 장면마다 따로 저장한다. 서버나 DB에는 저장하지 않는다
+const STORAGE_KEY = `kfc-chat-${scene.id}`;
 
 type Message = { id: number; role: "user" | "friend"; text: string };
-
-// 친구가 먼저 건네는 첫 말 (한국어 + 발음). 뜻은 고른 언어로 붙는다
-const GREETING_KO = "어서 와요! 뭐 먹고 싶어요? 메뉴에서 하나 골라 봐요. ☕";
-const GREETING_ROMAN = "eoseo wayo! mwo meokgo sipeoyo? menyueseo hana golla bwayo.";
 
 // 메뉴를 눌러 고르면 "○○로/으로 할게요"라고 말한다. 받침이 있으면 "으로"(ㄹ받침은 "로")
 function choose(name: string) {
@@ -82,7 +80,7 @@ export default function ChatPanel() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history, lang }),
+        body: JSON.stringify({ message: text, history, lang, scene: scene.id }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.reply) {
@@ -119,9 +117,9 @@ export default function ChatPanel() {
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
         {/* 친구가 먼저 묻는다. 서버에는 보내지 않고 화면에만 보인다 */}
         <div className="max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow">
-          <p className="font-semibold">{GREETING_KO}</p>
-          <p className="text-xs italic text-gray-500">KR: {GREETING_ROMAN}</p>
-          <p className="mt-1 text-xs text-gray-600">= {t.greeting}</p>
+          <p className="font-semibold">{scene.greeting.ko}</p>
+          <p className="text-xs italic text-gray-500">KR: {scene.greeting.roman}</p>
+          <p className="mt-1 text-xs text-gray-600">= {scene.greeting.meanings[lang]}</p>
         </div>
         {messages.map((m) =>
             m.role === "user" ? (
@@ -155,7 +153,7 @@ export default function ChatPanel() {
         {/* 메뉴를 눌러서 고르기: 누르면 "아메리카노로 할게요"라고 말한다 */}
         <p className="mb-1 px-1 text-xs text-gray-500">{t.pick}</p>
         <div className="mb-2 flex flex-wrap gap-1">
-          {menu.map((item) => (
+          {scene.items.map((item) => (
             <button
               key={item.name}
               type="button"
