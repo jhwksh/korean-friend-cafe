@@ -38,7 +38,7 @@ const cafe: Scene = {
   },
   items: menu,
   words: Object.values(words).map((w) => ({ ko: w.ko, roman: w.roman, en: w.names.en })),
-  flow: "choosing a drink -> ordering (hot/iced, size, for here/to go) -> paying -> waiting for the buzzer -> getting the drink -> talking about the taste -> taking photos -> where to go next in Myeongdong",
+  flow: "choosing a drink, bread or juice -> ordering (hot/iced, size, for here/to go) -> paying -> waiting for the buzzer -> getting the drink -> talking about the taste -> taking photos -> where to go next in Myeongdong",
   curiosity: ["the vibrating buzzer (진동벨)", "unfamiliar words on the menu board", "people taking photos of their drinks", "the self tray-return shelf"],
   realPhrases: ["아아 한 잔이요", "드시고 가세요? (staff)", "진동벨 울리면 오세요 (staff)", "먹고 갈게요", "포장해 주세요"],
   culture: ["buzzers in almost every cafe", "Koreans love iced americano even in winter (얼죽아)", "returning your own tray", "seats with power outlets"],

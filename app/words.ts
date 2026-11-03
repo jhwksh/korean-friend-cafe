@@ -7,6 +7,10 @@ export const words = {
     ko: "창문", roman: "changmun",
     names: { en: "window", de: "Fenster", ja: "窓", zh: "窗户", es: "ventana", vi: "cửa sổ" },
   },
+  sea: {
+    ko: "바다", roman: "bada",
+    names: { en: "sea", de: "Meer", ja: "海", zh: "大海", es: "mar", vi: "biển" },
+  },
   lamp: {
     ko: "조명", roman: "jomyeong",
     names: { en: "lamp", de: "Lampe", ja: "照明", zh: "灯", es: "lámpara", vi: "đèn" },
@@ -22,6 +26,18 @@ export const words = {
   showcase: {
     ko: "진열장", roman: "jinyeoljang",
     names: { en: "display case", de: "Vitrine", ja: "ショーケース", zh: "展示柜", es: "vitrina", vi: "tủ trưng bày" },
+  },
+  beans: {
+    ko: "원두", roman: "wondu",
+    names: { en: "coffee beans", de: "Kaffeebohnen", ja: "コーヒー豆", zh: "咖啡豆", es: "granos de café", vi: "hạt cà phê" },
+  },
+  coffeeMachine: {
+    ko: "커피 머신", roman: "keopi meosin",
+    names: { en: "coffee machine", de: "Kaffeemaschine", ja: "コーヒーマシン", zh: "咖啡机", es: "cafetera", vi: "máy pha cà phê" },
+  },
+  grinder: {
+    ko: "그라인더", roman: "geuraindeo",
+    names: { en: "coffee grinder", de: "Kaffeemühle", ja: "コーヒーミル", zh: "磨豆机", es: "molinillo de café", vi: "máy xay cà phê" },
   },
   staff: {
     ko: "직원", roman: "jigwon",

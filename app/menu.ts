@@ -24,4 +24,20 @@ export const menu: {
     name: "치즈케이크", price: "6,000원", emoji: "🍰", hot: false,
     names: { en: "Cheesecake", de: "Käsekuchen", ja: "チーズケーキ", zh: "芝士蛋糕", es: "Tarta de queso", vi: "Bánh phô mai" },
   },
+  {
+    name: "소금빵", price: "3,500원", emoji: "🥖", hot: false,
+    names: { en: "Salt Bread", de: "Salzbrötchen", ja: "塩パン", zh: "盐面包", es: "Pan de sal", vi: "Bánh mì muối" },
+  },
+  {
+    name: "크루아상", price: "4,000원", emoji: "🥐", hot: false,
+    names: { en: "Croissant", de: "Croissant", ja: "クロワッサン", zh: "可颂", es: "Cruasán", vi: "Bánh sừng bò" },
+  },
+  {
+    name: "오렌지주스", price: "5,500원", emoji: "🍊", hot: false,
+    names: { en: "Orange Juice", de: "Orangensaft", ja: "オレンジジュース", zh: "橙汁", es: "Zumo de naranja", vi: "Nước cam" },
+  },
+  {
+    name: "딸기주스", price: "6,000원", emoji: "🍓", hot: false,
+    names: { en: "Strawberry Juice", de: "Erdbeersaft", ja: "いちごジュース", zh: "草莓汁", es: "Zumo de fresa", vi: "Nước ép dâu" },
+  },
 ];

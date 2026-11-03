@@ -12,7 +12,7 @@ export default function CounterFood() {
   return (
     <div className="relative z-20 -mb-3 flex justify-center">
       {/* 유리 쇼케이스: 반투명 유리 + 반짝이는 빛 줄 + 아래 선반 */}
-      <div className="relative flex gap-6 overflow-hidden rounded-t-2xl border-2 border-b-0 border-white/80 bg-gradient-to-b from-white/50 to-sky-100/30 px-6 pb-3 pt-9 shadow-[inset_0_0_24px_rgba(255,255,255,0.7),0_10px_18px_rgba(0,0,0,0.25)]">
+      <div className="relative grid grid-cols-4 gap-x-6 gap-y-3 overflow-hidden rounded-t-2xl border-2 border-b-0 border-white/80 bg-gradient-to-b from-white/50 to-sky-100/30 px-6 pb-3 pt-9 shadow-[inset_0_0_24px_rgba(255,255,255,0.7),0_10px_18px_rgba(0,0,0,0.25)]">
         <span className="pointer-events-none absolute -left-6 top-0 h-full w-10 rotate-12 bg-white/40 blur-[2px]" />
         <span className="pointer-events-none absolute left-1/3 top-0 h-full w-3 rotate-12 bg-white/30" />
         <WordTag word="showcase" className="right-2 top-1" />

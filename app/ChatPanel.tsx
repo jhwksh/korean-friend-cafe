@@ -99,9 +99,13 @@ export default function ChatPanel() {
   return (
     <div className="flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-3xl bg-white/95 text-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.5)]">
       <header className="flex items-center gap-3 border-b border-gray-100 p-4">
-        <div className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-pink-400 to-amber-400 text-2xl shadow-md">
-          🙂
-        </div>
+        {/* 프로필: 한국어 친구 그림(public/friend.png)에서 얼굴 부분만 동그랗게 보여 준다 */}
+        <div
+          className="h-11 w-11 shrink-0 rounded-full bg-gradient-to-br from-pink-200 to-amber-200 bg-no-repeat shadow-md"
+          style={{ backgroundImage: "url(/friend.png)", backgroundSize: "240%", backgroundPosition: "62% 6%" }}
+          role="img"
+          aria-label="한국어 친구"
+        />
         <div>
           <p className="font-semibold">
             한국어 친구 <span className="text-xs font-normal text-gray-500">· {t.friend}</span>

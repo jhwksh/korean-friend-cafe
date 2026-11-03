@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { useLanguage } from "./LanguageProvider";
 
-// 카페 안에서 마우스(손가락)를 졸졸 따라다니는 한국어 친구
+// 카페 안에서 마우스(손가락)를 졸졸 따라다니는 한국어 친구.
+// 캐릭터 그림(public/friend.png)은 사용자가 Gemini로 만든 그림이다 (실제 사람 아님).
 export default function CafeFriend() {
   const friendRef = useRef<HTMLDivElement>(null);
   const { t } = useLanguage();
@@ -13,8 +15,8 @@ export default function CafeFriend() {
     const area = friend?.parentElement;
     if (!friend || !area) return;
 
-    // 처음에는 계산대 왼쪽에 서 있는다
-    const pos = { x: 40, y: area.clientHeight - 280 };
+    // 처음에는 계산대 왼쪽 바닥에 서 있는다
+    const pos = { x: 10, y: area.clientHeight - friend.offsetHeight - 10 };
     const target = { ...pos };
 
     const onMove = (e: PointerEvent) => {
@@ -24,8 +26,8 @@ export default function CafeFriend() {
       const x = (e.clientX - rect.left) / s;
       const y = (e.clientY - rect.top) / s;
       // 마우스 바로 위가 아니라 살짝 옆에 서도록 띄우고, 카페 밖으로 나가지 않게 막는다
-      target.x = Math.min(Math.max(x + 30, 0), area.offsetWidth - 180);
-      target.y = Math.min(Math.max(y - 60, 0), area.offsetHeight - 140);
+      target.x = Math.min(Math.max(x + 20, 0), area.offsetWidth - friend.offsetWidth);
+      target.y = Math.min(Math.max(y - friend.offsetHeight / 2, 0), area.offsetHeight - friend.offsetHeight);
     };
 
     let frame = 0;
@@ -47,17 +49,21 @@ export default function CafeFriend() {
 
   return (
     <div ref={friendRef} className="pointer-events-none absolute left-0 top-0 z-40">
-      <div className="flex flex-col items-center animate-[bob_2s_ease-in-out_infinite]">
+      <div className="flex flex-col items-center animate-[bob_3s_ease-in-out_infinite]">
         <div className="mb-2 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-sm text-gray-800 shadow-lg">
           같이 주문해 볼까? ☕
           <br />
           <span className="text-xs text-gray-500">{t.friendBubble}</span>
         </div>
-        <div className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-pink-400 to-amber-400 text-3xl shadow-[0_10px_20px_rgba(0,0,0,0.3)]">
-          🙂
-        </div>
+        <Image
+          src="/friend.png"
+          alt="한국어 친구"
+          width={122}
+          height={250}
+          className="h-[250px] w-auto drop-shadow-[0_10px_12px_rgba(0,0,0,0.3)]"
+        />
       </div>
-      <div className="mx-auto mt-1 h-2 w-10 rounded-full bg-black/20 blur-sm" />
+      <div className="mx-auto -mt-2 h-3 w-24 rounded-full bg-black/25 blur-sm" />
     </div>
   );
 }
