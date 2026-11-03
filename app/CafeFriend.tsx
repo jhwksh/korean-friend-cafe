@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { useLanguage } from "./LanguageProvider";
 
 // 카페 안에서 마우스(손가락)를 졸졸 따라다니는 한국어 친구
 export default function CafeFriend() {
   const friendRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const friend = friendRef.current;
@@ -40,12 +42,12 @@ export default function CafeFriend() {
   }, []);
 
   return (
-    <div ref={friendRef} className="pointer-events-none absolute left-0 top-0 z-20">
+    <div ref={friendRef} className="pointer-events-none absolute left-0 top-0 z-40">
       <div className="flex flex-col items-center animate-[bob_2s_ease-in-out_infinite]">
         <div className="mb-2 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-sm text-gray-800 shadow-lg">
           같이 주문해 볼까? ☕
           <br />
-          <span className="text-xs text-gray-500">Shall we order together?</span>
+          <span className="text-xs text-gray-500">{t.friendBubble}</span>
         </div>
         <div className="grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-pink-400 to-amber-400 text-3xl shadow-[0_10px_20px_rgba(0,0,0,0.3)]">
           🙂
