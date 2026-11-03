@@ -786,3 +786,23 @@
 - 실제로 소리가 나는지: 미확인 (Claude는 소리를 들을 수 없다. Claude 쪽 미리보기 브라우저에는 한국어 목소리가 없었다. 크롬·엣지에서는 보통 한국어 목소리가 있다)
 
 **커밋**: "숨은 단어와 스탬프 미션 10개를 한국어로 말해서 깨고, 친구 찬스와 읽어 주기·커피·빵 소리가 생김" (23~27번 함께)
+
+---
+
+## 28. 배포 준비 (2026-11-04)
+
+**한 일**
+- 브라우저 탭 제목: "Create Next App" → "한국어 친구 카페 · Korean Friend Cafe", 설명도 바꿨다. 페이지 언어를 ko로 (`app/layout.tsx`).
+- `.env.example` (빈칸 견본): `GEMINI_API_KEY=` 한 줄과 설명. `.gitignore`에 `!.env.example`을 넣어 견본만 올라가고 `.env.local`은 계속 막힌다.
+
+**왜**
+- 사용자: "배포부터 하고, 음악은 별도로."
+- CLAUDE.md 보안 규칙: `.env.example`에는 빈칸 견본만 둔다.
+
+**확인한 방법**
+- `git check-ignore`: `.env.local`은 무시됨, `.env.example`은 올라감 ✅
+- `npm run build` 통과 (`/`는 정적, `/api/chat`은 서버에서 돈다), `npx eslint app` 오류 없음.
+
+**커밋**: "탭 제목이 한국어 친구 카페로 보이고, 키 빈칸 견본(.env.example)이 생김"
+
+**다음**: GitHub 저장소 만들기 (사용자) → 올리기 → Vercel 연결과 키 넣기 (사용자)

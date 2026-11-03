@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# 빈칸 견본(.env.example)만 올린다. 진짜 키가 든 .env.local은 올리지 않는다
+!.env.example
 
 # vercel
 .vercel
