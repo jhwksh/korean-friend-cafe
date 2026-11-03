@@ -1,4 +1,5 @@
 import CafeFriend from "./CafeFriend";
+import ChatPanel from "./ChatPanel";
 import MenuBoard from "./MenuBoard";
 import { menu } from "./menu";
 
@@ -61,20 +62,7 @@ export default function Home() {
 
       {/* 오른쪽: 한국어 친구 채팅창 */}
       <section className="flex flex-1 p-4 md:max-w-md md:p-6">
-        <div className="flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-3xl bg-white/95 text-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.5)]">
-          <header className="flex items-center gap-3 border-b border-gray-100 p-4">
-            <div className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-pink-400 to-amber-400 text-2xl shadow-md">
-              🙂
-            </div>
-            <div>
-              <p className="font-semibold">한국어 친구</p>
-              <p className="text-xs text-emerald-600">● 온라인</p>
-            </div>
-          </header>
-          <div className="flex flex-1 items-center justify-center bg-gradient-to-b from-amber-50/60 to-white p-4 text-gray-400">
-            대화가 여기에 나와요
-          </div>
-        </div>
+        <ChatPanel />
       </section>
     </main>
   );
