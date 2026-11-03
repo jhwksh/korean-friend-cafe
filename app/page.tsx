@@ -1,6 +1,7 @@
 import Image from "next/image";
 import CafeFriend from "./CafeFriend";
 import CafeStage from "./CafeStage";
+import CafeView from "./CafeView";
 import ChatPanel from "./ChatPanel";
 import CounterFood from "./CounterFood";
 import LanguagePicker from "./LanguagePicker";
@@ -16,6 +17,8 @@ export default function Home() {
       <section className="flex-1">
         <CafeStage>
         <div className="relative h-full overflow-hidden bg-[#e9e4dc]">
+        {/* 🌀 둘러보기 버튼을 누르면 이 2D 카페 대신 360° 카페가 보인다 (CafeView) */}
+        <CafeView>
         {/* 배경 사진: Unsplash 무료 사진. 실제 브랜드 로고가 있는 곳은 흐리게 처리했다.
             아래 물건들의 위치는 이 사진(가로 800 × 세로 700 무대)에 맞춰 잡았다 */}
         <Image
@@ -38,11 +41,6 @@ export default function Home() {
         </div>
 
         <CafeFriend />
-
-        {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 */}
-        <div className="absolute left-1/2 top-3 z-30 -translate-x-1/2">
-          <LanguagePicker />
-        </div>
 
         {/* 간판: 하얀 천장 아래에 걸린 판 */}
         <h1 className="absolute left-[400px] top-[56px] z-10 -translate-x-1/2 whitespace-nowrap rounded-lg border-2 border-[#8b5a2b] bg-white/90 px-5 py-1.5 text-center text-2xl font-extrabold text-[#5c3a1c] shadow-[0_6px_12px_rgba(0,0,0,0.25)]">
@@ -91,6 +89,12 @@ export default function Home() {
         >
           Photo: Unsplash
         </a>
+        </CafeView>
+
+        {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 (2D와 360 둘 다에서 보인다) */}
+        <div className="absolute left-1/2 top-3 z-40 -translate-x-1/2">
+          <LanguagePicker />
+        </div>
         </div>
         </CafeStage>
       </section>
