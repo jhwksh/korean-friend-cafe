@@ -43,3 +43,16 @@ body {
   from { transform: rotateY(0deg); }
   to { transform: rotateY(360deg); }
 }
+
+/* 단어 버튼(닫힌 상태): 거의 투명한 동그라미가 살짝 숨 쉬듯 반짝인다 */
+@keyframes word-glow {
+  0%, 100% { opacity: 0.45; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+/* 단어를 맞히면 스탬프 도장이 "쾅" 찍힌다 */
+@keyframes stamp-pop {
+  0% { transform: scale(2.2) rotate(-12deg); opacity: 0; }
+  70% { transform: scale(0.9) rotate(-12deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-12deg); }
+}

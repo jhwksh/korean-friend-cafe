@@ -10,7 +10,7 @@ export type Scene = {
   name: string; // 장면의 한국어 이름
   place: string; // 지금 어디에 있는지
   greeting: { ko: string; roman: string; meanings: Record<LangCode, string> }; // 친구의 첫 말
-  items: { name: string; emoji?: string; price?: string; names: { en: string } & Partial<Record<LangCode, string>> }[]; // 고를 수 있는 것
+  items: { name: string; emoji?: string; hot?: boolean; price?: string; names: { en: string } & Partial<Record<LangCode, string>> }[]; // 고를 수 있는 것
   words: { ko: string; roman: string; en: string }[]; // 이 장소의 물건 이름
   flow: string; // 보통 흘러가는 순서 (억지로 지키지 않는다)
   curiosity: string[]; // 친구가 "이게 뭐예요?" 하고 궁금해할 만한 것
@@ -41,7 +41,7 @@ const cafe: Scene = {
   flow: "choosing a drink, bread or juice -> ordering (hot/iced, size, for here/to go) -> paying -> waiting for the buzzer -> getting the drink -> talking about the taste -> taking photos -> where to go next in Myeongdong",
   curiosity: ["the vibrating buzzer (진동벨)", "unfamiliar words on the menu board", "people taking photos of their drinks", "the self tray-return shelf"],
   realPhrases: ["아아 한 잔이요", "드시고 가세요? (staff)", "진동벨 울리면 오세요 (staff)", "먹고 갈게요", "포장해 주세요"],
-  culture: ["buzzers in almost every cafe", "Koreans love iced americano even in winter (얼죽아)", "returning your own tray", "seats with power outlets"],
+  culture: ["buzzers in almost every cafe", "Koreans love iced americano even in winter (얼죽아)", "returning your own tray", "seats with power outlets", "cafe stamp cards (collect 10 stamps, get a free drink)"],
   staff: "a barista behind the counter who greets with 어서 오세요",
   translationNotes: ['iced americano in German is "Eis-Americano", not "Eiskaffee"'],
 };

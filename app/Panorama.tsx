@@ -5,8 +5,13 @@ import * as THREE from "three";
 
 // 360° 둘러보기. 360도 사진을 커다란 공 안쪽에 붙이고, 카메라를 공 한가운데 둔다.
 // 마우스(손가락)로 끌면 고개를 돌리듯 둘러보고, 휠로 가까이/멀리 본다.
-export default function Panorama({ src }: { src: string }) {
+// markers: 사진 속 물건 자리(lon: 사진 왼쪽 끝부터 오른쪽으로 0~360도, lat: 위 90 ~ 아래 -90도)에 붙는 단어 버튼.
+// 둘러볼 때마다 그 자리를 따라 움직이고, 뒤쪽에 있으면 숨긴다.
+export type PanoMarker = { id: string; lon: number; lat: number; node: React.ReactNode };
+
+export default function Panorama({ src, markers = [] }: { src: string; markers?: PanoMarker[] }) {
   const mountRef = useRef<HTMLDivElement>(null);
+  const markerRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -75,6 +80,24 @@ export default function Panorama({ src }: { src: string }) {
         500 * Math.sin(phi) * Math.sin(theta),
       );
       renderer.render(scene, camera);
+
+      // 단어 버튼을 사진 속 자리에 맞춰 옮긴다
+      const w = mount.clientWidth;
+      const h = mount.clientHeight;
+      for (const m of markers) {
+        const el = markerRefs.current[m.id];
+        if (!el) continue;
+        const mPhi = THREE.MathUtils.degToRad(90 - m.lat);
+        const mTheta = THREE.MathUtils.degToRad(m.lon);
+        const p = new THREE.Vector3(
+          400 * Math.sin(mPhi) * Math.cos(mTheta),
+          400 * Math.cos(mPhi),
+          400 * Math.sin(mPhi) * Math.sin(mTheta),
+        ).project(camera);
+        const visible = p.z < 1 && Math.abs(p.x) < 1.1 && Math.abs(p.y) < 1.1;
+        el.style.display = visible ? "block" : "none";
+        if (visible) el.style.transform = `translate(${((p.x + 1) / 2) * w - 10}px, ${((1 - p.y) / 2) * h - 10}px)`;
+      }
       frame = requestAnimationFrame(render);
     };
     render();
@@ -92,7 +115,26 @@ export default function Panorama({ src }: { src: string }) {
       renderer.dispose();
       mount.removeChild(renderer.domElement);
     };
-  }, [src]);
+  }, [src, markers]);
 
-  return <div ref={mountRef} className="h-full w-full cursor-grab touch-none active:cursor-grabbing" />;
+  return (
+    <div className="relative h-full w-full">
+      <div ref={mountRef} className="h-full w-full cursor-grab touch-none active:cursor-grabbing" />
+      {/* 단어 버튼은 끌기 판 바깥에 둬서, 눌러도 화면이 돌아가지 않게 한다 */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        {markers.map((m) => (
+          <div
+            key={m.id}
+            ref={(el) => {
+              markerRefs.current[m.id] = el;
+            }}
+            className="pointer-events-auto absolute left-0 top-0"
+            style={{ display: "none" }}
+          >
+            {m.node}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }

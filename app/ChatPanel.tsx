@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from "react";
 import LanguagePicker from "./LanguagePicker";
+import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
+import { koreanParts, playCoffee, playCrunch } from "./sound";
+import SpeakButton from "./SpeakButton";
 import { scenes } from "./scenes";
 
 const MAX_LENGTH = 200;
@@ -22,6 +25,7 @@ function choose(name: string) {
 
 export default function ChatPanel() {
   const { lang, t } = useLanguage();
+  const { chances, spendChance } = useFound();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [notice, setNotice] = useState("");
@@ -56,7 +60,8 @@ export default function ChatPanel() {
     } catch {}
   }, [messages, loaded]);
 
-  async function send(raw: string) {
+  // free: 메뉴 버튼처럼 찬스를 쓰지 않는 말
+  async function send(raw: string, free = false) {
     if (loading) return;
     const text = raw.trim();
     if (!text) {
@@ -65,6 +70,11 @@ export default function ChatPanel() {
     }
     if (text.length > MAX_LENGTH) {
       setNotice(t.errLong);
+      return;
+    }
+    // 직접 쓴 말은 친구 찬스를 하나 쓴다 (무료 사용량 절약)
+    if (!free && !spendChance()) {
+      setNotice(t.noChance);
       return;
     }
     // 지금까지의 대화를 같이 보내야 친구가 앞 이야기를 기억한다
@@ -121,7 +131,9 @@ export default function ChatPanel() {
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
         {/* 친구가 먼저 묻는다. 서버에는 보내지 않고 화면에만 보인다 */}
         <div className="max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow">
-          <p className="font-semibold">{scene.greeting.ko}</p>
+          <p className="font-semibold">
+            {scene.greeting.ko} <SpeakButton text={scene.greeting.ko} />
+          </p>
           <p className="text-xs italic text-gray-500">KR: {scene.greeting.roman}</p>
           <p className="mt-1 text-xs text-gray-600">= {scene.greeting.meanings[lang]}</p>
         </div>
@@ -139,6 +151,11 @@ export default function ChatPanel() {
                 className="max-w-[85%] self-start whitespace-pre-wrap break-words rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow"
               >
                 {m.text}
+                {koreanParts(m.text).length > 0 && (
+                  <span className="mt-1 block">
+                    <SpeakButton text={koreanParts(m.text).join(" ")} />
+                  </span>
+                )}
               </div>
             ),
         )}
@@ -162,7 +179,12 @@ export default function ChatPanel() {
               key={item.name}
               type="button"
               disabled={loading}
-              onClick={() => send(choose(item.name))}
+              onClick={() => {
+                // 따뜻한 음료는 커피 내리는 소리, 빵은 바삭 소리
+                if (item.hot) playCoffee();
+                else if (item.emoji === "🥐" || item.emoji === "🥖") playCrunch();
+                send(choose(item.name), true);
+              }}
               className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs text-[#5c3a1c] hover:bg-amber-100 disabled:opacity-50"
             >
               {item.emoji} {item.name}{" "}
@@ -191,8 +213,8 @@ export default function ChatPanel() {
         </div>
         <div className="mt-1 flex justify-between px-2 text-xs">
           <span className="text-red-500">{notice}</span>
-          <span className="text-gray-400">
-            {input.length}/{MAX_LENGTH}
+          <span className="whitespace-nowrap text-gray-400">
+            🙋 {chances} · {t.chances} · {input.length}/{MAX_LENGTH}
           </span>
         </div>
       </form>

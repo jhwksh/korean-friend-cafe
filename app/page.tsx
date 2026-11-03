@@ -3,9 +3,12 @@ import Barista from "./Barista";
 import CafeFriend from "./CafeFriend";
 import CafeStage from "./CafeStage";
 import CafeView from "./CafeView";
+import { FoundProvider } from "./FoundProvider";
+import FoundScore from "./FoundScore";
 import ChatPanel from "./ChatPanel";
 import CounterFood from "./CounterFood";
 import LanguagePicker from "./LanguagePicker";
+import MissionButton from "./MissionButton";
 import { LanguageProvider, T } from "./LanguageProvider";
 import WordTag from "./WordTag";
 import MenuBoard from "./MenuBoard";
@@ -13,6 +16,7 @@ import MenuBoard from "./MenuBoard";
 export default function Home() {
   return (
     <LanguageProvider>
+    <FoundProvider>
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
       {/* 왼쪽: 가상 카페 화면. 화면 너비에 맞춰 통째로 커지고 작아진다 (CafeStage) */}
       <section className="flex-1">
@@ -38,6 +42,8 @@ export default function Home() {
           <div className="absolute inset-y-0 left-1/2 w-[7px] -translate-x-1/2 bg-[#fbfaf7] shadow-[0_0_4px_rgba(0,0,0,0.2)]" />
           <div className="absolute inset-x-0 top-1/2 h-[7px] -translate-y-1/2 bg-[#fbfaf7] shadow-[0_0_4px_rgba(0,0,0,0.2)]" />
           <WordTag word="window" className="left-2 top-2" />
+          {/* ⭐ 미션 6: 창밖 바다 보고 */}
+          <MissionButton id="sea" className="right-10 top-6" />
           <WordTag word="sea" className="bottom-2 right-2" />
         </div>
 
@@ -55,12 +61,23 @@ export default function Home() {
         </div>
 
         {/* 진열장: 사진 속 앞 계산대 위에 올려 둔다 */}
-        <div className="absolute left-[262px] top-[462px] z-20 origin-top-left scale-[0.62]">
+        <div className="absolute left-[262px] top-[462px] z-30 origin-top-left scale-[0.62]">
           <CounterFood />
         </div>
 
         {/* 점원(바리스타): 누르면 머리 위에 "어서 오세요!"가 보였다가, 다시 누르면 사라진다 */}
         <Barista />
+
+        {/* 앞 계산대: 배경 사진에서 계산대 부분만 한 번 더 겹쳐 그린다.
+            그래서 바리스타의 아랫몸이 계산대에 가려져, 계산대 뒤에 선 것처럼 보인다 */}
+        <Image
+          src="/cafe.jpg"
+          alt=""
+          fill
+          sizes="(min-width: 768px) 60vw, 100vw"
+          className="pointer-events-none z-[25] object-cover"
+          style={{ clipPath: "polygon(91px 552px, 800px 552px, 800px 700px, 91px 700px)" }}
+        />
 
         {/* 사진 속 물건 이름표 */}
         <WordTag word="lamp" className="left-[180px] top-[118px]" />
@@ -69,6 +86,16 @@ export default function Home() {
         <WordTag word="coffeeMachine" className="left-[96px] top-[392px]" />
         <WordTag word="grinder" className="left-[700px] top-[318px]" />
         <WordTag word="counter" className="left-[300px] top-[626px]" />
+        {/* ⭐ 미션: 계산대에서 계산, 쓰레기통 */}
+        <MissionButton id="card" className="left-[470px] top-[622px]" />
+        <MissionButton id="trash" className="left-[60px] top-[620px]" />
+        {/* 왼쪽 아래 하얀 상자의 동그란 구멍: 다 먹은 컵과 쓰레기를 버리는 곳 */}
+        <WordTag word="trash" className="left-[112px] top-[636px]" />
+        {/* 오른쪽 회색 콘크리트 기둥 = 벽, 위쪽 하얀 면 = 천장 */}
+        {/* 뒤쪽 하얀 작업대 = 싱크대 */}
+        <WordTag word="sink" className="left-[150px] top-[505px]" />
+        <WordTag word="wall" className="left-[752px] top-[200px]" />
+        <WordTag word="ceiling" className="left-[660px] top-[40px]" />
 
         {/* 사진 출처 */}
         <a
@@ -80,6 +107,9 @@ export default function Home() {
           Photo: Unsplash
         </a>
         </CafeView>
+
+        {/* 🔍 보물찾기 점수판과 상품 쿠폰 (2D와 360 둘 다에서 보인다) */}
+        <FoundScore />
 
         {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 (2D와 360 둘 다에서 보인다) */}
         <div className="absolute left-1/2 top-3 z-40 -translate-x-1/2">
@@ -94,6 +124,7 @@ export default function Home() {
         <ChatPanel />
       </section>
     </main>
+    </FoundProvider>
     </LanguageProvider>
   );
 }

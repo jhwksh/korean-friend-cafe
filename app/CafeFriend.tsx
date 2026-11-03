@@ -23,8 +23,9 @@ export default function CafeFriend() {
     const area = friend?.parentElement;
     if (!friend || !body || !facing || !area) return;
 
-    // 늘 바닥에 서 있다 (위아래로는 움직이지 않는다). 처음에는 계산대 왼쪽에 있다
-    const floorY = area.clientHeight - friend.offsetHeight - 6;
+    // 늘 바닥에 서 있다 (위아래로는 움직이지 않는다). 처음에는 계산대 왼쪽에 있다.
+    // 그림에 발이 없어서(치마가 그림 끝에서 잘림), 치마 끝이 카페 화면 아래 테두리에 가려지도록 조금 내려 둔다
+    const floorY = area.clientHeight - friend.offsetHeight + 40;
     let x = 10;
     let targetX = x;
     // 마우스가 한동안 가만히 있으면 혼자 이리저리 걸어 다닌다
@@ -94,14 +95,13 @@ export default function CafeFriend() {
         <Image
           src="/friend.png"
           alt="한국어 친구"
-          width={122}
-          height={250}
-          className="h-[250px] w-auto drop-shadow-[0_10px_12px_rgba(0,0,0,0.3)]"
+          width={139}
+          height={285}
+          className="h-[285px] w-auto drop-shadow-[0_10px_12px_rgba(0,0,0,0.3)]"
         />
         </span>
         </button>
       </div>
-      <div className="mx-auto -mt-2 h-3 w-24 rounded-full bg-black/25 blur-sm" />
     </div>
   );
 }

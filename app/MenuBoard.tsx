@@ -2,6 +2,7 @@
 
 import { useLanguage } from "./LanguageProvider";
 import { menu } from "./menu";
+import MissionButton from "./MissionButton";
 import WordTag from "./WordTag";
 
 // 유리 메뉴판. 뒤의 나무 선반이 뿌옇게 비쳐 보인다. 한국어 이름 아래에 고른 언어 이름을 보여 준다.
@@ -13,6 +14,10 @@ export default function MenuBoard() {
       {/* 유리에 비친 빛 줄 */}
       <span className="pointer-events-none absolute inset-y-0 left-[18%] w-10 -skew-x-12 bg-white/25" />
       <WordTag word="menuBoard" className="-right-4 -top-5" />
+      {/* 숨은 단어: 가격 (오른쪽 가격 줄 옆) */}
+      <WordTag word="price" className="-right-3 top-14" />
+      {/* ⭐ 미션 2: 메뉴판 보고 주문하기 */}
+      <MissionButton id="order" className="-left-3 -top-3" />
       <h2 className="mb-3 text-center text-lg font-semibold tracking-widest">
         메뉴 <span className="text-sm font-normal text-[#6b5a4a]">· {t.menu}</span>
       </h2>
