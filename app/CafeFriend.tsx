@@ -19,9 +19,13 @@ export default function CafeFriend() {
 
     const onMove = (e: PointerEvent) => {
       const rect = area.getBoundingClientRect();
+      // 카페 그림은 화면 크기에 맞춰 줄거나 커져 있으니(CafeStage), 마우스 위치를 원래 크기로 되돌려 계산한다
+      const s = rect.width / area.offsetWidth;
+      const x = (e.clientX - rect.left) / s;
+      const y = (e.clientY - rect.top) / s;
       // 마우스 바로 위가 아니라 살짝 옆에 서도록 띄우고, 카페 밖으로 나가지 않게 막는다
-      target.x = Math.min(Math.max(e.clientX - rect.left + 30, 0), rect.width - 180);
-      target.y = Math.min(Math.max(e.clientY - rect.top - 60, 0), rect.height - 140);
+      target.x = Math.min(Math.max(x + 30, 0), area.offsetWidth - 180);
+      target.y = Math.min(Math.max(y - 60, 0), area.offsetHeight - 140);
     };
 
     let frame = 0;

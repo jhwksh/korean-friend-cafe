@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import LanguagePicker from "./LanguagePicker";
 import { useLanguage } from "./LanguageProvider";
 import { menu } from "./menu";
 
@@ -77,6 +78,10 @@ export default function ChatPanel() {
             한국어 친구 <span className="text-xs font-normal text-gray-500">· {t.friend}</span>
           </p>
           <p className="text-xs text-emerald-600">● {t.online}</p>
+        </div>
+        {/* 🌐 언어 고르기 (카페 위에 있는 것과 같은 설정을 함께 쓴다) */}
+        <div className="ml-auto">
+          <LanguagePicker />
         </div>
       </header>
 
