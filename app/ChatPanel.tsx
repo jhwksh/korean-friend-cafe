@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LanguagePicker from "./LanguagePicker";
 import { useLanguage } from "./LanguageProvider";
 import { menu } from "./menu";
 
 const MAX_LENGTH = 200;
+// 대화를 이 브라우저(localStorage)에 저장할 때 쓰는 이름. 서버나 DB에는 저장하지 않는다
+const STORAGE_KEY = "kfc-chat";
 
 type Message = { id: number; role: "user" | "friend"; text: string };
 
@@ -26,6 +28,35 @@ export default function ChatPanel() {
   const [input, setInput] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  // 처음 열 때: 이 브라우저에 저장해 둔 대화를 불러온다 (새로고침해도 대화가 남는다)
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+      if (Array.isArray(saved)) {
+        // 브라우저 저장소는 화면이 뜬 뒤에만 읽을 수 있어서(서버엔 없음) 여기서 불러오는 것이 맞다
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setMessages(
+          saved.filter(
+            (m): m is Message =>
+              typeof m?.id === "number" && (m.role === "user" || m.role === "friend") && typeof m.text === "string",
+          ),
+        );
+      }
+    } catch {
+      // 저장된 내용이 망가졌거나 브라우저가 저장을 막으면 빈 대화로 시작한다
+    }
+    setLoaded(true);
+  }, []);
+
+  // 대화가 바뀔 때마다 저장한다. 불러오기 전에는 저장하지 않는다 (빈 대화로 덮어쓰지 않게)
+  useEffect(() => {
+    if (!loaded) return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages, loaded]);
 
   async function send(raw: string) {
     if (loading) return;

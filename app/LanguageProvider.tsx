@@ -21,6 +21,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       saved = localStorage.getItem(STORAGE_KEY);
     } catch {}
     const browser = navigator.language.slice(0, 2);
+    // 브라우저 저장소는 화면이 뜬 뒤에만 읽을 수 있어서(서버엔 없음) 여기서 바꾸는 것이 맞다
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (isLangCode(saved)) setLangState(saved);
     else if (isLangCode(browser)) setLangState(browser);
   }, []);
