@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Barista from "./Barista";
 import CafeFriend from "./CafeFriend";
 import CafeStage from "./CafeStage";
 import CafeView from "./CafeView";
@@ -58,19 +59,8 @@ export default function Home() {
           <CounterFood />
         </div>
 
-        {/* 점원(바리스타): 앞 계산대 오른쪽 뒤에 서서 손을 흔든다. 계산대 아래로는 가려진다 (지금은 모습만, 대화는 나중 단계)
-            그림(public/barista.png)은 사용자가 Gemini로 만든 그림이다 (실제 사람 아님) */}
-        <div className="absolute left-[612px] top-[352px] z-20 flex flex-col items-center">
-          <div className="mb-1 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-center text-sm text-gray-800 shadow-lg">
-            <span className="font-semibold">어서 오세요! 😊</span>
-            <br />
-            <span className="text-xs text-gray-500"><T k="welcome" /></span>
-          </div>
-          <div className="h-[178px] w-[161px] overflow-hidden">
-            <Image src="/barista.png" alt="바리스타" width={161} height={300} className="h-[300px] w-auto drop-shadow-[0_8px_10px_rgba(0,0,0,0.25)]" />
-          </div>
-          <WordTag word="staff" className="-left-10 bottom-10" />
-        </div>
+        {/* 점원(바리스타): 누르면 머리 위에 "어서 오세요!"가 보였다가, 다시 누르면 사라진다 */}
+        <Barista />
 
         {/* 사진 속 물건 이름표 */}
         <WordTag word="lamp" className="left-[180px] top-[118px]" />

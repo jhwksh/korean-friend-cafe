@@ -37,3 +37,9 @@ body {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+
+/* 한국어 친구를 누르면 세로축으로 한 바퀴 빙글 돈다 */
+@keyframes friend-spin {
+  from { transform: rotateY(0deg); }
+  to { transform: rotateY(360deg); }
+}
