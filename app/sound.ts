@@ -3,8 +3,18 @@
 // 커피·진동벨 소리는 파일 없이 소리 파형(Web Audio)으로 직접 만든다.
 
 // 글에서 한국어 부분만 골라낸다 (친구 답에는 외국어 설명과 한국어 문장이 섞여 있다)
+const KOREAN = /[가-힣][가-힣0-9\s,.!?~'"]*[가-힣.!?]?/g;
 export function koreanParts(text: string) {
-  return (text.match(/[가-힣][가-힣0-9\s,.!?~'"]*[가-힣.!?]?/g) ?? []).map((s) => s.trim()).filter(Boolean);
+  return (text.match(KOREAN) ?? []).map((s) => s.trim()).filter(Boolean);
+}
+
+// 연습할 말만 골라낸다: 친구는 배울 말 뒤에 "(KR: 발음)"을 붙인다 (예: 먹고 갈게요 (KR: meokgo galgeyo)).
+// 한국어를 모두 이어 읽으면 앞의 다른 말이 붙어 나와서, 발음이 붙은 말만 하나씩 읽는다. 없으면 한국어 전부.
+export function practiceParts(text: string) {
+  const marked = [...text.matchAll(KOREAN)]
+    .filter((m) => /^\s*\(KR:/.test(text.slice(m.index + m[0].length)))
+    .map((m) => m[0].trim());
+  return [...new Set(marked.length > 0 ? marked : koreanParts(text))];
 }
 
 // 🔊 한국어를 소리 내어 읽는다

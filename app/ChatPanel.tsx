@@ -6,7 +6,7 @@ import LanguagePicker from "./LanguagePicker";
 import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
 import { useOrders } from "./OrderProvider";
-import { koreanParts } from "./sound";
+import { practiceParts } from "./sound";
 import SpeakButton from "./SpeakButton";
 import { scenes } from "./scenes";
 
@@ -190,9 +190,15 @@ export default function ChatPanel() {
                 className="max-w-[85%] self-start whitespace-pre-wrap break-words rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow"
               >
                 {m.text}
-                {koreanParts(m.text).length > 0 && (
-                  <span className="mt-1 block">
-                    <SpeakButton text={koreanParts(m.text).join(" ")} />
+                {/* 🔊 연습할 말마다 버튼 하나. 무엇을 읽는지 옆에 글로 보여 준다 */}
+                {practiceParts(m.text).length > 0 && (
+                  <span className="mt-1 flex flex-wrap gap-2">
+                    {practiceParts(m.text).map((p) => (
+                      <span key={p} className="inline-flex items-center gap-1 text-xs text-gray-600">
+                        <SpeakButton text={p} />
+                        {p}
+                      </span>
+                    ))}
                   </span>
                 )}
               </div>
