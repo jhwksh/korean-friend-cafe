@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import MissionButton from "./MissionButton";
-import { speak } from "./sound";
+import { speakAlong } from "./sound";
+import { Words } from "./SpeakLine";
 import WordTag from "./WordTag";
 
 // 점원(바리스타): 앞 계산대 뒤에 서서 손을 흔든다. 키는 친구와 비슷하게 맞췄다.
@@ -12,12 +13,17 @@ import WordTag from "./WordTag";
 // 그림(public/barista.png)은 사용자가 Gemini로 만든 그림이다 (실제 사람 아님).
 // 계산대 뒤를 천천히 왔다 갔다 하며, 방향이 바뀌면 몸을 돌린다.
 // 누르면 한 바퀴 빙글 돌고, 머리 위 "어서 오세요!" 말풍선이 보이며 소리 내어 말한다. 다시 누르면 말풍선이 사라진다.
+
+// 점원 인사 (한국어와 발음은 띄어쓰기 수를 맞춘다: 형광펜이 낱말끼리 짝지어 칠한다)
+const GREETING = "어서 오세요!";
+const GREETING_ROMAN = "eoseo oseyo!";
 const RANGE = { left: -70, right: 40 }; // 처음 자리에서 왼쪽·오른쪽으로 움직일 수 있는 거리
 
 export default function Barista() {
   const { t } = useLanguage();
   const [showBubble, setShowBubble] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
+  const [at, setAt] = useState(-1); // 🖍️ 형광펜이 칠할 낱말 번호
   const wrapRef = useRef<HTMLDivElement>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const facingRef = useRef<HTMLButtonElement>(null);
@@ -56,7 +62,14 @@ export default function Barista() {
       <div
         className={`mb-1 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-center text-sm text-gray-800 shadow-lg transition-opacity ${showBubble ? "opacity-100" : "invisible opacity-0"}`}
       >
-        <span className="font-semibold">어서 오세요! 😊</span>
+        {/* 🖍️ 점원이 말하는 동안 형광펜이 낱말을 따라간다 */}
+        <span className="font-semibold">
+          <Words text={GREETING} at={at} /> 😊
+        </span>
+        <br />
+        <span className="text-xs italic text-gray-500">
+          KR: <Words text={GREETING_ROMAN} at={at} />
+        </span>
         <br />
         <span className="text-xs text-gray-500">{t.welcome}</span>
       </div>
@@ -66,7 +79,7 @@ export default function Barista() {
           type="button"
           onClick={() => {
             // 말풍선이 나타날 때 점원이 "어서 오세요!"라고 소리 내어 말한다
-            if (!showBubble) speak("어서 오세요!", "male");
+            if (!showBubble) speakAlong(GREETING.split(" "), setAt, "male");
             setShowBubble((v) => !v);
             setSpinCount((n) => n + 1);
           }}

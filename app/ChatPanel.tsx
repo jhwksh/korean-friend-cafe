@@ -7,7 +7,7 @@ import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
 import { useOrders } from "./OrderProvider";
 import { practiceParts } from "./sound";
-import SpeakButton from "./SpeakButton";
+import SpeakLine, { SpeakWords } from "./SpeakLine";
 import { scenes } from "./scenes";
 
 const MAX_LENGTH = 200;
@@ -179,11 +179,8 @@ export default function ChatPanel() {
       <div ref={listRef} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
         {/* 친구가 먼저 묻는다. 서버에는 보내지 않고 화면에만 보인다 */}
         <div className="max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow">
-          <p className="font-semibold">
-            {scene.greeting.ko} <SpeakButton text={scene.greeting.ko} />
-          </p>
-          <p className="text-xs italic text-gray-500">KR: {scene.greeting.roman}</p>
-          <p className="mt-1 text-xs text-gray-600">= {scene.greeting.meanings[lang]}</p>
+          {/* 🔊 누르면 형광펜이 한국어와 KR 발음을 같이 따라간다 */}
+          <SpeakLine ko={scene.greeting.ko} roman={scene.greeting.roman} mean={`= ${scene.greeting.meanings[lang]}`} />
         </div>
         {messages.map((m) =>
             m.role === "user" ? (
@@ -199,14 +196,11 @@ export default function ChatPanel() {
                 className="max-w-[85%] self-start whitespace-pre-wrap break-words rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow"
               >
                 {m.text}
-                {/* 🔊 연습할 말마다 버튼 하나. 무엇을 읽는지 옆에 글로 보여 준다 */}
+                {/* 🔊 연습할 말마다 버튼 하나. 옆 글에 읽는 낱말을 따라 형광펜이 칠해진다 */}
                 {practiceParts(m.text).length > 0 && (
                   <span className="mt-1 flex flex-wrap gap-2">
                     {practiceParts(m.text).map((p) => (
-                      <span key={p} className="inline-flex items-center gap-1 text-xs text-gray-600">
-                        <SpeakButton text={p} />
-                        {p}
-                      </span>
+                      <SpeakWords key={p} text={p} />
                     ))}
                   </span>
                 )}

@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
 import { missions, type MissionId } from "./missions";
-import { playCoffee } from "./sound";
-import SpeakButton from "./SpeakButton";
+import { playCoffee, speakAlong } from "./sound";
+import { Words } from "./SpeakLine";
 
 // 띄어쓰기와 문장부호는 빼고 비교한다 (예: "안녕하세요!" = "안녕하세요")
 const normalize = (s: string) => s.replace(/[\s.,!?~。？！]/g, "");
@@ -29,6 +29,7 @@ export default function MissionButton({ id, className = "" }: { id: MissionId; c
   const [open, setOpen] = useState(false);
   const [answer, setAnswer] = useState("");
   const [result, setResult] = useState<"" | "almost" | "wrong">("");
+  const [at, setAt] = useState(-1); // 🖍️ 형광펜이 칠할 낱말 번호
   const index = missions.findIndex((m) => m.id === id);
   const m = missions[index];
   const done = stamps.includes(id);
@@ -59,14 +60,29 @@ export default function MissionButton({ id, className = "" }: { id: MissionId; c
     <div className={`absolute z-30 ${className}`}>
       {open ? (
         <div className="relative w-max max-w-[210px] rounded-xl border-2 border-amber-400 bg-white/95 py-1.5 pl-2.5 pr-8 text-left text-xs text-[#5c3a1c] shadow-lg">
-          <SpeakButton text={m.ko} className="absolute right-1.5 top-1.5" />
+          {/* 🔊 누르면 미션 문장을 읽고, 형광펜이 한국어와 KR 발음을 같이 따라간다 */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              speakAlong(m.ko.split(" "), setAt);
+            }}
+            aria-label={`${m.ko} 듣기`}
+            className="absolute right-1.5 top-1.5 inline-grid h-5 w-5 place-items-center rounded-full bg-amber-100 text-[11px] hover:bg-amber-200"
+          >
+            🔊
+          </button>
           <button type="button" onClick={() => setOpen(false)} aria-expanded className="block w-full text-left">
             <span className="text-[10px] font-semibold text-amber-600">
               {m.emoji} 미션 {index + 1} · {t.mission}
             </span>
-            <span className="block text-sm font-bold">{m.ko}</span>
+            <span className="block text-sm font-bold">
+              <Words text={m.ko} at={at} />
+            </span>
             <span className="block text-[10px] leading-tight text-gray-600">
-              <span className="italic">KR: {m.roman}</span>
+              <span className="italic">
+                KR: <Words text={m.roman} at={at} />
+              </span>
               <br />= {m.names[lang]}
             </span>
           </button>

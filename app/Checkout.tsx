@@ -6,8 +6,8 @@ import { useLanguage } from "./LanguageProvider";
 import KioskOrder from "./KioskOrder";
 import { menu } from "./menu";
 import { useOrders, won, type CartItem } from "./OrderProvider";
-import { playBell, speak } from "./sound";
-import SpeakLine from "./SpeakLine";
+import { playBell, speakAlong } from "./sound";
+import SpeakLine, { Words } from "./SpeakLine";
 import { CouponPicker, StampRules } from "./Stamps";
 
 // 🧾 주문서 → 💳 계산(점원 또는 키오스크) → 📳 진동벨 → 받으러 가기.
@@ -21,11 +21,20 @@ const ASK_AFTER = 3000;
 
 // 주문서 안의 작은 대답 버튼 (한국어 + KR 발음 + 내 언어)
 // 누르면 내 대답을 소리 내어 말하고, 다 말한 뒤에 다음으로 간다 (바로 가면 점원의 다음 말이 내 말을 끊는다)
+// 🖍️ 말하는 동안 읽는 낱말에 형광펜이 따라간다 (한국어와 KR 발음 같이).
+// 맨 앞 그림(🧑‍🍳, 📱)은 발음에 없는 낱말이라 떼어 두어야 한국어와 발음의 낱말 번호가 맞는다.
 function Reply({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
+  const [at, setAt] = useState(-1);
+  const [first, ...rest] = ko.split(" ");
+  const hasIcon = !/\p{Script=Hangul}/u.test(first);
+  const icon = hasIcon ? first : "🙋";
+  const text = hasIcon ? rest.join(" ") : ko;
   return (
-    <button type="button" onClick={() => speak(ko, undefined, onClick)} className="w-full rounded-lg bg-amber-100 px-2 py-1 text-left text-xs font-semibold hover:bg-amber-200">
-      🙋 {ko}
-      <span className="block text-xs font-medium italic text-gray-500">KR: {roman}</span>
+    <button type="button" onClick={() => speakAlong(text.split(" "), setAt, undefined, onClick)} className="w-full rounded-lg bg-amber-100 px-2 py-1 text-left text-xs font-semibold hover:bg-amber-200">
+      {icon} <Words text={text} at={at} />
+      <span className="block text-xs font-medium italic text-gray-500">
+        KR: <Words text={roman} at={at} />
+      </span>
       <span className="block text-xs font-medium text-gray-500">{mean}</span>
     </button>
   );

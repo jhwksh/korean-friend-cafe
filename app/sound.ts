@@ -33,7 +33,15 @@ export function speak(text: string, voice?: "male", onEnd?: () => void) {
     onEnd?.();
     return;
   }
-  const u = new SpeechSynthesisUtterance(clean);
+  const u = koreanUtterance(synth, clean, voice);
+  if (onEnd) u.onend = u.onerror = () => onEnd();
+  synth.speak(u);
+}
+
+// 한국어 목소리로 읽을 준비 (speak와 speakAlong이 같이 쓴다)
+// voice: "male"이면 남자 목소리를 찾고(예: Microsoft InJoon), 없으면 목소리를 낮춰서 남자처럼 들리게 한다
+function koreanUtterance(synth: SpeechSynthesis, text: string, voice?: "male") {
+  const u = new SpeechSynthesisUtterance(text);
   u.lang = "ko-KR";
   u.rate = 0.9; // 배우는 사람을 위해 조금 천천히
   const koVoices = synth.getVoices().filter((v) => v.lang.startsWith("ko"));
@@ -41,14 +49,17 @@ export function speak(text: string, voice?: "male", onEnd?: () => void) {
   const chosen = male ?? koVoices[0];
   if (chosen) u.voice = chosen;
   if (voice === "male" && !male) u.pitch = 0.6; // 남자 목소리가 없는 컴퓨터에서는 낮은 음으로
-  if (onEnd) u.onend = u.onerror = () => onEnd();
-  synth.speak(u);
+  return u;
 }
 
 // 🖍️ 낱말을 따라가며 읽기: 읽는 낱말 번호(0, 1, 2…)를 onWord로 알려 주고, 끝나면 onWord(-1).
 // 브라우저가 "지금 이 낱말"을 알려 주면(boundary) 그것을 쓰고, 안 알려 주는 목소리면 글자 수로 시간을 어림한다.
-export function speakAlong(words: string[], onWord: (index: number) => void) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+// voice·onEnd는 speak와 같다 (점원은 남자 목소리, 내 대답은 다 말한 뒤 다음으로)
+export function speakAlong(words: string[], onWord: (index: number) => void, voice?: "male", onEnd?: () => void) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+    onEnd?.();
+    return;
+  }
   const synth = window.speechSynthesis;
   synth.cancel();
   // 이모지는 읽지 않게 지우고, 낱말마다 읽을 글 안에서 어디서 시작하는지 적어 둔다
@@ -59,13 +70,12 @@ export function speakAlong(words: string[], onWord: (index: number) => void) {
     starts.push(text.length);
     text += w + " ";
   });
-  if (!text.trim()) return;
+  if (!text.trim()) {
+    onEnd?.();
+    return;
+  }
 
-  const u = new SpeechSynthesisUtterance(text.trim());
-  u.lang = "ko-KR";
-  u.rate = 0.9;
-  const voice = synth.getVoices().find((v) => v.lang.startsWith("ko"));
-  if (voice) u.voice = voice;
+  const u = koreanUtterance(synth, text.trim(), voice);
 
   const timers: ReturnType<typeof setTimeout>[] = [];
   const stopGuess = () => timers.splice(0).forEach(clearTimeout);
@@ -88,6 +98,7 @@ export function speakAlong(words: string[], onWord: (index: number) => void) {
   u.onend = u.onerror = () => {
     stopGuess();
     onWord(-1);
+    onEnd?.();
   };
   synth.speak(u);
 }

@@ -28,19 +28,12 @@ export default function SpeakLine({
   useEffect(() => {
     if (autoPlay) speakAlong(ko.split(" "), setAt);
   }, [autoPlay, ko]);
-  const romanWords = roman.split(" ");
-  const mark = (i: number) => (i === at ? "rounded bg-yellow-300 text-[#2a1c10] [text-shadow:none]" : "");
   const sub = tone === "dark" ? "text-gray-200" : "text-gray-600";
 
   return (
     <div className={className}>
       <p className="font-bold">
-        {koWords.map((w, i) => (
-          <span key={i} className={`transition-colors ${mark(i)}`}>
-            {w}
-            {i < koWords.length - 1 ? " " : ""}
-          </span>
-        ))}{" "}
+        <Words text={ko} at={at} />{" "}
         <button
           type="button"
           onClick={(e) => {
@@ -54,15 +47,44 @@ export default function SpeakLine({
         </button>
       </p>
       <p className={`text-[0.8rem] font-semibold italic ${sub}`}>
-        KR:{" "}
-        {romanWords.map((w, i) => (
-          <span key={i} className={`transition-colors ${mark(i)}`}>
-            {w}
-            {i < romanWords.length - 1 ? " " : ""}
-          </span>
-        ))}
+        KR: <Words text={roman} at={at} />
       </p>
       {mean && <p className={`text-[0.8rem] font-medium ${sub}`}>{mean}</p>}
     </div>
+  );
+}
+
+// 🖍️ 글을 띄어쓰기로 나눠 보여 주고, at번째 낱말에 노란 형광펜을 칠한다 (주문서 대답, 점원 인사, 채팅창도 같이 쓴다)
+export function Words({ text, at }: { text: string; at: number }) {
+  const words = text.split(" ");
+  return (
+    <>
+      {words.map((w, i) => (
+        <span key={i} className={`transition-colors ${i === at ? "rounded bg-yellow-300 text-[#2a1c10] [text-shadow:none]" : ""}`}>
+          {w}
+          {i < words.length - 1 ? " " : ""}
+        </span>
+      ))}
+    </>
+  );
+}
+
+// 🔊 + 🖍️ 한 줄짜리: 누르면 읽으면서 낱말마다 형광펜이 따라간다 (채팅창 친구 말의 연습 문장)
+export function SpeakWords({ text }: { text: string }) {
+  const [at, setAt] = useState(-1);
+  return (
+    <span className="inline-flex items-center gap-1 text-xs text-gray-600">
+      <button
+        type="button"
+        onClick={() => speakAlong(text.split(" "), setAt)}
+        aria-label={`${text} 듣기`}
+        className="inline-grid h-5 w-5 place-items-center rounded-full bg-amber-100 text-[11px] hover:bg-amber-200"
+      >
+        🔊
+      </button>
+      <span>
+        <Words text={text} at={at} />
+      </span>
+    </span>
   );
 }
