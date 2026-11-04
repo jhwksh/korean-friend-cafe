@@ -1,37 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { useAuth } from "./AuthProvider";
 import { useLanguage } from "./LanguageProvider";
 
-// 이 브라우저에서 "로그인 없이 둘러보기"를 눌렀는지 기억하는 이름
-const GUEST_KEY = "kfc-guest";
-
 // 🏖️ 카페 입구. 처음에는 카페를 보여 주지 않고 부산 바닷가 테라스 사진과 가운데 로그인만 보인다.
-// 로그인하거나 "로그인 없이 둘러보기"를 누르면 카페로 들어간다.
+// 구글로 로그인해야 카페로 들어간다 (사용자 결정: 로그인이 중요하다).
 export default function Entrance({ children }: { children: React.ReactNode }) {
   const { enabled, ready, user, signIn } = useAuth();
   const { t } = useLanguage();
-  const [guest, setGuest] = useState(false);
 
-  useEffect(() => {
-    try {
-      // 브라우저 저장소는 화면이 뜬 뒤에만 읽을 수 있어서 여기서 읽는다
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      if (localStorage.getItem(GUEST_KEY) === "1") setGuest(true);
-    } catch {}
-  }, []);
-
-  function enterAsGuest() {
-    setGuest(true);
-    try {
-      localStorage.setItem(GUEST_KEY, "1");
-    } catch {}
-  }
-
-  // 로그인 기능이 꺼져 있거나(키 없음), 로그인했거나, 손님으로 들어왔으면 카페를 보여 준다
-  if (!enabled || user || guest) return <>{children}</>;
+  // 로그인 기능이 꺼져 있거나(키 없음), 로그인했으면 카페를 보여 준다
+  if (!enabled || user) return <>{children}</>;
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#1f2a44] p-4">
@@ -58,13 +38,6 @@ export default function Entrance({ children }: { children: React.ReactNode }) {
               <span className="text-xs font-normal text-gray-500">· {t.loginGoogle}</span>
             </button>
             <p className="mt-2 text-[11px] leading-snug text-gray-500">{t.loginWhy}</p>
-            <button
-              type="button"
-              onClick={enterAsGuest}
-              className="mt-2 text-xs font-medium text-amber-800 underline underline-offset-2 hover:text-amber-600"
-            >
-              로그인 없이 둘러보기 · {t.enterGuest}
-            </button>
           </>
         ) : (
           <p className="py-3 text-sm text-gray-400">⏳</p>
