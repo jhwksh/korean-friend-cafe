@@ -9,21 +9,24 @@ import { supabase } from "./supabase";
 // → supabase-js가 code를 로그인 정보로 바꿔 이 브라우저에 기억한다.
 type Ctx = {
   enabled: boolean; // Supabase 키가 들어 있는지
+  ready: boolean; // 처음 로그인 상태 확인이 끝났는지 (끝나기 전엔 입구 버튼을 숨긴다)
   user: User | null;
   signIn: () => void;
   signOut: () => void;
 };
 
-const AuthContext = createContext<Ctx>({ enabled: false, user: null, signIn: () => {}, signOut: () => {} });
+const AuthContext = createContext<Ctx>({ enabled: false, ready: true, user: null, signIn: () => {}, signOut: () => {} });
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
+  const [ready, setReady] = useState(!supabase);
 
   useEffect(() => {
     if (!supabase) return;
     // 처음 열 때(INITIAL_SESSION), 로그인(SIGNED_IN), 로그아웃(SIGNED_OUT) 때마다 불린다
     const { data } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      setReady(true);
       // 구글에서 돌아온 주소의 ?code=...는 다 쓴 뒤라 주소창에서 지운다
       const here = new URL(window.location.href);
       if (session && here.searchParams.has("code")) {
@@ -43,7 +46,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     supabase?.auth.signOut();
   }
 
-  return <AuthContext.Provider value={{ enabled: !!supabase, user, signIn, signOut }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ enabled: !!supabase, ready, user, signIn, signOut }}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {

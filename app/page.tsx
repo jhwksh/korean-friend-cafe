@@ -9,6 +9,7 @@ import { FoundProvider } from "./FoundProvider";
 import { OrderProvider } from "./OrderProvider";
 import FoundScore from "./FoundScore";
 import ChatPanel from "./ChatPanel";
+import Entrance from "./Entrance";
 import CounterFood from "./CounterFood";
 import LanguagePicker from "./LanguagePicker";
 import MissionButton from "./MissionButton";
@@ -24,6 +25,7 @@ export default function Home() {
     <AuthProvider>
     <FoundProvider>
     <OrderProvider>
+    <Entrance>
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
       {/* 왼쪽: 가상 카페 화면. 화면 너비에 맞춰 통째로 커지고 작아진다 (CafeStage) */}
       <section className="flex-1">
@@ -141,6 +143,7 @@ export default function Home() {
         <ChatPanel />
       </section>
     </main>
+    </Entrance>
     </OrderProvider>
     </FoundProvider>
     </AuthProvider>
