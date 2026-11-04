@@ -63,21 +63,21 @@ export default function AfterMeal({
   return (
     <div className="w-full max-w-[460px] rounded-2xl bg-white/95 p-3 text-[#5c3a1c] shadow-lg">
       <SpeakLine ko="다 먹었어요! 이제 카페를 구경해 볼까요?" roman="da meogeosseoyo! ije kapereul gugyeonghae bolkkayo?" mean={t.lookNow} className="text-center" />
-      <p className="mt-1 text-center text-[11px] text-gray-500">📸 {t.snsTip}</p>
+      <p className="mt-1 text-center text-xs font-medium text-gray-500">📸 {t.snsTip}</p>
       {/* 더 먹고 싶으면: 탁자 위 📱 패드로 다시 주문 */}
       <button type="button" onClick={onOrderMore} className="mt-2 w-full rounded-xl bg-[#1f3b57] px-3 py-1.5 text-sm font-bold text-white shadow hover:brightness-110">
-        📱 더 먹고 싶으면 테이블 패드로 주문 <span className="block text-[10px] font-normal text-gray-300">{t.padHere}</span>
+        📱 더 먹고 싶으면 테이블 패드로 주문 <span className="block text-xs font-medium text-gray-300">{t.padHere}</span>
       </button>
 
       <div className="mt-2 grid grid-cols-3 gap-2">
         <button type="button" onClick={takePhoto} className={choice}>
-          📸 인증샷 <span className="block text-[10px] font-normal text-gray-500">{t.takePhoto}</span>
+          📸 인증샷 <span className="block text-xs font-medium text-gray-500">{t.takePhoto}</span>
         </button>
         <button type="button" onClick={onHiddenPicture} className={choice}>
-          🖼️ 숨은 그림 <span className="block text-[10px] font-normal text-gray-500">{t.lookHidden}</span>
+          🖼️ 숨은 그림 <span className="block text-xs font-medium text-gray-500">{t.lookHidden}</span>
         </button>
         <button type="button" onClick={() => setShowLookHow((v) => !v)} className={choice}>
-          👀 구경하기 <span className="block text-[10px] font-normal text-gray-500">{t.lookWords}</span>
+          👀 구경하기 <span className="block text-xs font-medium text-gray-500">{t.lookWords}</span>
         </button>
       </div>
 
@@ -98,7 +98,7 @@ export default function AfterMeal({
             <img src={photo} alt="인증샷" className="w-full rounded-lg" />
             <SpeakLine ko="인증샷 찍었어요!" roman="injeungsyat jjigeosseoyo!" mean={t.photoTaken} className="mt-2 text-center" />
             <p className="mt-1 text-center text-xs text-[#c26a0e]">{hashtags}</p>
-            <p className="mt-1 text-center text-[11px] text-gray-500">{t.hashtagTip}</p>
+            <p className="mt-1 text-center text-xs font-medium text-gray-500">{t.hashtagTip}</p>
             <div className="mt-2 flex justify-center gap-2">
               <a
                 href={photo}

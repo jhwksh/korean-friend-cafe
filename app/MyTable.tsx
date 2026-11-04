@@ -141,8 +141,8 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
                 <span className="grid h-16 w-16 place-items-center rounded-full border-2 border-gray-200 bg-[radial-gradient(circle,#ffffff_55%,#e9e6e1)] shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
                   {!empty && <span className={SIZE[o.bites]}>{o.emoji}</span>}
                 </span>
-                <span className="text-[10px] font-semibold text-amber-50">{empty ? how.done : o.name}</span>
-                <span className="text-[9px] leading-tight text-amber-200">{empty ? t[how.doneMean] : nameIn(o.name)}</span>
+                <span className="text-xs font-bold text-amber-50">{empty ? how.done : o.name}</span>
+                <span className="text-xs font-medium leading-tight text-amber-200">{empty ? t[how.doneMean] : nameIn(o.name)}</span>
               </button>
             );
           })
@@ -157,7 +157,7 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
             onClick={openPickup}
             className="animate-[bell-shake_0.4s_ease-in-out_infinite] rounded-xl border-2 border-amber-400 bg-[#1f3b57] px-3 py-1 text-left text-xs font-bold text-white shadow"
           >
-            📱 메뉴 나왔어요! <span className="block text-[10px] font-normal text-amber-200">받으러 가기 · {t.pickUp}</span>
+            📱 메뉴 나왔어요! <span className="block text-xs font-medium text-amber-200">받으러 가기 · {t.pickUp}</span>
           </button>
         ) : (
           <button
@@ -166,7 +166,7 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
             disabled={step !== "ordering"}
             className="rounded-xl border-2 border-gray-800 bg-[#1f3b57] px-3 py-1 text-left text-xs font-bold text-white shadow hover:brightness-110 disabled:opacity-50"
           >
-            📱 테이블 패드 <span className="block text-[10px] font-normal text-gray-300">{t.orderMore}</span>
+            📱 테이블 패드 <span className="block text-xs font-medium text-gray-300">{t.orderMore}</span>
           </button>
         )}
       </div>

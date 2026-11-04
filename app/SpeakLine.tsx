@@ -30,7 +30,7 @@ export default function SpeakLine({
   }, [autoPlay, ko]);
   const romanWords = roman.split(" ");
   const mark = (i: number) => (i === at ? "rounded bg-yellow-300 text-[#2a1c10] [text-shadow:none]" : "");
-  const sub = tone === "dark" ? "text-gray-300" : "text-gray-500";
+  const sub = tone === "dark" ? "text-gray-200" : "text-gray-600";
 
   return (
     <div className={className}>
@@ -48,12 +48,12 @@ export default function SpeakLine({
             speakAlong(koWords, setAt);
           }}
           aria-label={`${ko} 듣기`}
-          className="inline-grid h-5 w-5 place-items-center rounded-full bg-amber-100 align-middle text-[11px] hover:bg-amber-200"
+          className="inline-grid h-5 w-5 place-items-center rounded-full bg-amber-100 align-middle text-xs font-medium hover:bg-amber-200"
         >
           🔊
         </button>
       </p>
-      <p className={`text-xs italic ${sub}`}>
+      <p className={`text-[0.8rem] font-semibold italic ${sub}`}>
         KR:{" "}
         {romanWords.map((w, i) => (
           <span key={i} className={`transition-colors ${mark(i)}`}>
@@ -62,7 +62,7 @@ export default function SpeakLine({
           </span>
         ))}
       </p>
-      {mean && <p className={`text-xs ${sub}`}>{mean}</p>}
+      {mean && <p className={`text-[0.8rem] font-medium ${sub}`}>{mean}</p>}
     </div>
   );
 }

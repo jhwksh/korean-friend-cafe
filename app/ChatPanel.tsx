@@ -27,12 +27,19 @@ function choose(name: string) {
 export default function ChatPanel() {
   const { lang, t } = useLanguage();
   const { chances, spendChance } = useFound();
-  const { addToCart } = useOrders();
+  const { addToCart, paidCount } = useOrders();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [notice, setNotice] = useState("");
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
+
+  // 계산이 끝나면 주문하며 나눈 대화를 정리하고 새로 시작한다 (첫인사만 남는다). 대화가 줄줄이 쌓이지 않게
+  const [seenPaid, setSeenPaid] = useState(paidCount);
+  if (paidCount !== seenPaid) {
+    setSeenPaid(paidCount);
+    setMessages([]);
+  }
 
   // 처음 열 때: 이 브라우저에 저장해 둔 대화를 불러온다 (새로고침해도 대화가 남는다)
   useEffect(() => {

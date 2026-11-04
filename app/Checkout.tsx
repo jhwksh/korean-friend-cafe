@@ -3,10 +3,12 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
+import KioskOrder from "./KioskOrder";
 import { menu } from "./menu";
 import { useOrders, won, type CartItem } from "./OrderProvider";
 import { playBell } from "./sound";
 import SpeakLine from "./SpeakLine";
+import { CouponPicker, StampRules } from "./Stamps";
 
 // 🧾 주문서 → 💳 계산(점원 또는 키오스크) → 📳 진동벨 → 받으러 가기.
 // 주문서와 진동벨은 2D와 360 둘 다에서 보인다. 계산과 받기는 카페 화면 위에 창으로 뜬다.
@@ -22,8 +24,8 @@ function Reply({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: 
   return (
     <button type="button" onClick={onClick} className="w-full rounded-lg bg-amber-100 px-2 py-1 text-left text-xs font-semibold hover:bg-amber-200">
       🙋 {ko}
-      <span className="block text-[10px] font-normal italic text-gray-500">KR: {roman}</span>
-      <span className="block text-[10px] font-normal text-gray-500">{mean}</span>
+      <span className="block text-xs font-medium italic text-gray-500">KR: {roman}</span>
+      <span className="block text-xs font-medium text-gray-500">{mean}</span>
     </button>
   );
 }
@@ -33,6 +35,8 @@ export default function Checkout() {
   const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy } = useOrders();
   const [payWith, setPayWith] = useState<PayWith>(null);
   const [answer, setAnswer] = useState<Answer | null>(null);
+  // 📱 카페 안 키오스크로 처음부터 주문하는 중 (그동안 점원은 주문서에서 묻지 않는다)
+  const [kioskOpen, setKioskOpen] = useState(false);
   // 마지막으로 고르고 3초가 지났을 때의 주문 개수. 그동안 더 고르면 다시 3초를 센다
   const [quietN, setQuietN] = useState(0);
   useEffect(() => {
@@ -57,6 +61,27 @@ export default function Checkout() {
 
   return (
     <>
+      {/* 📱 계산대 옆에 서 있는 키오스크 기계 (2D 카페에만 보인다. 360°에서는 둘러보기 화면에 가려진다) */}
+      <button
+        type="button"
+        onClick={() => setKioskOpen(true)}
+        disabled={step !== "ordering"}
+        aria-label="키오스크"
+        className="absolute left-[712px] top-[430px] z-[26] flex w-[78px] flex-col items-center disabled:opacity-60"
+      >
+        <span className="flex h-[96px] w-[70px] flex-col items-center justify-center rounded-lg border-[5px] border-gray-800 bg-[#1f3b57] text-white shadow-[0_6px_12px_rgba(0,0,0,0.4)] hover:brightness-125">
+          <span className="text-2xl">☕</span>
+          <span className="text-xs font-medium font-bold">주문</span>
+          <span className="animate-pulse text-xs font-medium text-amber-300">TOUCH</span>
+        </span>
+        <span className="h-[46px] w-[12px] bg-gray-700" />
+        <span className="h-[6px] w-[44px] rounded-full bg-gray-800" />
+        <span className="mt-1 whitespace-nowrap rounded-full bg-white/90 px-2 text-xs font-bold text-[#5c3a1c] shadow">
+          📱 키오스크 <span className="font-normal text-gray-500">{t.kiosk}</span>
+        </span>
+      </button>
+      {kioskOpen && <KioskOrder onClose={() => setKioskOpen(false)} />}
+
       {/* 🧺 받은 쟁반을 들고 있을 때: 자리에 앉아 내려놓으라고 알려 준다 */}
       {carrying.length > 0 && (
         <div className="absolute bottom-3 right-3 z-40 w-[190px] rounded-xl border-2 border-amber-400 bg-white/95 px-3 py-2 text-center text-[#5c3a1c] shadow-lg">
@@ -66,29 +91,29 @@ export default function Checkout() {
               <span key={c.id}>{c.emoji}</span>
             ))}
           </div>
-          <p className="text-[10px] text-gray-500">🪑 {t.sitToPut}</p>
+          <p className="text-xs font-medium text-gray-500">🪑 {t.sitToPut}</p>
         </div>
       )}
       {/* 👀 처음 메뉴를 고르면 주문서가 어디 있는지 알려 준다 (계산 방법을 고르기 전까지 반짝인다) */}
-      {step === "ordering" && cart.length > 0 && asking !== "how" && (
-        <p className="absolute right-[228px] top-[180px] z-40 animate-pulse whitespace-nowrap rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-white shadow">
-          주문서를 보세요 👉 <span className="block text-[10px] font-normal">{t.lookSlip}</span>
+      {step === "ordering" && cart.length > 0 && asking !== "how" && !kioskOpen && (
+        <p className="absolute right-[248px] top-[180px] z-40 animate-pulse whitespace-nowrap rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-white shadow">
+          주문서를 보세요 👉 <span className="block text-xs font-medium">{t.lookSlip}</span>
         </p>
       )}
       {showSlip && (
         <div
-          className={`absolute right-3 top-[170px] z-40 w-[210px] rounded-xl bg-white/95 px-3 py-2 text-[#5c3a1c] shadow-lg ${step === "ordering" && asking !== "how" ? "ring-4 ring-amber-400 animate-[word-glow_2.4s_ease-in-out_infinite]" : ""}`}
+          className={`absolute right-3 top-[170px] z-40 w-[230px] rounded-xl bg-white/95 px-3 py-2 text-[#5c3a1c] shadow-lg ${step === "ordering" && asking !== "how" ? "ring-4 ring-amber-400 animate-[word-glow_2.4s_ease-in-out_infinite]" : ""}`}
         >
           {step === "ordering" ? (
             <>
               <p className="text-sm font-bold">
                 {isBill ? (
                   <>
-                    🧾 계산서 <span className="text-[10px] font-normal text-gray-500">{t.bill}</span>
+                    🧾 계산서 <span className="text-xs font-medium text-gray-500">{t.bill}</span>
                   </>
                 ) : (
                   <>
-                    🧾 주문서 <span className="text-[10px] font-normal text-gray-500">{t.mySlip}</span>
+                    🧾 주문서 <span className="text-xs font-medium text-gray-500">{t.mySlip}</span>
                   </>
                 )}
               </p>
@@ -96,7 +121,7 @@ export default function Checkout() {
                 {cart.map((c) => (
                   <li key={c.id} className="flex items-center justify-between gap-1">
                     <span>
-                      {c.emoji} {c.name}
+                      {c.emoji} {c.name}{c.option && <span className="text-xs font-medium text-gray-500"> {c.option}</span>}
                     </span>
                     <span className="flex items-center gap-1 text-gray-500">
                       {won(c.price)}
@@ -114,20 +139,20 @@ export default function Checkout() {
               </p>
               {/* 점원과 주고받는 말: 더 주문할지 → 계산은 어떻게 할지 */}
               <div className="mt-1 flex flex-col gap-1 border-t border-amber-200 pt-1">
-                {asking === "ask" && (
+                {asking === "ask" && !kioskOpen && (
                   <>
                     <SpeakLine ko="더 주문하실 거 있으세요?" roman="deo jumunhasil geo isseuseyo?" mean={`🧑‍🍳 ${t.askMore}`} autoPlay className="text-xs" />
                     <Reply ko="네, 더 주문할게요." roman="ne, deo jumunhalgeyo." mean={t.moreYes} onClick={() => setAnswer({ n: cart.length, step: "more" })} />
                     <Reply ko="아니요, 이게 다예요." roman="aniyo, ige dayeyo." mean={t.moreNo} onClick={() => setAnswer({ n: cart.length, step: "how" })} />
                   </>
                 )}
-                {asking === "more" && <p className="text-[11px] text-gray-500">👉 {t.moreHint}</p>}
+                {asking === "more" && <p className="text-xs font-medium text-gray-500">👉 {t.moreHint}</p>}
                 {asking === "how" && (
                   <>
                     <SpeakLine ko="계산은 어떻게 하시겠어요?" roman="gyesaneun eotteoke hasigesseoyo?" mean={`🧑‍🍳 ${t.askPayHow}`} autoPlay className="text-xs" />
                     <Reply ko="🧑‍🍳 카운터에서 할게요." roman="kaunteoeseo halgeyo." mean={t.payStaff} onClick={() => setPayWith("staff")} />
                     <Reply ko="📱 키오스크로 할게요." roman="kioseukeuro halgeyo." mean={t.payKiosk} onClick={() => setPayWith("kiosk")} />
-                    <button type="button" onClick={() => setAnswer({ n: cart.length, step: "more" })} className="text-[10px] text-gray-500 underline">
+                    <button type="button" onClick={() => setAnswer({ n: cart.length, step: "more" })} className="text-xs font-medium text-gray-500 underline">
                       ✏️ 주문 바꾸기 · {t.changeOrder}
                     </button>
                   </>
@@ -138,13 +163,13 @@ export default function Checkout() {
             <>
               {/* 🧾 영수증: 결제가 끝난 것 */}
               <p className="text-sm font-bold">
-                🧾 영수증 <span className="text-[10px] font-normal text-gray-500">{t.receipt}</span>
+                🧾 영수증 <span className="text-xs font-medium text-gray-500">{t.receipt}</span>
               </p>
               <ul className="my-1 text-xs">
                 {paid.map((p) => (
                   <li key={p.id} className="flex justify-between">
                     <span>
-                      {p.emoji} {p.name}
+                      {p.emoji} {p.name}{p.option && <span className="text-xs font-medium text-gray-500"> {p.option}</span>}
                     </span>
                     <span className="text-gray-500">{won(p.price)}</span>
                   </li>
@@ -152,7 +177,7 @@ export default function Checkout() {
               </ul>
               <p className="mb-1 border-t border-dashed border-amber-300 pt-1 text-right text-xs font-bold">
                 합계 {won(paidTotal)} <span className="text-green-600">✅ 결제 완료</span>
-                <span className="block text-[10px] font-normal text-gray-500">{t.paid}</span>
+                <span className="block text-xs font-medium text-gray-500">{t.paid}</span>
               </p>
             </>
           )}
@@ -161,12 +186,12 @@ export default function Checkout() {
               {alertBy === "pad" ? (
                 <>
                   <span className="block text-3xl">📱</span>
-                  테이블 패드 <span className="block text-[10px] font-normal text-gray-500">{t.padWillTell}</span>
+                  테이블 패드 <span className="block text-xs font-medium text-gray-500">{t.padWillTell}</span>
                 </>
               ) : (
                 <>
                   <span className="block text-3xl">📳</span>
-                  진동벨 <span className="block text-[10px] font-normal text-gray-500">{t.bellWait}</span>
+                  진동벨 <span className="block text-xs font-medium text-gray-500">{t.bellWait}</span>
                 </>
               )}
             </p>
@@ -175,7 +200,7 @@ export default function Checkout() {
             <button type="button" onClick={openPickup} className="w-full border-t border-amber-200 pt-1 text-center text-sm font-bold">
               <span className="block animate-[bell-shake_0.4s_ease-in-out_infinite] text-3xl">{alertBy === "pad" ? "📱" : "📳"}</span>
               주문하신 메뉴 나왔습니다!
-              <span className="block text-[10px] font-normal text-gray-500">{t.bellReady}</span>
+              <span className="block text-xs font-medium text-gray-500">{t.bellReady}</span>
               <span className="mt-1 block rounded-full bg-amber-400 px-2 py-0.5 text-xs text-white hover:bg-amber-500">
                 받으러 가기 · {t.pickUp}
               </span>
@@ -192,13 +217,13 @@ export default function Checkout() {
 }
 
 // 창 틀: 카페 화면 위를 어둡게 덮고 가운데에 띄운다
-function Dialog({ children, onClose }: { children: React.ReactNode; onClose?: () => void }) {
+export function Dialog({ children, onClose }: { children: React.ReactNode; onClose?: () => void }) {
   const { t } = useLanguage();
   return (
     <div className="absolute inset-0 z-50 grid place-items-center bg-black/50 p-4">
       <div className="relative w-full max-w-[460px] rounded-2xl bg-white p-4 text-[#5c3a1c] shadow-2xl">
         {onClose && (
-          <button type="button" onClick={onClose} aria-label={t.close} className="absolute right-3 top-2 text-gray-400 hover:text-gray-700">
+          <button type="button" onClick={onClose} aria-label={t.close} className="absolute right-3 top-2 text-gray-500 hover:text-gray-700">
             ✕
           </button>
         )}
@@ -247,13 +272,13 @@ function ISay({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: s
   );
 }
 
-function CartList({ items, total }: { items: CartItem[]; total: number }) {
+export function CartList({ items, total }: { items: CartItem[]; total: number }) {
   return (
     <ul className="my-2 rounded-lg bg-gray-50 p-2 text-sm">
       {items.map((c) => (
         <li key={c.id} className="flex justify-between">
           <span>
-            {c.emoji} {c.name}
+            {c.emoji} {c.name}{c.option && <span className="text-xs font-medium text-gray-500"> {c.option}</span>}
           </span>
           <span>{won(c.price)}</span>
         </li>
@@ -266,22 +291,24 @@ function CartList({ items, total }: { items: CartItem[]; total: number }) {
   );
 }
 
-// 💳 카드를 대면 1.2초 뒤 "결제되었습니다"
-function useCardTap(onDone: () => void) {
+// 💳 카드를 대면 1.2초 뒤 "결제되었습니다". 누를 때 한 번만 센다
+// (전에는 화면이 바뀔 때마다 다시 세어서, 적립·영수증 화면에서 결제 다음 화면으로 되돌아갔다)
+export function useCardTap(onDone: () => void) {
   const [tapping, setTapping] = useState(false);
-  useEffect(() => {
-    if (!tapping) return;
-    const timer = setTimeout(onDone, 1200);
-    return () => clearTimeout(timer);
-  }, [tapping, onDone]);
-  return [tapping, () => setTapping(true)] as const;
+  function tap() {
+    if (tapping) return;
+    setTapping(true);
+    setTimeout(onDone, 1200);
+  }
+  return [tapping, tap] as const;
 }
 
-// 🧑‍🍳 점원에게 계산: 주문 → 매장/포장 → 카드 → 진동벨
+// 🧑‍🍳 점원에게 계산: 주문 → 매장/포장 → 적립 → (쿠폰) 카드 → 진동벨
 function StaffPay({ onClose }: { onClose: () => void }) {
   const { t } = useLanguage();
   const { cart, total, pay } = useOrders();
   const [scene, setScene] = useState(0);
+  const [earn, setEarn] = useState(false);
   const [tapping, tap] = useCardTap(() => setScene(3));
 
   return (
@@ -296,7 +323,24 @@ function StaffPay({ onClose }: { onClose: () => void }) {
       {scene === 1 && (
         <>
           <StaffSays ko="드시고 가세요?" roman="deusigo gaseyo?" mean={t.staffHere} />
-          <ISay ko="네, 먹고 갈게요." roman="ne, meokgo galgeyo." mean={t.meHere} onClick={() => setScene(2)} />
+          <ISay ko="네, 먹고 갈게요." roman="ne, meokgo galgeyo." mean={t.meHere} onClick={() => setScene(5)} />
+        </>
+      )}
+      {/* 💳 계산하기 바로 전: 점원이 적립을 묻는다 (한국 카페에서 거의 항상 듣는 말) */}
+      {scene === 5 && (
+        <>
+          <StaffSays ko="적립하시겠어요?" roman="jeongnipasigesseoyo?" mean={t.earnPoints} />
+          <StampRules />
+          <ISay
+            ko="네, 적립해 주세요."
+            roman="ne, jeongnipae juseyo."
+            mean={t.meEarnYes}
+            onClick={() => {
+              setEarn(true);
+              setScene(2);
+            }}
+          />
+          <ISay ko="아니요, 괜찮아요." roman="aniyo, gwaenchanayo." mean={t.meEarnNo} onClick={() => setScene(2)} />
         </>
       )}
       {scene === 2 && (
@@ -306,6 +350,7 @@ function StaffPay({ onClose }: { onClose: () => void }) {
             roman={`${wonRoman(total)}imnida. gyeoljeneun eotteoke hasigesseoyo?`}
             mean={t.staffPay}
           />
+          {!tapping && <CouponPicker />}
           {tapping ? (
             <p className="mt-3 text-center text-sm font-bold">💳 ··· 띡!</p>
           ) : (
@@ -324,7 +369,7 @@ function StaffPay({ onClose }: { onClose: () => void }) {
             roman="gamsahamnida!"
             mean={`📳 ${t.meThanks}`}
             onClick={() => {
-              pay();
+              pay("bell", earn);
               onClose();
             }}
           />
@@ -335,15 +380,15 @@ function StaffPay({ onClose }: { onClose: () => void }) {
 }
 
 // 키오스크 화면 글자: 크게 한국어, 그 아래 KR 발음과 내 언어 (🔊 형광펜)
-function Big({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
+export function Big({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
   return <SpeakLine ko={ko} roman={roman} mean={mean} tone="dark" className="text-center text-lg text-white" />;
 }
 
-function KioskButton({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
+export function KioskButton({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
   return (
     <button type="button" onClick={onClick} className="flex-1 rounded-xl bg-white px-3 py-4 text-base font-bold text-[#1f3b57] shadow hover:bg-sky-50">
       {ko}
-      <span className="block text-xs font-normal italic text-gray-400">KR: {roman}</span>
+      <span className="block text-xs font-normal italic text-gray-500">KR: {roman}</span>
       <span className="block text-xs font-normal text-gray-500">{mean}</span>
     </button>
   );
@@ -356,7 +401,9 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
   const { t } = useLanguage();
   const { cart, total, pay, addToCart, removeFromCart } = useOrders();
   const [scene, setScene] = useState(pad ? -1 : 0);
-  const [tapping, tap] = useCardTap(() => setScene(3));
+  const [earn, setEarn] = useState(false);
+  // 카드를 넣으면 "적립하시겠어요?"(4) → 끝(3)
+  const [tapping, tap] = useCardTap(() => setScene(4));
 
   return (
     <Dialog onClose={onClose}>
@@ -376,7 +423,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 >
                   <span className="block text-2xl">{item.emoji}</span>
                   {item.name}
-                  <span className="block text-[10px] font-normal text-gray-500">{item.price}</span>
+                  <span className="block text-xs font-medium text-gray-500">{item.price}</span>
                 </button>
               ))}
             </div>
@@ -385,11 +432,11 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 {cart.map((c) => (
                   <li key={c.id} className="flex justify-between">
                     <span>
-                      {c.emoji} {c.name}
+                      {c.emoji} {c.name}{c.option && <span className="text-xs font-medium text-gray-500"> {c.option}</span>}
                     </span>
                     <span className="flex gap-2">
                       {won(c.price)}
-                      <button type="button" onClick={() => removeFromCart(c.id)} aria-label={`${c.name} 빼기`} className="text-gray-400 hover:text-red-500">
+                      <button type="button" onClick={() => removeFromCart(c.id)} aria-label={`${c.name} 빼기`} className="text-gray-500 hover:text-red-500">
                         ✕
                       </button>
                     </span>
@@ -421,6 +468,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
           <>
             <Big ko="주문 내역을 확인해 주세요" roman="jumun naeyeogeul hwaginhae juseyo" mean={t.kioskCheck} />
             <CartList items={cart} total={total} />
+            <CouponPicker dark />
             <div className="flex">
               <KioskButton ko="결제하기" roman="gyeoljehagi" mean={t.kioskPayBtn} onClick={() => setScene(2)} />
             </div>
@@ -438,6 +486,27 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
             </div>
           </>
         )}
+        {/* 적립: 카드를 넣은 뒤 묻는다 */}
+        {scene === 4 && (
+          <>
+            <Big ko="적립하시겠어요?" roman="jeongnipasigesseoyo?" mean={t.earnPoints} />
+            <div className="mt-3">
+              <StampRules dark />
+            </div>
+            <div className="mt-3 flex gap-2">
+              <KioskButton
+                ko="⭐ 적립하기"
+                roman="jeongnipagi"
+                mean={t.earn}
+                onClick={() => {
+                  setEarn(true);
+                  setScene(3);
+                }}
+              />
+              <KioskButton ko="건너뛰기" roman="geonneottwigi" mean={t.skip} onClick={() => setScene(3)} />
+            </div>
+          </>
+        )}
         {scene === 3 && !pad && (
           <>
             <Big ko="결제가 완료되었습니다. 진동벨을 가져가세요." roman="gyeoljega wallyodoeeotseumnida. jindongbereul gajyeogaseyo." mean={t.kioskDone} />
@@ -447,7 +516,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 roman="jindongbel batgi"
                 mean={t.takeBell}
                 onClick={() => {
-                  pay();
+                  pay("bell", earn);
                   onClose();
                 }}
               />
@@ -468,7 +537,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 roman="hwagin"
                 mean={t.okBtn}
                 onClick={() => {
-                  pay("pad");
+                  pay("pad", earn);
                   onClose();
                 }}
               />

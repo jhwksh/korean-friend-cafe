@@ -15,6 +15,7 @@ import { LanguageProvider, T } from "./LanguageProvider";
 import WordTag from "./WordTag";
 import MenuBoard from "./MenuBoard";
 import MusicButton from "./MusicButton";
+import { StampToast } from "./Stamps";
 
 export default function Home() {
   return (
@@ -121,6 +122,9 @@ export default function Home() {
 
         {/* 🧾 주문서 → 💳 계산(점원/키오스크) → 📳 진동벨 → 받으러 가기 (2D와 360 둘 다에서 보인다) */}
         <Checkout />
+
+        {/* ☕ 도장을 받는 순간 "+1 도장!" (언제 적립되는지 눈으로 알게) */}
+        <StampToast />
 
         {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 (2D와 360 둘 다에서 보인다) */}
         <div className="absolute left-1/2 top-3 z-40 -translate-x-1/2">
