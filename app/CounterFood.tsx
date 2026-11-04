@@ -2,12 +2,15 @@
 
 import { menu } from "./menu";
 import MissionButton from "./MissionButton";
+import { useOrders } from "./OrderProvider";
 import WordTag, { WordButton } from "./WordTag";
 
 // 계산대 위 음식. 메뉴판과 같은 목록에서 그려서 항상 메뉴와 맞는다.
 // 음식마다 투명한 단어 버튼이 있어서, 누르면 한국어·KR 발음·내 나라 말이 나온다.
 // 음식은 계산대 위 유리 쇼케이스 안에 놓여서 떠 보이지 않는다.
+// 🛒 담기: 채팅창까지 가지 않고 여기서 바로 주문서에 담는다.
 export default function CounterFood() {
+  const { addToCart } = useOrders();
   return (
     <div className="relative z-20 -mb-3 flex justify-center">
       {/* 유리 쇼케이스: 반투명 유리 + 반짝이는 빛 줄 + 아래 선반 */}
@@ -31,6 +34,14 @@ export default function CounterFood() {
           )}
           <span className="text-4xl drop-shadow-[0_6px_4px_rgba(0,0,0,0.35)]">{item.emoji}</span>
           <span className="text-[11px] font-semibold text-[#5c3a1c]">{item.name}</span>
+          <button
+            type="button"
+            onClick={() => addToCart(item)}
+            aria-label={`${item.name} 담기`}
+            className="mt-0.5 rounded-full bg-amber-400 px-2 text-[10px] font-bold text-white shadow hover:bg-amber-500"
+          >
+            🛒 담기
+          </button>
           <WordButton ko={item.name} roman={item.roman} names={item.names} foundKey={`menu:${item.name}`} className="-right-3 -top-2" />
         </div>
       ))}
