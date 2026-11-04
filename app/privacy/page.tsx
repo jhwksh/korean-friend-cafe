@@ -15,9 +15,9 @@ export default function PrivacyPage() {
 
       <section className="mt-8 space-y-2">
         <h2 className="text-lg font-bold">1. 받는 정보 · What we collect</h2>
-        <p>구글로 로그인하면 구글이 알려 주는 <b>이름, 이메일 주소, 프로필 사진</b>만 받습니다.</p>
+        <p>구글로 로그인하면 구글이 알려 주는 <b>이름, 이메일 주소, 프로필 사진 주소</b>만 받습니다. 사진은 구글이 함께 보내 줄 뿐, 우리는 쓰거나 보여 주지 않습니다.</p>
         <p className="text-sm text-stone-500">
-          When you sign in with Google, we receive only your name, email address and profile picture.
+          When you sign in with Google, we receive only your name, email address and profile picture link. Google sends the picture link with your profile, but we do not use or show it.
         </p>
       </section>
 
