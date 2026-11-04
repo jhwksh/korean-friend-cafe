@@ -11,7 +11,7 @@ export default function CounterFood() {
   return (
     <div className="relative z-20 -mb-3 flex justify-center">
       {/* 유리 쇼케이스: 반투명 유리 + 반짝이는 빛 줄 + 아래 선반 */}
-      <div className="relative grid grid-cols-4 gap-x-6 gap-y-3 rounded-t-2xl border-2 border-b-0 border-white/80 bg-gradient-to-b from-white/50 to-sky-100/30 px-6 pb-3 pt-9 shadow-[inset_0_0_24px_rgba(255,255,255,0.7),0_10px_18px_rgba(0,0,0,0.25)]">
+      <div className="relative grid grid-cols-5 gap-x-6 gap-y-3 rounded-t-2xl border-2 border-b-0 border-white/80 bg-gradient-to-b from-white/50 to-sky-100/30 px-6 pb-3 pt-9 shadow-[inset_0_0_24px_rgba(255,255,255,0.7),0_10px_18px_rgba(0,0,0,0.25)]">
         {/* 유리에 비친 빛 줄 (진열장 밖으로 삐져나가지 않게 따로 자른다. 단어 카드는 밖으로 나와도 된다) */}
         <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-t-2xl">
           <span className="absolute -left-6 top-0 h-full w-10 rotate-12 bg-white/40 blur-[2px]" />

@@ -13,6 +13,7 @@ export type Scene = {
   items: { name: string; emoji?: string; hot?: boolean; price?: string; names: { en: string } & Partial<Record<LangCode, string>> }[]; // 고를 수 있는 것
   words: { ko: string; roman: string; en: string }[]; // 이 장소의 물건 이름
   flow: string; // 보통 흘러가는 순서 (억지로 지키지 않는다)
+  onScreen: string; // 이 화면에서 실제로 하는 방법 (친구가 "어디를 보면 되는지" 알려 줄 수 있게)
   curiosity: string[]; // 친구가 "이게 뭐예요?" 하고 궁금해할 만한 것
   realPhrases: string[]; // 이곳에서 실제로 들리는 한국어
   culture: string[]; // 때가 맞으면 곁들일 한국 문화
@@ -25,20 +26,23 @@ const cafe: Scene = {
   name: "카페",
   place: "a small cafe in Myeongdong, Seoul",
   greeting: {
-    ko: "어서 와요! 뭐 먹고 싶어요? 메뉴에서 하나 골라 봐요. ☕",
-    roman: "eoseo wayo! mwo meokgo sipeoyo? menyueseo hana golla bwayo.",
+    // 처음 온 사람이 어떻게 주문하는지 알게: 친구가 돕겠다고 하고, 아래 메뉴 버튼을 눌러도 되고 글로 써도 된다고 알려 준다
+    ko: "어서 와요! 뭐 먹고 싶어요? 내가 도와줄게요. 아래 메뉴 버튼을 눌러도 되고, 원하면 글로 써도 돼요. ☕",
+    roman: "eoseo wayo! mwo meokgo sipeoyo? naega dowajulgeyo. arae menyu beoteuneul nulleodo doego, wonhamyeon geullo sseodo dwaeyo.",
     meanings: {
-      en: "Welcome! What would you like to have? Pick one from the menu.",
-      de: "Willkommen! Was möchtest du haben? Such dir etwas von der Karte aus.",
-      ja: "いらっしゃい！何が食べたい？メニューから一つ選んでみて。",
-      zh: "欢迎！你想吃点什么？从菜单里选一个吧。",
-      es: "¡Bienvenido! ¿Qué te apetece? Elige algo del menú.",
-      vi: "Chào bạn! Bạn muốn ăn uống gì? Hãy chọn một món trong thực đơn nhé.",
+      en: "Welcome! What would you like to have? I'll help you. You can tap the menu buttons below, or type if you like.",
+      de: "Willkommen! Was möchtest du haben? Ich helfe dir. Du kannst unten auf die Menü-Knöpfe tippen oder, wenn du willst, schreiben.",
+      ja: "いらっしゃい！何が食べたい？手伝うね。下のメニューボタンを押してもいいし、書いてもいいよ。",
+      zh: "欢迎！你想吃点什么？我来帮你。可以点下面的菜单按钮，也可以直接打字。",
+      es: "¡Bienvenido! ¿Qué te apetece? Te ayudo. Puedes tocar los botones del menú de abajo o escribir si quieres.",
+      vi: "Chào bạn! Bạn muốn ăn uống gì? Mình sẽ giúp bạn. Bạn có thể bấm nút menu bên dưới, hoặc viết cũng được.",
     },
   },
   items: menu,
   words: Object.values(words).map((w) => ({ ko: w.ko, roman: w.roman, en: w.names.en })),
   flow: "choosing a drink, bread or juice -> ordering (hot/iced, size, for here/to go) -> paying -> waiting for the buzzer -> getting the drink -> talking about the taste -> taking photos -> where to go next in Myeongdong",
+  onScreen:
+    "IMPORTANT: the screen itself handles ordering, paying and the buzzer. When they choose a menu item (a message like 크루아상으로 할게요), reply in 2-3 short sentences: react to their choice, then tell them to look at the 🧾 order slip (주문서) on the right of the cafe picture, where the staff will ask 더 주문하실 거 있으세요? and then how they will pay (counter or kiosk). Do NOT act out the staff's questions yourself (for here / to go, payment) and do not ask them to type those answers. After paying they get a buzzer (📳), sit at the round table in 🌀 Look around (360°), pick up the tray when it rings, and eat. If they want more, there is a 📱 table pad on their table to order more.",
   curiosity: ["the vibrating buzzer (진동벨)", "unfamiliar words on the menu board", "people taking photos of their drinks", "the self tray-return shelf"],
   realPhrases: ["아아 한 잔이요", "드시고 가세요? (staff)", "진동벨 울리면 오세요 (staff)", "먹고 갈게요", "포장해 주세요"],
   culture: ["buzzers in almost every cafe", "Koreans love iced americano even in winter (얼죽아)", "returning your own tray", "seats with power outlets", "cafe stamp cards (collect 10 stamps, get a free drink)"],
@@ -64,6 +68,7 @@ export function scenePrompt(scene: Scene, lang: LangCode, langLabel: string) {
 - Things they can choose here (meanings in ${langLabel}): ${items}. For anything else, say naturally that this place does not have it.
 - Objects in this place: ${scene.words.map((w) => `${w.ko} (${w.en})`).join(", ")}
 - How a visit here usually flows (do not force it): ${scene.flow}
+- How it works on this screen: ${scene.onScreen}
 - Things that can make them curious: ${scene.curiosity.join("; ")}
 - Real Korean heard here: ${scene.realPhrases.join("; ")}
 - Local culture to mention only when it fits: ${scene.culture.join("; ")}

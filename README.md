@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ☕ 한국어 친구 카페 (Korean Friend Cafe)
 
-## Getting Started
+외국인이 가상 카페에서 **한국어 친구 챗봇**과 대화하며 한국어를 배우는 웹사이트입니다.
 
-First, run the development server:
+👉 **사이트 바로 가기: https://korean-friend-cafe.vercel.app**
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 왜 만들었나요?
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+제가 원래 하려고 하는 **한국어 교육**의 첫 단계로, 먼저 챗봇을 만들어 보았습니다.
+앞으로 어떻게 구성하고 어떤 방향으로 갈지, 지금부터 뼈대를 만들고 있습니다.
+처음에는 챗봇 하나로 시작했는데, 만들면서 기능을 하나하나 덧붙이게 되었습니다.
+원래 계획에 없던 수수께끼(숨은그림찾기)도 생겼고, 앞으로 어떤 한국어 콘텐츠를 담을지 생각하게 되었습니다.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+큰 그림은 외국인이 **가상 명동을 여행하는 동안 한국어 친구가 옆에서 같이 다니며** 그곳에서 진짜 쓰는 말과 문화를 알려 주는 서비스입니다.
+이 카페는 그 첫 번째 가게입니다. 자세한 방향은 [VISION.md](VISION.md)에 적었습니다.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 무엇을 할 수 있나요?
 
-## Learn More
+- 💬 **한국어 친구와 채팅**: 친구가 쉬운 한국어로 대답하고, 🔊를 누르면 소리 내어 읽어 줍니다.
+- 🏷️ **물건 이름표**: 카페 안 물건(창문, 커피 머신, 계산대…)의 한국어 이름을 보여 줍니다.
+- 🔍 **수수께끼 숨은그림찾기**: 카페 곳곳에 숨은 ⭐ 미션을 찾으면 점수가 오르고 쿠폰을 받습니다.
+- 🌀 **360° 둘러보기**: 카페 안을 빙 둘러볼 수 있습니다.
+- 🌐 **6개 언어 안내**: 영어, 독일어, 일본어, 중국어, 스페인어, 베트남어
+- 🎵 **카페 음악**: 버튼을 누르면 잔잔한 보사노바·재즈가 나옵니다.
+- 🧾 **주문하고 계산하기**: 메뉴를 고르면 주문서에 담깁니다. 🧑‍🍳 점원과 대화하며("카드로 할게요") 계산하거나, 📱 키오스크(매장/포장, 결제하기)로 계산합니다.
+- 📳 **진동벨**: 계산하면 진동벨을 받고, 커피 내리는 소리가 납니다. 조금 뒤 벨이 "띠리리리" 울리면 계산대로 받으러 갑니다.
+- 🪑 **앉아서 먹기**: 360° 카페의 탁자에 앉아 받은 음식을 누르면 "꿀꺽꿀꺽! 아메리카노를 마셔요", "바삭바삭! 토스트를 먹어요"처럼 진짜 녹음한 소리와 한국어, 내 언어 뜻이 함께 나옵니다.
+- 🖍️ **따라 읽는 형광펜**: 점원·키오스크·먹는 말 아래에 한국어 발음(KR)이 있고, 🔊를 누르면 읽는 낱말을 따라 형광펜이 움직입니다.
+- 📸 **다 먹고 구경하기**: 다 먹으면 "이제 카페를 구경해 볼까요?"가 나옵니다. 한국의 인증샷 문화처럼 사진을 찍어 한국어 해시태그(#카페 #토스트 #맛있다)와 함께 저장하거나, 숨은 그림 찾기와 반짝이는 단어 찾기로 이어집니다.
 
-To learn more about Next.js, take a look at the following resources:
+## 어떻게 실행하나요?
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**그냥 써 보기:** 위 사이트 주소를 열면 됩니다. 설치할 것은 없습니다.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**내 컴퓨터에서 실행하기:**
 
-## Deploy on Vercel
+1. 저장소를 내려받고 폴더로 들어갑니다.
+   ```bash
+   git clone https://github.com/jhwksh/korean-friend-cafe.git
+   cd korean-friend-cafe
+   npm install
+   ```
+2. `.env.example`을 복사해 `.env.local`을 만들고, 내 Gemini API 키를 넣습니다.
+   (`.env.local`은 GitHub에 올라가지 않습니다.)
+3. 실행하고 http://localhost:3000 을 엽니다.
+   ```bash
+   npm run dev
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 확인 결과
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- ✅ 배포된 사이트에서 친구가 한국어로 대답합니다.
+- ✅ API 키가 브라우저에 보이지 않습니다. (사이트의 HTML·JS 파일 검색, F12 네트워크 확인 → 키 없음)
+- ✅ 🎵 음악 켜기·끄기와 다음 곡으로 넘어가기를 배포된 사이트에서 확인했습니다.
+- ✅ `npm run lint`, `npm run build` 통과
+
+## 회고
+
+(여기는 직접 쓸 예정입니다: 좋았던 점, 어려웠던 점, 배운 점)
+
+## 만든 도구와 출처
+
+- Next.js, TypeScript, Tailwind CSS, Google Gemini API, Vercel 배포
+- 사진: [Unsplash](https://unsplash.com/photos/1lHFvq8SDQo)
+- 음악: Kevin MacLeod ([incompetech.com](https://incompetech.com)), CC BY 4.0
+- 먹고 마시는 소리: [OpenGameArt.org](https://opengameart.org)의 CC0 효과음 (qubodup, cogitollc, StarNinjas)
+- 만든 과정 기록: [WORKLOG.md](WORKLOG.md)

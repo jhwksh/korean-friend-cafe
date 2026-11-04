@@ -3,7 +3,9 @@ import Barista from "./Barista";
 import CafeFriend from "./CafeFriend";
 import CafeStage from "./CafeStage";
 import CafeView from "./CafeView";
+import Checkout from "./Checkout";
 import { FoundProvider } from "./FoundProvider";
+import { OrderProvider } from "./OrderProvider";
 import FoundScore from "./FoundScore";
 import ChatPanel from "./ChatPanel";
 import CounterFood from "./CounterFood";
@@ -18,6 +20,7 @@ export default function Home() {
   return (
     <LanguageProvider>
     <FoundProvider>
+    <OrderProvider>
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
       {/* 왼쪽: 가상 카페 화면. 화면 너비에 맞춰 통째로 커지고 작아진다 (CafeStage) */}
       <section className="flex-1">
@@ -56,7 +59,7 @@ export default function Home() {
           <span className="block text-sm font-semibold text-[#7a5230]"><T k="title" /></span>
         </h1>
 
-        {/* 유리 메뉴판: 창문 앞에 건다. 뒤의 바다가 뿌옇게 비친다 */}
+        {/* 유리 메뉴판: 창문 앞에 건다. 뒤의 바다가 뿌옇게 비친다 (메뉴 9개라 줄 간격을 좁혔다) */}
         <div className="absolute left-[196px] top-[196px] z-10 w-[408px] [perspective:900px]">
           <MenuBoard />
         </div>
@@ -116,6 +119,9 @@ export default function Home() {
         {/* 🎵 카페 음악 켜기/끄기 (2D와 360 둘 다에서 보인다. 🌀 둘러보기 버튼 아래) */}
         <MusicButton />
 
+        {/* 🧾 주문서 → 💳 계산(점원/키오스크) → 📳 진동벨 → 받으러 가기 (2D와 360 둘 다에서 보인다) */}
+        <Checkout />
+
         {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 (2D와 360 둘 다에서 보인다) */}
         <div className="absolute left-1/2 top-3 z-40 -translate-x-1/2">
           <LanguagePicker />
@@ -129,6 +135,7 @@ export default function Home() {
         <ChatPanel />
       </section>
     </main>
+    </OrderProvider>
     </FoundProvider>
     </LanguageProvider>
   );

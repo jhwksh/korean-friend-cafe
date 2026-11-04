@@ -56,3 +56,12 @@ body {
   70% { transform: scale(0.9) rotate(-12deg); opacity: 1; }
   100% { transform: scale(1) rotate(-12deg); }
 }
+
+/* 📳 진동벨이 울릴 때 덜덜 떨린다 */
+@keyframes bell-shake {
+  0%, 100% { transform: rotate(0deg); }
+  20% { transform: rotate(-12deg); }
+  40% { transform: rotate(12deg); }
+  60% { transform: rotate(-8deg); }
+  80% { transform: rotate(8deg); }
+}

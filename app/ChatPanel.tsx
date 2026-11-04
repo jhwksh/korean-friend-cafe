@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import LanguagePicker from "./LanguagePicker";
 import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
-import { koreanParts, playCoffee, playCrunch } from "./sound";
+import { useOrders } from "./OrderProvider";
+import { koreanParts } from "./sound";
 import SpeakButton from "./SpeakButton";
 import { scenes } from "./scenes";
 
@@ -26,6 +27,7 @@ function choose(name: string) {
 export default function ChatPanel() {
   const { lang, t } = useLanguage();
   const { chances, spendChance } = useFound();
+  const { addToCart } = useOrders();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [notice, setNotice] = useState("");
@@ -180,9 +182,8 @@ export default function ChatPanel() {
               type="button"
               disabled={loading}
               onClick={() => {
-                // 따뜻한 음료는 커피 내리는 소리, 빵은 바삭 소리
-                if (item.hot) playCoffee();
-                else if (item.emoji === "🥐" || item.emoji === "🥖") playCrunch();
+                // 고른 것은 🧾 주문서에 담긴다. 계산하고 진동벨이 울리면 받아서 내 탁자에서 먹는다
+                addToCart(item);
                 send(choose(item.name), true);
               }}
               className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs text-[#5c3a1c] hover:bg-amber-100 disabled:opacity-50"

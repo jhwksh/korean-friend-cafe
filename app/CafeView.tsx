@@ -3,8 +3,10 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
-import Panorama, { type PanoMarker } from "./Panorama";
+import Panorama, { type PanoFocus, type PanoMarker } from "./Panorama";
 import MissionButton from "./MissionButton";
+import MyTable from "./MyTable";
+import { useOrders } from "./OrderProvider";
 import type { MissionId } from "./missions";
 import WordTag from "./WordTag";
 import type { WordKey } from "./words";
@@ -96,6 +98,10 @@ const FRAME_WORDS: [WordKey, number, number][] = [
   ["brick", 52.9, 88],
 ];
 
+// 🪑 앉는 자리: 새 그림 액자 벽 앞의 동그란 탁자와 회색 의자 2개. 앉으면 이 탁자를 가까이 내려다본다
+const SEAT = { lon: 219, lat: -12 };
+const SEATED_VIEW: PanoFocus = { lon: 219, lat: -16, fov: 45 };
+
 const BASE_MARKERS: PanoMarker[] = [
   ...PANO_WORDS.map(([word, lon, lat], i) => ({
     id: `${word}-${i}`,
@@ -117,8 +123,12 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
   const [look360, setLook360] = useState(false);
   const [framesOpen, setFramesOpen] = useState(false);
+  const [seated, setSeated] = useState(false);
+  // 📳 받으러 가는 동안에는 계산대(2D)를 보여 준다. 받고 나면 있던 자리(360)로 돌아온다
+  const { pickupOpen } = useOrders();
+  const show360 = look360 && !pickupOpen;
 
-  // 360 단어들 + 새 그림 액자 옆 "숨은 그림 찾기" 표시판 (누르면 액자 벽을 크게 연다)
+  // 360 단어들 + 새 그림 액자 옆 "숨은 그림 찾기" 표시판 (누르면 액자 벽을 크게 연다) + 🪑 앉기 버튼
   const markers = useMemo<PanoMarker[]>(
     () => [
       ...BASE_MARKERS,
@@ -137,15 +147,39 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
           </button>
         ),
       },
+      {
+        id: "seat",
+        ...SEAT,
+        node: (
+          <button
+            type="button"
+            onClick={() => setSeated(true)}
+            className="-translate-x-1/2 whitespace-nowrap rounded-full border-2 border-amber-400 bg-white/95 px-3 py-1 text-left text-xs font-bold text-[#5c3a1c] shadow-lg animate-[word-glow_2.4s_ease-in-out_infinite] hover:bg-amber-50"
+          >
+            🪑 여기 앉기
+            <span className="block text-[10px] font-normal text-gray-500">{t.sitHere}</span>
+          </button>
+        ),
+      },
     ],
-    [t.hiddenPicture],
+    [t.hiddenPicture, t.sitHere],
   );
 
   return (
     <>
-      {look360 ? (
+      {show360 ? (
         <div className="absolute inset-0 z-30 select-none bg-black">
-          <Panorama src="/cafe-360.jpg" markers={markers} />
+          <Panorama src="/cafe-360.jpg" markers={markers} focus={seated ? SEATED_VIEW : null} />
+          {seated && (
+            <MyTable
+              onStand={() => setSeated(false)}
+              onHiddenPicture={() => {
+                // 구경하러 일어나서 숨은 그림 찾기 액자 벽을 연다
+                setSeated(false);
+                setFramesOpen(true);
+              }}
+            />
+          )}
           {framesOpen && (
             <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-2 bg-black/85 p-3">
               <p className="text-sm font-bold text-white">🖼️ 숨은 그림 찾기 · {t.typePrompt}</p>
@@ -169,9 +203,11 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
               </button>
             </div>
           )}
-          <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white">
-            👆 {t.dragHint}
-          </p>
+          {!seated && (
+            <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/50 px-3 py-1 text-xs text-white">
+              👆 {t.dragHint}
+            </p>
+          )}
         </div>
       ) : (
         children
@@ -182,6 +218,7 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
         onClick={() => {
           setLook360((v) => !v);
           setFramesOpen(false);
+          setSeated(false);
         }}
         className="absolute left-3 top-3 z-40 rounded-full bg-white/90 px-3 py-1 text-left text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
       >

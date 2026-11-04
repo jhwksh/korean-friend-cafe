@@ -7,17 +7,33 @@ import * as THREE from "three";
 // 마우스(손가락)로 끌면 고개를 돌리듯 둘러보고, 휠로 가까이/멀리 본다.
 // markers: 사진 속 물건 자리(lon: 사진 왼쪽 끝부터 오른쪽으로 0~360도, lat: 위 90 ~ 아래 -90도)에 붙는 단어 버튼.
 // 둘러볼 때마다 그 자리를 따라 움직이고, 뒤쪽에 있으면 숨긴다.
+// focus: 여기를 주면 고개가 스르르 그쪽으로 돌아가 멈춘다 (자리에 앉아 탁자를 내려다볼 때). fov가 작을수록 가까이 보인다.
 export type PanoMarker = { id: string; lon: number; lat: number; node: React.ReactNode };
+export type PanoFocus = { lon: number; lat: number; fov: number };
 
-export default function Panorama({ src, markers = [] }: { src: string; markers?: PanoMarker[] }) {
+export default function Panorama({
+  src,
+  markers = [],
+  focus = null,
+}: {
+  src: string;
+  markers?: PanoMarker[];
+  focus?: PanoFocus | null;
+}) {
   const mountRef = useRef<HTMLDivElement>(null);
   const markerRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  // 사진을 다시 불러오지 않고 고개만 돌리려고, focus는 ref로 그리기 고리(render)에 넘긴다
+  const focusRef = useRef<PanoFocus | null>(focus);
+  useEffect(() => {
+    focusRef.current = focus;
+  }, [focus]);
 
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    // preserveDrawingBuffer: 📸 인증샷을 찍을 때 지금 보이는 화면을 그림으로 꺼낼 수 있게
+    const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     mount.appendChild(renderer.domElement);
@@ -68,9 +84,27 @@ export default function Panorama({ src, markers = [] }: { src: string; markers?:
     mount.addEventListener("wheel", onWheel, { passive: false });
 
     let frame = 0;
+    let zoomBack = false;
     const render = () => {
-      // 가만히 있을 때는 아주 천천히 혼자 돈다
-      if (!dragging) lon += 0.03;
+      const target = focusRef.current;
+      if (target && !dragging) {
+        // 앉았을 때: 탁자 쪽으로 조금씩 고개를 돌리고 가까이 본다 (가장 가까운 방향으로 돈다)
+        const dLon = ((((target.lon - lon) % 360) + 540) % 360) - 180;
+        lon += dLon * 0.06;
+        lat += (target.lat - lat) * 0.06;
+        camera.fov += (target.fov - camera.fov) * 0.06;
+        camera.updateProjectionMatrix();
+        zoomBack = true;
+      } else if (!target) {
+        // 일어나면 원래 넓이로 다시 본다
+        if (zoomBack) {
+          camera.fov += (75 - camera.fov) * 0.06;
+          camera.updateProjectionMatrix();
+          if (Math.abs(75 - camera.fov) < 0.5) zoomBack = false;
+        }
+        // 가만히 있을 때는 아주 천천히 혼자 돈다
+        if (!dragging) lon += 0.03;
+      }
       lat = Math.min(Math.max(lat, -85), 85);
       const phi = THREE.MathUtils.degToRad(90 - lat);
       const theta = THREE.MathUtils.degToRad(lon);

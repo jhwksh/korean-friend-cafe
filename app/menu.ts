@@ -34,11 +34,15 @@ export const menu: {
     names: { en: "Croissant", de: "Croissant", ja: "クロワッサン", zh: "可颂", es: "Cruasán", vi: "Bánh sừng bò" },
   },
   {
-    name: "오렌지주스", roman: "orenjijuseu", price: "5,500원", emoji: "🍊", hot: false,
+    name: "토스트", roman: "toseuteu", price: "4,000원", emoji: "🍞", hot: false,
+    names: { en: "Toast", de: "Toast", ja: "トースト", zh: "吐司", es: "Tostada", vi: "Bánh mì nướng" },
+  },
+  {
+    name: "오렌지주스", roman: "orenjijuseu", price: "5,500원", emoji: "🧃", hot: false, // 과일 그림(🍊)이 아니라 주스 그림
     names: { en: "Orange Juice", de: "Orangensaft", ja: "オレンジジュース", zh: "橙汁", es: "Zumo de naranja", vi: "Nước cam" },
   },
   {
-    name: "딸기주스", roman: "ttalgijuseu", price: "6,000원", emoji: "🍓", hot: false,
+    name: "딸기주스", roman: "ttalgijuseu", price: "6,000원", emoji: "🥤", hot: false, // 과일 그림(🍓)이 아니라 주스 그림
     names: { en: "Strawberry Juice", de: "Erdbeersaft", ja: "いちごジュース", zh: "草莓汁", es: "Zumo de fresa", vi: "Nước ép dâu" },
   },
 ];
