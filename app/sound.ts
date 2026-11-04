@@ -9,13 +9,20 @@ export function koreanParts(text: string) {
 
 // 🔊 한국어를 소리 내어 읽는다
 // voice: "male"이면 남자 목소리를 찾고(예: Microsoft InJoon), 없으면 목소리를 낮춰서 남자처럼 들리게 한다
-export function speak(text: string, voice?: "male") {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+// onEnd: 다 읽은 뒤에 할 일 (소리를 못 내는 브라우저면 바로 한다)
+export function speak(text: string, voice?: "male", onEnd?: () => void) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
+    onEnd?.();
+    return;
+  }
   const synth = window.speechSynthesis;
   synth.cancel(); // 읽던 것이 있으면 멈추고 새로 읽는다
   // 이모지(☕ 등)는 읽지 않게 한글, 숫자, 문장부호만 남긴다
   const clean = text.replace(/[^\p{Script=Hangul}0-9\s.,!?]/gu, "").trim();
-  if (!clean) return;
+  if (!clean) {
+    onEnd?.();
+    return;
+  }
   const u = new SpeechSynthesisUtterance(clean);
   u.lang = "ko-KR";
   u.rate = 0.9; // 배우는 사람을 위해 조금 천천히
@@ -24,6 +31,7 @@ export function speak(text: string, voice?: "male") {
   const chosen = male ?? koVoices[0];
   if (chosen) u.voice = chosen;
   if (voice === "male" && !male) u.pitch = 0.6; // 남자 목소리가 없는 컴퓨터에서는 낮은 음으로
+  if (onEnd) u.onend = u.onerror = () => onEnd();
   synth.speak(u);
 }
 

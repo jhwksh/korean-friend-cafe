@@ -6,7 +6,7 @@ import { useLanguage } from "./LanguageProvider";
 import KioskOrder from "./KioskOrder";
 import { menu } from "./menu";
 import { useOrders, won, type CartItem } from "./OrderProvider";
-import { playBell } from "./sound";
+import { playBell, speak } from "./sound";
 import SpeakLine from "./SpeakLine";
 import { CouponPicker, StampRules } from "./Stamps";
 
@@ -20,9 +20,10 @@ type Answer = { n: number; step: "more" | "how" };
 const ASK_AFTER = 3000;
 
 // 주문서 안의 작은 대답 버튼 (한국어 + KR 발음 + 내 언어)
+// 누르면 내 대답을 소리 내어 말하고, 다 말한 뒤에 다음으로 간다 (바로 가면 점원의 다음 말이 내 말을 끊는다)
 function Reply({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="w-full rounded-lg bg-amber-100 px-2 py-1 text-left text-xs font-semibold hover:bg-amber-200">
+    <button type="button" onClick={() => speak(ko, undefined, onClick)} className="w-full rounded-lg bg-amber-100 px-2 py-1 text-left text-xs font-semibold hover:bg-amber-200">
       🙋 {ko}
       <span className="block text-xs font-medium italic text-gray-500">KR: {roman}</span>
       <span className="block text-xs font-medium text-gray-500">{mean}</span>
@@ -144,12 +145,21 @@ export default function Checkout() {
                     <SpeakLine ko="더 주문하실 거 있으세요?" roman="deo jumunhasil geo isseuseyo?" mean={`🧑‍🍳 ${t.askMore}`} autoPlay className="text-xs" />
                     <Reply ko="네, 더 주문할게요." roman="ne, deo jumunhalgeyo." mean={t.moreYes} onClick={() => setAnswer({ n: cart.length, step: "more" })} />
                     <Reply ko="아니요, 이게 다예요." roman="aniyo, ige dayeyo." mean={t.moreNo} onClick={() => setAnswer({ n: cart.length, step: "how" })} />
+                    {/* 같은 뜻의 더 짧은 말. 실제 카페에서 자주 쓴다 */}
+                    <Reply ko="아니요, 없어요." roman="aniyo, eopseoyo." mean={t.moreNo} onClick={() => setAnswer({ n: cart.length, step: "how" })} />
                   </>
                 )}
                 {asking === "more" && <p className="text-xs font-medium text-gray-500">👉 {t.moreHint}</p>}
                 {asking === "how" && (
                   <>
-                    <SpeakLine ko="계산은 어떻게 하시겠어요?" roman="gyesaneun eotteoke hasigesseoyo?" mean={`🧑‍🍳 ${t.askPayHow}`} autoPlay className="text-xs" />
+                    {/* 점원이 고른 것과 합계를 말해 주고 계산 방법을 묻는다: "아메리카노, 토스트 해서 총 8,500원입니다." */}
+                    <SpeakLine
+                      ko={`${cart.map((c) => c.name).join(", ")} 해서 총 ${won(total)}입니다. 계산은 어떻게 하시겠어요?`}
+                      roman={`${cart.map((c) => menu.find((m) => m.name === c.name)?.roman ?? c.name).join(", ")} haeseo chong ${wonRoman(total)}imnida. gyesaneun eotteoke hasigesseoyo?`}
+                      mean={`🧑‍🍳 ${t.total} ${won(total)} · ${t.askPayHow}`}
+                      autoPlay
+                      className="text-xs"
+                    />
                     <Reply ko="🧑‍🍳 카운터에서 할게요." roman="kaunteoeseo halgeyo." mean={t.payStaff} onClick={() => setPayWith("staff")} />
                     <Reply ko="📱 키오스크로 할게요." roman="kioseukeuro halgeyo." mean={t.payKiosk} onClick={() => setPayWith("kiosk")} />
                     <button type="button" onClick={() => setAnswer({ n: cart.length, step: "more" })} className="text-xs font-medium text-gray-500 underline">
@@ -354,10 +364,28 @@ function StaffPay({ onClose }: { onClose: () => void }) {
           {tapping ? (
             <p className="mt-3 text-center text-sm font-bold">💳 ··· 띡!</p>
           ) : (
-            <ISay ko="카드로 할게요." roman="kadeuro halgeyo." mean={`💳 ${t.meCard}`} onClick={tap} />
+            <>
+              <ISay ko="카드로 할게요." roman="kadeuro halgeyo." mean={`💳 ${t.meCard}`} onClick={tap} />
+              <ISay ko="현금으로 할게요." roman="hyeongeumeuro halgeyo." mean={`💵 ${t.meCash}`} onClick={() => setScene(6)} />
+            </>
           )}
         </>
       )}
+      {/* 💵 현금: 지폐(5,000원 단위)로 내면 점원이 받은 돈과 거스름돈을 말한다. 한국도 현금을 받는다 */}
+      {scene === 6 && (() => {
+        const given = Math.max(5000, Math.ceil(total / 5000) * 5000);
+        const change = given - total;
+        return (
+          <>
+            <StaffSays
+              ko={change > 0 ? `${won(given)} 받았습니다. 거스름돈 ${won(change)}입니다.` : `${won(given)} 받았습니다.`}
+              roman={change > 0 ? `${wonRoman(given)} badatseumnida. geoseureumdon ${wonRoman(change)}imnida.` : `${wonRoman(given)} badatseumnida.`}
+              mean={`💵 ${t.staffCash} (${won(given)} → ${won(change)})`}
+            />
+            <ISay ko="네, 감사합니다." roman="ne, gamsahamnida." mean={t.meThanks} onClick={() => setScene(3)} />
+          </>
+        );
+      })()}
       {scene === 3 && (
         <>
           <p className="mb-2 text-center text-sm font-bold text-green-600">
