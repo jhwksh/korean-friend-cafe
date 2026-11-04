@@ -1131,3 +1131,50 @@
   - 키오스크 → 카페라테 ICE → 결제 수단 화면에 쿠폰 ✅ → 사이즈 업 → "카페라테 HOT · 라지(쿠폰) 5,000원" ✅ (처음엔 "레귤러 · 라지(쿠폰)"이 같이 나와서 고침) → 적립 → +1 도장 ✅, 쿠폰 "사용함" ✅
   - 아메리카노 쿠폰: 카페라테·토스트만 있을 때 "아메리카노 ICE · 무료 쿠폰 0원"이 들어감 ✅
 
+---
+
+## 42. 🔐 구글 로그인 + 회원별 도장·쿠폰·미션 저장 (Supabase) — 진행 중 (2026-11-04)
+
+**한 일 (코드, 커밋 안 함)**
+- `@supabase/supabase-js` 설치.
+- `app/supabase.ts`: 카페 전용 Supabase 프로젝트에 붙는 통로. 키가 없으면 `null` → 로그인 줄만 숨고 카페는 예전처럼 브라우저 저장으로 돈다.
+- `app/AuthProvider.tsx`: 구글 로그인(PKCE). "구글로 계속하기" → 구글 → Supabase → 우리 사이트(`?code=`) → 로그인 정보 기억. 다 쓴 `?code=`는 주소창에서 지운다.
+- `app/LoginBar.tsx`: 채팅창 머리 아래 줄. 로그인 전 "G 구글로 계속하기" + 왜 로그인하는지, 로그인 뒤 👤 이름 · ☁️ 저장 상태 · 로그아웃. 6개 언어 글자 7개 (`loginGoogle`, `logout`, `loginWhy`, `cloudLoading`, `cloudSaving`, `cloudSaved`, `cloudError`).
+- `app/FoundProvider.tsx`: 로그인하면 계정 기록을 불러와 이 컴퓨터 기록과 합친다(단어·미션·쓴 쿠폰은 합집합, 적립 도장은 큰 쪽, 찬스는 계정 값) → 계정에 저장. 그 뒤로 바뀔 때마다 0.8초 뒤 저장(upsert). 로그아웃하면 이 컴퓨터 기록만 비운다(계정엔 남음).
+- `supabase/schema.sql`: 표 `cafe_progress` (회원마다 한 줄: found, stamps, buy_stamps, coupons_used, chances). RLS로 내 줄만 읽기·만들기·고치기, `authenticated`에만 권한.
+- `.env.example`: `NEXT_PUBLIC_SUPABASE_URL=`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=` 빈칸 견본.
+- `CLAUDE.md`: 로그인·DB를 이번에 만든다고 고침. NEXT_PUBLIC_ 금지 규칙에 예외(Supabase 주소와 공개용 키, secret 키는 절대 안 됨).
+- `docs/google-login-setup.md`: 구글 로그인 설정 지침(비밀 값 없음, 오류별 고치는 법).
+
+**사용자가 직접 한 것 (화면)**
+- Supabase 새 조직·프로젝트 `korean-friend-cafe` (주소 `https://qpijcjojmbgvgsbtqfys.supabase.co`). SQL Editor에서 표 SQL 실행 → "Success. No rows returned".
+- `.env.local`에 Supabase 주소와 publishable 키. Claude는 값을 보지 않고 모양만 확인(sb_publishable_로 시작, 46자, 띄어쓰기·따옴표 없음).
+- 구글 클라우드: 프로젝트, 앱 정보(외부), 웹 애플리케이션 클라이언트. Supabase Auth → Google 켜고 ID·보안 비밀번호 넣음.
+
+**왜**
+- 숙제 제출에 로그인이 필요하다. 투두 때 안 해 본 것(구글 로그인, 새 프로젝트, 회원별 표)으로 공부하려고.
+- 도장·쿠폰이 브라우저에만 있으면 다른 컴퓨터에서 0개가 된다.
+
+**확인한 방법**
+- `npm run lint`, `npm run build` 통과.
+- localhost:3000 채팅창에 "구글로 계속하기" 버튼이 보임 ✅
+- 구글 로그인: ❌ `400 redirect_uri_mismatch`. 구글이 받은 주소는 `https://qpijcjojmbgvgsbtqfys.supabase.co/auth/v1/callback`로 맞았다. 처음 만든 클라이언트에 리디렉션 URI가 비어 있었고, Supabase에 들어간 클라이언트(ID가 9053…으로 시작)에 이 주소가 저장됐는지 아직 확인하지 못했다.
+- 구글 클라우드를 시험용 계정(testgit2222)으로 열자 "추가 액세스 권한 필요"가 떴다 → 프로젝트를 만든 계정으로 바꿔야 한다.
+- 원인: Supabase가 쓰는 클라이언트(ID 끝 `iij7`)에 리디렉션 URI를 넣고 **저장 버튼을 못 찾아 저장하지 않았다.** 저장 버튼은 클라이언트 화면 맨 아래에 있다. (같은 프로젝트의 클라이언트 ID는 앞자리가 다 같아서, 비교할 땐 끝자리를 본다.)
+- 저장 뒤 다시 시험 (2026-11-04, 화면마다 2초 이상 기다림):
+  - testgit2222로 구글 로그인 → `👤 이름 · ☁️ Saved to your account` ✅
+  - 키오스크 아메리카노 → ⭐ 적립하기 → 결제 → 스탬프 0 → 1 ✅
+  - 로그아웃 → 스탬프 1 → 0 (이 컴퓨터만 비움) ✅
+  - 다시 로그인 → 스탬프 0 → 1 (계정에서 불러옴) ✅
+  - Supabase Table Editor `cafe_progress`에 내 줄 1개 ✅ (좁은 창에서는 ☰를 눌러야 표 목록이 보인다)
+- 따로 볼 것: 개발 모드에서 `Route "/": Could not validate \`instant\`` 오류(LanguageProvider)가 "Issues"로 뜬다. 로그인과는 관계없어 보인다.
+
+**남은 것**
+- 구글 클라이언트 리디렉션 URI 저장 확인(또는 지침대로 새 클라이언트 → Supabase에 새 ID·비밀번호) → 5~10분 뒤 다시 로그인.
+- 구글 테스트 사용자에 로그인할 지메일 넣기. 숙제 낼 때 "앱 게시".
+- Supabase URL Configuration(Site URL, Redirect URLs) 저장 확인.
+- 로그인 → 도장 받기 → 새 창/다른 브라우저에서 이어지는지, 로그아웃하면 비워지는지 천천히 시험. Table Editor에서 내 줄 확인.
+- Vercel에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 넣고 Redeploy (사용자 직접).
+- 쿠폰 축하 창 기록(`kfc-coupon-seen`)은 아직 브라우저에만 있다. 새 컴퓨터에서 로그인하면 예전 쿠폰 창이 한 번씩 뜰 수 있다.
+- Gemini 키가 채팅에 한 번 붙여졌다 → 새 키로 바꾸기 권함(AI Studio에서 새 키, 예전 키 삭제, .env.local·Vercel 바꾸고 Redeploy).
+- 커밋: 사용자가 말할 때.

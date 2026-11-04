@@ -11,10 +11,12 @@
 - Next.js
 - AI: Gemini API 무료 키 (Flash 계열 모델)
 - 대화 기록 저장: 브라우저 저장(localStorage)
+- 로그인·공부 기록 저장: 카페 전용 Supabase 프로젝트 (구글 로그인, 표 `cafe_progress`, RLS로 내 줄만). 표 SQL은 `supabase/schema.sql`
 
 ## 보안 규칙 (최우선)
 - API 키는 .env.local의 GEMINI_API_KEY에만 둔다. 키 값은 사용자가 직접 넣는다. 채팅으로 키를 요구하지 마라.
-- 변수 이름에 NEXT_PUBLIC_를 붙이지 마라.
+- 변수 이름에 NEXT_PUBLIC_를 붙이지 마라. (예외: Supabase 주소와 공개용 publishable 키. 브라우저에 보여도 되는 키이고 RLS가 지킨다. secret/service_role 키는 절대 코드나 NEXT_PUBLIC_에 넣지 않는다)
+- Supabase 키도 사용자가 직접 .env.local과 Vercel에 넣는다. Claude는 키 값을 보거나 치지 않는다.
 - Gemini 호출은 서버(API 경로)에서만 한다.
 - 입력 글자 수 제한(200자), 빈 입력 처리, 네트워크 실패 처리를 넣는다.
 - 에러 메시지에 키나 내부 정보를 노출하지 마라.
@@ -30,4 +32,5 @@
 - 단계가 끝날 때마다 WORKLOG.md에 "한 일 / 왜 / 확인한 방법 / 커밋 / 남은 것"을 추가한다. 사용자가 따로 말하지 않아도 한다.
 
 ## 이번에 만들지 않을 것
-음성, 레벨 구분, 점원 역할, 돌발상황, 명동 지도, 로그인, DB
+음성, 레벨 구분, 점원 역할, 돌발상황, 명동 지도
+(로그인과 DB는 숙제 제출에 필요해서 42번부터 Supabase로 만든다)

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { AuthProvider } from "./AuthProvider";
 import Barista from "./Barista";
 import CafeFriend from "./CafeFriend";
 import CafeStage from "./CafeStage";
@@ -20,6 +21,7 @@ import { StampToast } from "./Stamps";
 export default function Home() {
   return (
     <LanguageProvider>
+    <AuthProvider>
     <FoundProvider>
     <OrderProvider>
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
@@ -141,6 +143,7 @@ export default function Home() {
     </main>
     </OrderProvider>
     </FoundProvider>
+    </AuthProvider>
     </LanguageProvider>
   );
 }

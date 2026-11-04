@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import LoginBar from "./LoginBar";
 import LanguagePicker from "./LanguagePicker";
 import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
@@ -136,6 +137,8 @@ export default function ChatPanel() {
           <LanguagePicker />
         </div>
       </header>
+      {/* 🔐 구글 로그인 줄: 로그인하면 도장·쿠폰·미션이 계정에 저장된다 */}
+      <LoginBar />
 
       <div className="flex flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
         {/* 친구가 먼저 묻는다. 서버에는 보내지 않고 화면에만 보인다 */}
