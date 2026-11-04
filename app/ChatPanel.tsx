@@ -26,7 +26,7 @@ function choose(name: string) {
 }
 
 export default function ChatPanel() {
-  const { lang, t } = useLanguage();
+  const { lang, picked, t } = useLanguage();
   const { chances, spendChance } = useFound();
   const { addToCart, paidCount } = useOrders();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -40,6 +40,15 @@ export default function ChatPanel() {
   if (paidCount !== seenPaid) {
     setSeenPaid(paidCount);
     setMessages([]);
+  }
+
+  // 🌐 언어를 직접 바꾸면 새 대화로 시작한다. 예전 말은 그때 언어로 저장돼 있어서, 남겨 두면 언어가 섞여 보인다
+  // (새로고침으로 저장된 언어를 불러올 때는 picked가 늘지 않아서 대화가 그대로 남는다)
+  const [seenPicked, setSeenPicked] = useState(picked);
+  if (picked !== seenPicked) {
+    setSeenPicked(picked);
+    setMessages([]);
+    setNotice("");
   }
 
   // 🔄 새 대화: 계산하지 않고 주문만 했어도, 쌓인 대화를 지우고 첫인사부터 다시 시작한다
