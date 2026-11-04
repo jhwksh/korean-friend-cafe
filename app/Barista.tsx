@@ -4,13 +4,14 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import MissionButton from "./MissionButton";
+import { speak } from "./sound";
 import WordTag from "./WordTag";
 
 // 점원(바리스타): 앞 계산대 뒤에 서서 손을 흔든다. 키는 친구와 비슷하게 맞췄다.
 // 아랫몸은 page.tsx에서 한 번 더 겹쳐 그린 계산대에 가려진다 (지금은 모습만, 대화는 나중 단계).
 // 그림(public/barista.png)은 사용자가 Gemini로 만든 그림이다 (실제 사람 아님).
 // 계산대 뒤를 천천히 왔다 갔다 하며, 방향이 바뀌면 몸을 돌린다.
-// 누르면 한 바퀴 빙글 돌고, 머리 위 "어서 오세요!" 말풍선이 보였다가 다시 누르면 사라진다.
+// 누르면 한 바퀴 빙글 돌고, 머리 위 "어서 오세요!" 말풍선이 보이며 소리 내어 말한다. 다시 누르면 말풍선이 사라진다.
 const RANGE = { left: -70, right: 40 }; // 처음 자리에서 왼쪽·오른쪽으로 움직일 수 있는 거리
 
 export default function Barista() {
@@ -64,6 +65,8 @@ export default function Barista() {
           ref={facingRef}
           type="button"
           onClick={() => {
+            // 말풍선이 나타날 때 점원이 "어서 오세요!"라고 소리 내어 말한다
+            if (!showBubble) speak("어서 오세요!");
             setShowBubble((v) => !v);
             setSpinCount((n) => n + 1);
           }}
