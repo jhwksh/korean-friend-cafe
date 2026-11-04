@@ -1133,9 +1133,9 @@
 
 ---
 
-## 42. 🔐 구글 로그인 + 회원별 도장·쿠폰·미션 저장 (Supabase) — 진행 중 (2026-11-04)
+## 42. 🔐 구글 로그인 + 회원별 도장·쿠폰·미션 저장 (Supabase) — 완료 (2026-11-04)
 
-**한 일 (코드, 커밋 안 함)**
+**한 일 (코드, 커밋 `ff309dd`)**
 - `@supabase/supabase-js` 설치.
 - `app/supabase.ts`: 카페 전용 Supabase 프로젝트에 붙는 통로. 키가 없으면 `null` → 로그인 줄만 숨고 카페는 예전처럼 브라우저 저장으로 돈다.
 - `app/AuthProvider.tsx`: 구글 로그인(PKCE). "구글로 계속하기" → 구글 → Supabase → 우리 사이트(`?code=`) → 로그인 정보 기억. 다 쓴 `?code=`는 주소창에서 지운다.
@@ -1167,14 +1167,40 @@
   - 로그아웃 → 스탬프 1 → 0 (이 컴퓨터만 비움) ✅
   - 다시 로그인 → 스탬프 0 → 1 (계정에서 불러옴) ✅
   - Supabase Table Editor `cafe_progress`에 내 줄 1개 ✅ (좁은 창에서는 ☰를 눌러야 표 목록이 보인다)
+- 커밋 `ff309dd` 푸시 → Vercel 자동 배포. 배포 사이트에 "구글로 계속하기" 버튼이 보임 ✅
+- 배포 사이트 로그인: ❌ 처음엔 돌아와서 주소에 `?code=`만 남고 로그인이 안 됐다.
+  - 원인: Vercel의 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 값에 진짜 키 대신 Claude가 표에 적은 안내 글자(".env.local의 sb_publishable_… 값")가 들어갔다. 사용자가 "이거 아닌 것 같다"고 물었는데 Claude가 확인하지 않았다.
+  - 고침: 사용자가 Vercel 변수를 지우고 진짜 키로 새로 넣음(Config, 모든 환경) → Redeploy(빌드 캐시 안 씀, 이메일 코드로 본인 확인).
+  - 확인: 배포된 코드 속 키와 `.env.local` 키를 값은 보지 않고 비교 → 둘 다 46자, `sb_publishable_`로 시작, SHA-256 앞 8자리 같음 ✅
+- 배포 사이트에서 testgit2222로 로그인 → `☁️ Saved to your account`, localhost에서 받은 도장이 **스탬프 1 / 10**으로 이어짐 ✅
 - 따로 볼 것: 개발 모드에서 `Route "/": Could not validate \`instant\`` 오류(LanguageProvider)가 "Issues"로 뜬다. 로그인과는 관계없어 보인다.
 
+**배운 것**
+- Vercel 변수 종류: 공개돼도 되는 `NEXT_PUBLIC_` 값은 **Config**, 진짜 비밀(Gemini 키 등)은 **Secret**.
+- `NEXT_PUBLIC_` 값은 빌드할 때 코드에 박힌다 → 값을 바꾸면 꼭 Redeploy.
+- 안내할 때 표 안에 진짜 값과 설명을 섞지 않는다. 값을 넣은 뒤에는 모양(길이·시작 글자)을 바로 확인한다.
+
 **남은 것**
-- 구글 클라이언트 리디렉션 URI 저장 확인(또는 지침대로 새 클라이언트 → Supabase에 새 ID·비밀번호) → 5~10분 뒤 다시 로그인.
-- 구글 테스트 사용자에 로그인할 지메일 넣기. 숙제 낼 때 "앱 게시".
-- Supabase URL Configuration(Site URL, Redirect URLs) 저장 확인.
-- 로그인 → 도장 받기 → 새 창/다른 브라우저에서 이어지는지, 로그아웃하면 비워지는지 천천히 시험. Table Editor에서 내 줄 확인.
-- Vercel에 `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` 넣고 Redeploy (사용자 직접).
+- 숙제 낼 때 구글 Auth Platform → 대상 → **앱 게시** (지금은 테스트 사용자만 로그인 가능).
+- Gemini 키가 채팅에 한 번 붙여졌다 → 새 키로 바꾸기(AI Studio에서 새 키, 예전 키 삭제, .env.local·Vercel 바꾸고 Redeploy).
 - 쿠폰 축하 창 기록(`kfc-coupon-seen`)은 아직 브라우저에만 있다. 새 컴퓨터에서 로그인하면 예전 쿠폰 창이 한 번씩 뜰 수 있다.
-- Gemini 키가 채팅에 한 번 붙여졌다 → 새 키로 바꾸기 권함(AI Studio에서 새 키, 예전 키 삭제, .env.local·Vercel 바꾸고 Redeploy).
-- 커밋: 사용자가 말할 때.
+- Vercel에 `korean-friend-cafe-dz28` 복사본 프로젝트가 있다. 나중에 정리(사용자 직접).
+- 새로 쓰지 않는 예전 구글 클라이언트가 있으면 정리(사용자 직접).
+
+## 43. 🔑 Gemini 키 새로 바꾸기 — 완료 (2026-11-04)
+
+**왜**
+- 예전 Gemini 키가 채팅에 한 번 붙여졌다. 남이 볼 수 있었던 키는 새 키로 바꾸는 게 안전하다.
+
+**사용자가 직접 한 것 (화면)**
+- AI Studio에서 새 키를 만들었다 (`AQ.`로 시작하는 새 모양, 53자).
+- `.env.local`의 `GEMINI_API_KEY=` 줄만 새 키로 바꿨다. Supabase 두 줄은 그대로.
+- Vercel `korean-friend-cafe` 프로젝트의 `GEMINI_API_KEY`를 새 키로 바꿨다 (종류 **Secret**) → Redeploy.
+- 새 키가 되는 것을 본 **뒤에** AI Studio에서 예전 키를 지웠다.
+
+**확인한 방법** (Claude는 키 값을 보지 않고 길이·시작 글자·띄어쓰기만 확인)
+- 예전 키를 지운 뒤 localhost 채팅 "감사합니다" → AI 친구가 답함 ✅
+- 예전 키를 지운 뒤 배포 사이트 채팅 "포장해 주세요" → AI 친구가 답함 ✅
+
+**남은 것**
+- Vercel의 `korean-friend-cafe-dz28` 복사본은 예전 키를 쓰고 있어서 이제 채팅이 안 된다. 쓰지 않는 복사본이라 나중에 지우면 된다 (사용자 직접).
