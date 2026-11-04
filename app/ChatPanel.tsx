@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LoginBar from "./LoginBar";
 import LanguagePicker from "./LanguagePicker";
 import { useFound } from "./FoundProvider";
@@ -41,6 +41,21 @@ export default function ChatPanel() {
     setSeenPaid(paidCount);
     setMessages([]);
   }
+
+  // 🔄 새 대화: 계산하지 않고 주문만 했어도, 쌓인 대화를 지우고 첫인사부터 다시 시작한다
+  function resetChat() {
+    if (loading) return;
+    setMessages([]);
+    setInput("");
+    setNotice("");
+  }
+
+  // 새 말이 오면 대화창을 맨 아래로 내려서 최신 말이 보이게 한다
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const list = listRef.current;
+    if (list) list.scrollTop = list.scrollHeight;
+  }, [messages, loading]);
 
   // 처음 열 때: 이 브라우저에 저장해 둔 대화를 불러온다 (새로고침해도 대화가 남는다)
   useEffect(() => {
@@ -117,8 +132,9 @@ export default function ChatPanel() {
   }
 
   return (
-    <div className="flex min-h-[420px] flex-1 flex-col overflow-hidden rounded-3xl bg-white/95 text-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.5)]">
-      <header className="flex items-center gap-3 border-b border-gray-100 p-4">
+    // 창 높이를 화면에 맞춰 고정한다. 대화가 쌓여도 창은 길어지지 않고 안에서 스크롤된다
+    <div className="flex h-[75vh] min-h-[420px] flex-1 flex-col self-start overflow-hidden rounded-3xl md:sticky md:top-6 md:h-[calc(100vh-3rem)] bg-white/95 text-gray-900 shadow-[0_25px_50px_rgba(0,0,0,0.5)]">
+      <header className="flex flex-wrap items-center gap-3 border-b border-gray-100 p-4">
         {/* 프로필: 한국어 친구 그림(public/friend.png)에서 얼굴 부분만 동그랗게 보여 준다 */}
         <div
           className="h-11 w-11 shrink-0 rounded-full bg-gradient-to-br from-pink-200 to-amber-200 bg-no-repeat shadow-md"
@@ -133,14 +149,25 @@ export default function ChatPanel() {
           <p className="text-xs text-emerald-600">● {t.online}</p>
         </div>
         {/* 🌐 언어 고르기 (카페 위에 있는 것과 같은 설정을 함께 쓴다) */}
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            type="button"
+            onClick={resetChat}
+            disabled={loading}
+            title={`새 대화 · ${t.newChat}`}
+            aria-label={`새 대화 · ${t.newChat}`}
+            // 옆의 🌐 언어 고르기와 같은 모양(둥근 흰 알약, 같은 높이)으로 맞춘다
+            className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-gray-800 shadow-lg hover:bg-amber-50 disabled:opacity-50"
+          >
+            🔄 새 대화
+          </button>
           <LanguagePicker />
         </div>
       </header>
       {/* 🔐 구글 로그인 줄: 로그인하면 도장·쿠폰·미션이 계정에 저장된다 */}
       <LoginBar />
 
-      <div className="flex flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
+      <div ref={listRef} className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto bg-gradient-to-b from-amber-50/60 to-white p-4">
         {/* 친구가 먼저 묻는다. 서버에는 보내지 않고 화면에만 보인다 */}
         <div className="max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow">
           <p className="font-semibold">
