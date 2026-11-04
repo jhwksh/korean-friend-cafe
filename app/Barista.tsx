@@ -66,7 +66,7 @@ export default function Barista() {
           type="button"
           onClick={() => {
             // 말풍선이 나타날 때 점원이 "어서 오세요!"라고 소리 내어 말한다
-            if (!showBubble) speak("어서 오세요!");
+            if (!showBubble) speak("어서 오세요!", "male");
             setShowBubble((v) => !v);
             setSpinCount((n) => n + 1);
           }}

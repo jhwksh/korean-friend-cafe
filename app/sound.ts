@@ -8,7 +8,8 @@ export function koreanParts(text: string) {
 }
 
 // 🔊 한국어를 소리 내어 읽는다
-export function speak(text: string) {
+// voice: "male"이면 남자 목소리를 찾고(예: Microsoft InJoon), 없으면 목소리를 낮춰서 남자처럼 들리게 한다
+export function speak(text: string, voice?: "male") {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
   const synth = window.speechSynthesis;
   synth.cancel(); // 읽던 것이 있으면 멈추고 새로 읽는다
@@ -18,8 +19,11 @@ export function speak(text: string) {
   const u = new SpeechSynthesisUtterance(clean);
   u.lang = "ko-KR";
   u.rate = 0.9; // 배우는 사람을 위해 조금 천천히
-  const voice = synth.getVoices().find((v) => v.lang.startsWith("ko"));
-  if (voice) u.voice = voice;
+  const koVoices = synth.getVoices().filter((v) => v.lang.startsWith("ko"));
+  const male = voice === "male" ? koVoices.find((v) => /InJoon|\bmale\b|남/i.test(v.name)) : undefined;
+  const chosen = male ?? koVoices[0];
+  if (chosen) u.voice = chosen;
+  if (voice === "male" && !male) u.pitch = 0.6; // 남자 목소리가 없는 컴퓨터에서는 낮은 음으로
   synth.speak(u);
 }
 
