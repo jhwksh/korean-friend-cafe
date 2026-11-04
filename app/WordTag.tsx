@@ -11,6 +11,8 @@ type Names = { en: string } & Partial<Record<LangCode, string>>;
 
 // 띄어쓰기는 맞든 틀리든 괜찮게 비교한다 (예: "커피 머신" = "커피머신")
 const normalize = (s: string) => s.replace(/\s+/g, "").trim();
+// 열린 카드의 가장 넓은 폭 (max-w-[170px]) + 조금 여유
+const CARD_WIDTH = 180;
 
 // 숨은 단어 버튼 (보물찾기).
 // 처음엔 거의 투명한 작은 동그라미만 살짝 반짝인다 (화면을 가리지 않게).
@@ -46,10 +48,30 @@ export function WordButton({
     }
   }
 
+  // 카드를 열 때 오른쪽 자리가 모자라면(카페 그림 끝, 채팅창 옆) 왼쪽으로 펼친다. 잘려서 안 보이지 않게
+  const [toLeft, setToLeft] = useState(false);
+  function openCard(e: React.MouseEvent<HTMLButtonElement>) {
+    const dot = e.currentTarget.getBoundingClientRect();
+    // 카드를 잘라 내는 가장 가까운 상자(넘치면 숨기는 상자)의 오른쪽 끝을 찾는다
+    let right = window.innerWidth;
+    for (let el = e.currentTarget.parentElement; el; el = el.parentElement) {
+      if (getComputedStyle(el).overflowX !== "visible") {
+        right = Math.min(right, el.getBoundingClientRect().right);
+        break;
+      }
+    }
+    setToLeft(dot.left + CARD_WIDTH > right);
+    setOpen(true);
+  }
+
   return (
     <div className={`absolute z-30 ${className}`}>
       {open ? (
-        <div className="relative w-max max-w-[170px] rounded-lg border border-amber-300 bg-white/95 py-1 pl-2 pr-7 text-left text-xs text-[#5c3a1c] shadow-md">
+        // 동그라미 자리는 그대로 두고, 카드는 그 자리에서 오른쪽 또는 왼쪽으로 펼친다
+        <div className="relative h-5 w-5">
+        <div
+          className={`absolute top-0 ${toLeft ? "right-0" : "left-0"} w-max max-w-[170px] rounded-lg border border-amber-300 bg-white/95 py-1 pl-2 pr-7 text-left text-xs text-[#5c3a1c] shadow-md`}
+        >
           <SpeakButton text={ko} className="absolute right-1 top-1" />
           <button type="button" onClick={() => setOpen(false)} aria-expanded className="block w-full text-left">
             <span className="font-bold">
@@ -82,10 +104,11 @@ export function WordButton({
             </form>
           )}
         </div>
+        </div>
       ) : (
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openCard}
           aria-expanded={false}
           aria-label={ko}
           className={`block h-5 w-5 rounded-full border shadow-[0_0_6px_rgba(255,255,255,0.6)] hover:bg-white/40 ${
