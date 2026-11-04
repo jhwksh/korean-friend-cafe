@@ -212,7 +212,8 @@ export default function ChatPanel() {
       >
         {/* 메뉴를 눌러서 고르기: 누르면 "아메리카노로 할게요"라고 말한다 */}
         <p className="mb-1 px-1 text-xs text-gray-500">{t.pick}</p>
-        <div className="mb-2 flex flex-wrap gap-1">
+        {/* 버튼은 한 줄로 두고 옆으로 밀어서 본다. 여러 줄이면 대화칸이 너무 작아진다 */}
+        <div className="mb-2 flex gap-1 overflow-x-auto pb-1">
           {scene.items.map((item) => (
             <button
               key={item.name}
@@ -223,7 +224,7 @@ export default function ChatPanel() {
                 addToCart(item);
                 send(choose(item.name), true);
               }}
-              className="rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs text-[#5c3a1c] hover:bg-amber-100 disabled:opacity-50"
+              className="shrink-0 whitespace-nowrap rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-xs text-[#5c3a1c] hover:bg-amber-100 disabled:opacity-50"
             >
               {item.emoji} {item.name}{" "}
               <span className="text-[10px] text-gray-500">{item.names[lang] ?? item.names.en}</span>
