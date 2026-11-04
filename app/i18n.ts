@@ -61,6 +61,7 @@ const en = {
   errNetwork: "Please check your internet connection.",
   errFriend: "Your friend can't reply right now. Please try again.",
   errBusy: "It's busy right now. Please try again in a moment.",
+  music: "Cafe music",
 };
 
 export type UiKey = keyof typeof en;
@@ -107,6 +108,7 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     errNetwork: "Bitte prüfe deine Internetverbindung.",
     errFriend: "Dein Freund kann gerade nicht antworten. Versuch es noch einmal.",
     errBusy: "Gerade ist viel los. Versuch es gleich noch einmal.",
+    music: "Café-Musik",
   },
   ja: {
     title: "韓国語フレンドカフェ",
@@ -148,6 +150,7 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     errNetwork: "インターネット接続を確認してください。",
     errFriend: "友だちが今返事できません。もう一度試してください。",
     errBusy: "今混み合っています。少し待ってからもう一度試してください。",
+    music: "カフェの音楽",
   },
   zh: {
     title: "韩语朋友咖啡馆",
@@ -189,6 +192,7 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     errNetwork: "请检查网络连接。",
     errFriend: "朋友现在无法回复，请再试一次。",
     errBusy: "现在有点忙，请稍后再试。",
+    music: "咖啡馆音乐",
   },
   es: {
     title: "Café Amigo Coreano",
@@ -230,6 +234,7 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     errNetwork: "Revisa tu conexión a internet.",
     errFriend: "Tu amigo no puede responder ahora. Inténtalo de nuevo.",
     errBusy: "Hay mucha gente ahora. Inténtalo en un momento.",
+    music: "Música de café",
   },
   vi: {
     title: "Quán cà phê Bạn Hàn Quốc",
@@ -271,5 +276,6 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     errNetwork: "Vui lòng kiểm tra kết nối mạng.",
     errFriend: "Bạn ấy chưa thể trả lời. Hãy thử lại.",
     errBusy: "Đang đông người. Vui lòng thử lại sau.",
+    music: "Nhạc quán cà phê",
   },
 };

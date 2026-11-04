@@ -806,3 +806,48 @@
 **커밋**: "탭 제목이 한국어 친구 카페로 보이고, 키 빈칸 견본(.env.example)이 생김"
 
 **다음**: GitHub 저장소 만들기 (사용자) → 올리기 → Vercel 연결과 키 넣기 (사용자)
+
+---
+
+## 29. 배포한 사이트에서 친구가 대답한다 (2026-11-04)
+
+**한 일**
+- 사용자가 GitHub 저장소(jhwksh/korean-friend-cafe, 공개)를 만들고 Vercel에 연결했다. 주소: https://korean-friend-cafe.vercel.app
+- 친구가 "지금 대답할 수 없어요"라고 했다. 원인: Vercel에 같은 저장소를 연결한 프로젝트가 **두 개** 있었다 (`korean-friend-cafe`, `korean-friend-cafe-dz28`). 키는 dz28 쪽에만 들어가 있었고, 진짜 주소 쪽에는 없었다.
+- 진짜 주소 프로젝트(`korean-friend-cafe`)에 `GEMINI_API_KEY`를 넣었다 (Secret, Production). 키 값은 사용자가 직접 붙여 넣었다. Claude는 값을 보지 않았다.
+- 다시 배포(Redeploy). 첫 번째는 Vercel의 이메일 본인 확인 창 때문에 시작되지 않았다. 사용자가 코드를 넣은 뒤 배포가 됐다.
+
+**왜**
+- 키는 넣은 **다음 배포부터** 서버에 들어간다. 그래서 키를 넣고 꼭 다시 배포해야 한다.
+
+**확인한 방법**
+- 배포한 사이트 `/api/chat`에 "I want an americano"(English) → HTTP 200, 영어 설명과 "아메리카노 주세요 (KR: amerikano juseyo)" ✅
+- 배포한 사이트의 HTML과 브라우저로 가는 JS 파일 7개에서 키 모양(`AIza`)과 `GEMINI_API_KEY`를 찾았다 → 0개 ✅
+- 사용자가 크롬 F12 → Network에서 직접 확인 ✅: `chat` 요청의 Payload는 `history`, `lang`, `message`, `scene`뿐이고 키는 없음. 요청 8개 모두 우리 사이트(korean-friend-cafe.vercel.app)로만 감.
+  - Search에서 "google"이 7개 나왔지만, 모두 브라우저가 스스로 붙이는 `sec-ch-ua` 머리글("Google Chrome"이라는 브라우저 이름)이었다. 구글로 간 요청은 아니다.
+
+**남은 것**
+- `korean-friend-cafe-dz28` 프로젝트는 복사본이다. 지울지 사용자가 정한다 (지우기는 사용자가 직접).
+
+---
+
+## 30. 🎵 카페 음악 (2026-11-04)
+
+**한 일**
+- `app/MusicButton.tsx`: 🌀 둘러보기 버튼 아래에 "🎵 음악 켜기" 버튼. 누르면 음악이 나오고 "🎵 음악 끄기 / ♪ 곡 이름"으로 바뀐다. 다시 누르면 멈추고, 또 누르면 멈춘 곳부터 이어서 나온다. 2D와 360 둘 다에서 보인다.
+- 4곡을 차례로 틀고, 끝나면 처음부터 다시 튼다 (약 18분): Bossa Antigua(보사노바) → Jazz Brunch → Airport Lounge → Lobby Time.
+- 곡: Kevin MacLeod (incompetech.com), CC BY 4.0. `public/music/`에 넣었다 (4곡 약 37MB).
+- 출처: 카페 오른쪽 아래 "Photo: Unsplash · Music: Kevin MacLeod (incompetech.com), CC BY 4.0".
+- 소리 크기 35%: 친구와의 대화, 🔊 읽어 주기, 커피·빵 소리가 묻히지 않게.
+- 파일이 커서 버튼을 누르기 전에는 내려받지 않는다. 처음 사이트를 열 때 느려지지 않게.
+- 6개 언어 글자 추가 (`music`: Cafe music, Café-Musik …).
+
+**왜**
+- 사용자: 잔잔하면서 보사노바 느낌. 처음 찾은 무료(CC0) 게임 음악은 1~4분으로 짧고 게임기 소리가 났다. 그래서 진짜 악기 소리이고 출처만 적으면 되는 Kevin MacLeod 곡을 골랐다 (사용자: "다 못 들었어, 잘 추천해 줘").
+- 저절로 켜지지 않게 했다. 브라우저는 누르기 전 소리를 막고, 갑자기 소리가 나면 놀란다.
+
+**확인한 방법**
+- `npm run build` 통과, `npx eslint app` 오류 없음.
+- Claude가 브라우저(로컬 `next start`)에서: 버튼이 🌀 둘러보기 아래에 보임 ✅, 누르니 "🎵 음악 끄기"로 바뀌고 bossa-antigua.mp3를 받아 옴 ✅, 다시 누르니 "🎵 음악 켜기" ✅, 출처 글자 ✅
+- 실제 소리: 미확인 (Claude는 들을 수 없다)
+- 한 곡이 끝나면 다음 곡으로 넘어가는지: 미확인 (곡이 4~5분이라 기다리지 못함)

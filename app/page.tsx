@@ -12,6 +12,7 @@ import MissionButton from "./MissionButton";
 import { LanguageProvider, T } from "./LanguageProvider";
 import WordTag from "./WordTag";
 import MenuBoard from "./MenuBoard";
+import MusicButton from "./MusicButton";
 
 export default function Home() {
   return (
@@ -97,19 +98,23 @@ export default function Home() {
         <WordTag word="wall" className="left-[752px] top-[200px]" />
         <WordTag word="ceiling" className="left-[660px] top-[40px]" />
 
-        {/* 사진 출처 */}
-        <a
-          href="https://unsplash.com/photos/1lHFvq8SDQo"
-          target="_blank"
-          rel="noreferrer"
-          className="absolute bottom-1 right-2 z-10 text-[10px] text-gray-500"
-        >
-          Photo: Unsplash
-        </a>
+        {/* 사진과 음악 출처 (음악은 CC BY 4.0이라 출처를 꼭 적는다) */}
+        <p className="absolute bottom-1 right-2 z-10 text-[10px] text-gray-500">
+          <a href="https://unsplash.com/photos/1lHFvq8SDQo" target="_blank" rel="noreferrer">
+            Photo: Unsplash
+          </a>
+          {" · "}
+          <a href="https://incompetech.com" target="_blank" rel="noreferrer">
+            Music: Kevin MacLeod (incompetech.com), CC BY 4.0
+          </a>
+        </p>
         </CafeView>
 
         {/* 🔍 보물찾기 점수판과 상품 쿠폰 (2D와 360 둘 다에서 보인다) */}
         <FoundScore />
+
+        {/* 🎵 카페 음악 켜기/끄기 (2D와 360 둘 다에서 보인다. 🌀 둘러보기 버튼 아래) */}
+        <MusicButton />
 
         {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 (2D와 360 둘 다에서 보인다) */}
         <div className="absolute left-1/2 top-3 z-40 -translate-x-1/2">
