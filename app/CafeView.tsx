@@ -225,6 +225,21 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
         {look360 ? "↩ 카페로 돌아가기" : "🌀 둘러보기"}
         <span className="block text-[10px] font-normal text-gray-500">{look360 ? t.back2d : t.look360}</span>
       </button>
+      {/* 🏠 360에서 2D 카페로 돌아가는 큰 버튼 (왼쪽 위 작은 버튼은 잘 안 보여서, 아래 왼쪽에 크게 하나 더) */}
+      {look360 && (
+        <button
+          type="button"
+          onClick={() => {
+            setLook360(false);
+            setFramesOpen(false);
+            setSeated(false);
+          }}
+          className="absolute bottom-4 left-4 z-50 rounded-2xl bg-orange-500 px-5 py-2 text-left text-lg font-bold text-white shadow-[0_6px_14px_rgba(0,0,0,0.45)] ring-2 ring-white hover:bg-orange-600"
+        >
+          🏠 카페로 돌아가기
+          <span className="block text-xs font-medium text-orange-50">{t.back2d}</span>
+        </button>
+      )}
     </>
   );
 }
