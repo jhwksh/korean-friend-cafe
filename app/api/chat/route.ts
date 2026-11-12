@@ -3,7 +3,9 @@ import { isSceneId, scenePrompt, scenes } from "../../scenes";
 
 // 이 파일은 서버에서만 돈다. 그래서 키(GEMINI_API_KEY)가 브라우저로 가지 않는다.
 const MAX_LENGTH = 200;
-const MAX_HISTORY = 20; // 친구가 앞 이야기를 기억하도록 최근 대화 20개를 같이 보낸다
+const MAX_HISTORY = 6; // 친구가 앞 이야기를 기억하도록 최근 대화 6개만 같이 보낸다 (많이 보낼수록 토큰을 많이 쓴다)
+// 답 길이 상한 (생각하는 데 쓰는 토큰도 여기에 포함된다). 보통 답은 200토큰 안팎이라 넉넉하게 둔다
+const MAX_OUTPUT_TOKENS = 2048;
 // 무료 키로 쓰는 Flash 계열 모델. 앞에서부터 차례로 시도한다.
 // 무료 키는 모델마다 하루 쓸 수 있는 횟수가 따로 있어서(예: gemini-3.5-flash는 하루 20번), 여러 모델을 두면 더 오래 버틴다.
 const MODELS = ["gemini-3.5-flash", "gemini-3.5-flash-lite", "gemini-3.1-flash-lite", "gemini-flash-latest"];
@@ -57,6 +59,10 @@ export async function POST(request: Request) {
     console.error("GEMINI_API_KEY가 설정되지 않았습니다.");
     return Response.json({ error: "친구가 지금 대답할 수 없어요. / Your friend can't reply right now." }, { status: 500 });
   }
+
+  // 🔐 하루 사용 제한: 구글 로그인한 사람만, 한 사람당 하루 정해진 횟수까지 (횟수는 supabase/schema.sql의 use_chat_turn에서 정한다)
+  const limit = await countChatTurn(request);
+  if (limit !== "ok") return limit;
 
   let body: { message?: unknown; history?: unknown; lang?: unknown; scene?: unknown };
   try {
@@ -144,7 +150,11 @@ async function askGemini(
       res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: systemText }] }, contents }),
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemText }] },
+          contents,
+          generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS },
+        }),
         signal: AbortSignal.timeout(25000),
       });
     } catch (err) {
@@ -187,4 +197,42 @@ function hangulRatio(text: string) {
   const letters = text.match(/\p{L}/gu) ?? [];
   if (letters.length === 0) return 0;
   return letters.filter((c) => /\p{Script=Hangul}/u.test(c)).length / letters.length;
+}
+
+// 로그인한 사람의 오늘 사용 횟수를 Supabase에서 하나 올린다. 넘었으면 막는다.
+// 브라우저가 보낸 로그인 표(access token)로 Supabase에 묻기 때문에, 다른 사람 횟수는 건드릴 수 없다.
+async function countChatTurn(request: Request): Promise<"ok" | Response> {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) return "ok"; // Supabase 키가 없는 내 컴퓨터 연습용: 제한 없이 쓴다
+  const token = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "");
+  const needLogin = Response.json(
+    { error: "구글로 로그인하면 친구와 이야기할 수 있어요. / Please log in with Google to chat." },
+    { status: 401 },
+  );
+  if (!token) return needLogin;
+  try {
+    const res = await fetch(`${url}/rest/v1/rpc/use_chat_turn`, {
+      method: "POST",
+      headers: { apikey: key, Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+      body: "{}",
+      signal: AbortSignal.timeout(8000),
+    });
+    if (res.status === 401) return needLogin;
+    if (!res.ok) {
+      console.error("사용 횟수 확인 실패:", res.status);
+      return failure();
+    }
+    const left = await res.json();
+    if (typeof left !== "number" || left < 0) {
+      return Response.json(
+        { error: "오늘은 여기까지! 내일 또 이야기해요. / That's all for today. See you tomorrow!" },
+        { status: 403 },
+      );
+    }
+    return "ok";
+  } catch (err) {
+    console.error("사용 횟수 확인 연결 실패:", err instanceof Error ? err.name : "unknown");
+    return failure();
+  }
 }

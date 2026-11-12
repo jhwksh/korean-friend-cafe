@@ -9,6 +9,7 @@ import { useOrders } from "./OrderProvider";
 import { practiceParts } from "./sound";
 import SpeakLine, { SpeakWords } from "./SpeakLine";
 import { scenes } from "./scenes";
+import { supabase } from "./supabase";
 
 const MAX_LENGTH = 200;
 // 지금 장면 (나중에 장면이 늘어나면 바꿔 끼운다)
@@ -121,14 +122,17 @@ export default function ChatPanel() {
     try {
       // 키는 브라우저에 없다. 우리 서버(/api/chat)에 부탁하면 서버가 Gemini에게 묻는다.
       // lang을 같이 보내서 친구가 고른 언어로 설명하게 한다.
+      // 로그인 표를 같이 보낸다. 서버가 이걸로 "누구인지"와 오늘 사용 횟수를 확인한다
+      const token = (await supabase?.auth.getSession())?.data.session?.access_token;
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) },
         body: JSON.stringify({ message: text, history, lang, scene: scene.id }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.reply) {
-        setNotice(res.status === 429 ? t.errBusy : t.errFriend);
+        // 401(로그인 필요), 403(오늘 횟수 다 씀)은 서버가 보낸 안내를 그대로 보여 준다
+        setNotice(res.status === 401 || res.status === 403 ? data.error : res.status === 429 ? t.errBusy : t.errFriend);
         return;
       }
       setMessages((prev) => [...prev, { id: prev.length, role: "friend", text: data.reply }]);

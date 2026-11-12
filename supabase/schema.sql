@@ -26,3 +26,40 @@ create policy "내 기록 고치기" on public.cafe_progress
 
 -- 로그인한 사람(authenticated)만 이 표를 쓸 수 있다. 로그인 안 한 사람(anon)은 못 쓴다.
 grant select, insert, update on public.cafe_progress to authenticated;
+
+-- ─────────────────────────────────────────────
+-- 💬 챗봇 하루 사용 제한 (한 사람당 하루 10번, 한국 날짜 기준)
+-- 횟수를 바꾸려면 아래 10을 고치고 이 부분만 다시 Run 한다.
+create table if not exists public.chat_usage (
+  user_id uuid    not null references auth.users (id) on delete cascade,
+  day     date    not null,
+  count   integer not null default 0,
+  primary key (user_id, day)
+);
+-- RLS를 켜고 규칙을 하나도 안 만든다: 아무도 이 표를 직접 못 고친다 (아래 함수만 고칠 수 있다)
+alter table public.chat_usage enable row level security;
+
+-- 오늘 횟수를 하나 올리고 "남은 횟수"를 돌려준다. 0보다 작으면 오늘은 다 쓴 것.
+create or replace function public.use_chat_turn()
+returns integer
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  daily_limit constant integer := 10;
+  n integer;
+begin
+  if auth.uid() is null then
+    return -1;
+  end if;
+  insert into public.chat_usage (user_id, day, count)
+  values (auth.uid(), (now() at time zone 'Asia/Seoul')::date, 1)
+  on conflict (user_id, day) do update set count = public.chat_usage.count + 1
+  returning count into n;
+  return daily_limit - n;
+end;
+$$;
+
+revoke all on function public.use_chat_turn() from public, anon;
+grant execute on function public.use_chat_turn() to authenticated;
