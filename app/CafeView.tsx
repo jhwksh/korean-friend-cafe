@@ -39,7 +39,7 @@ const PANO_WORDS: [WordKey, number, number][] = [
   ["ceilingLight", 194, 26],
   ["ceilingLight", 181, 22],
   ["painting", 83, 9],
-  ["painting", 273, 10],
+  ["painting", 270.6, -1.5], // 문 옆 왕 그림의 액자 아래쪽
   ["painting", 11, 9],
   ["flower", 296, -17],
   ["plant", 261, -2],
@@ -58,14 +58,14 @@ const PANO_WORDS: [WordKey, number, number][] = [
   ["table", 113, -14],
   ["chair", 229, -16],
   ["wall", 306, 22],
-  ["arch", 274, 15],
+  ["arch", 274, 18.2], // 둥근 벽의 아치 테두리 맨 위
   ["floor", 30, -62],
   ["ceiling", 100, 80],
   // 그림이나 물건에서 크게 잘 보이는 것만 (작은 그림 속 물건은 360에서 잘 안 보여서 뺐다)
   ["bird", 192.8, 4.9], // 새 그림은 작아도 새인 게 바로 보인다
   ["light", 211.9, 4.3],
   ["dress", 83, 1],
-  ["king", 273, 3],
+  ["king", 273, 6], // 왕의 얼굴
   // 색깔 단어는 크고 눈에 띄는 물건에: 노란 쿠션, 빨간 쿠션, 초록 식물
   ["yellow", 85, -21],
   ["red", 94, -24],
