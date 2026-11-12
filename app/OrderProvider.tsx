@@ -45,9 +45,13 @@ type Ctx = {
   putDown: () => void;
   orders: Order[];
   eat: (id: number) => void;
+  padOpen: boolean; // 📱 자리의 테이블 패드를 열고 있는지 (열려 있으면 계산대 주문서는 숨는다)
+  setPadOpen: (open: boolean) => void;
 };
 
 const OrderContext = createContext<Ctx>({
+  padOpen: false,
+  setPadOpen: () => {},
   cart: [],
   addToCart: () => {},
   removeFromCart: () => {},
@@ -91,6 +95,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [paidCount, setPaidCount] = useState(0);
   const [pickupOpen, setPickupOpen] = useState(false);
   const [carrying, setCarrying] = useState<CartItem[]>([]);
+  const [padOpen, setPadOpen] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const bellTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { addBuyStamps, spendCoupons } = useFound();
@@ -191,7 +196,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <OrderContext.Provider
-      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat }}
+      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen }}
     >
       {children}
     </OrderContext.Provider>

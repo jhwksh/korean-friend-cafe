@@ -42,7 +42,7 @@ function Reply({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: 
 
 export default function Checkout() {
   const { t } = useLanguage();
-  const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy } = useOrders();
+  const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy, padOpen } = useOrders();
   const [payWith, setPayWith] = useState<PayWith>(null);
   const [answer, setAnswer] = useState<Answer | null>(null);
   // 📱 카페 안 키오스크로 처음부터 주문하는 중 (그동안 점원은 주문서에서 묻지 않는다)
@@ -64,7 +64,8 @@ export default function Checkout() {
     return () => clearInterval(timer);
   }, [step, pickupOpen]);
 
-  const showSlip = cart.length > 0 || step !== "ordering";
+  // 📱 테이블 패드로 주문하는 동안에는 계산대 주문서를 숨긴다 (같은 장바구니를 써서 두 주문이 섞이지 않게)
+  const showSlip = !padOpen && (cart.length > 0 || step !== "ordering");
   // 🧾 주문서 → (이게 다예요) 계산서: 낼 돈이 정해져 더 못 뺀다 → (결제) 영수증
   const isBill = asking === "how";
   const paidTotal = paid.reduce((sum, p) => sum + p.price, 0);
@@ -105,7 +106,7 @@ export default function Checkout() {
         </div>
       )}
       {/* 👀 처음 메뉴를 고르면 주문서가 어디 있는지 알려 준다 (계산 방법을 고르기 전까지 반짝인다) */}
-      {step === "ordering" && cart.length > 0 && asking !== "how" && !kioskOpen && (
+      {step === "ordering" && cart.length > 0 && asking !== "how" && !kioskOpen && !padOpen && (
         <p className="absolute right-[248px] top-[180px] z-40 animate-pulse whitespace-nowrap rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-white shadow">
           주문서를 보세요 👉 <span className="block text-xs font-medium">{t.lookSlip}</span>
         </p>

@@ -66,10 +66,9 @@ const SIZE = ["", "text-5xl", "text-6xl", "text-7xl"];
 
 export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => void; onHiddenPicture: () => void }) {
   const { lang, t } = useLanguage();
-  const { orders, eat, carrying, putDown, step, alertBy, openPickup } = useOrders();
+  const { orders, eat, carrying, putDown, step, alertBy, openPickup, padOpen, setPadOpen } = useOrders();
   // 패드로 시킨 메뉴가 나오면 탁자 위 패드가 울린다
   const padRinging = step === "ready" && alertBy === "pad";
-  const [padOpen, setPadOpen] = useState(false);
   const [said, setSaid] = useState<{ id: number; ko: string; roman: string; mean: string } | null>(null);
 
   // 탁자 위 것을 다 먹었고, 들고 온 쟁반도 없을 때
