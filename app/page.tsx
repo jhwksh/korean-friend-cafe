@@ -9,6 +9,7 @@ import { FoundProvider } from "./FoundProvider";
 import { OrderProvider } from "./OrderProvider";
 import FoundScore from "./FoundScore";
 import ChatDock from "./ChatDock";
+import RotateHint from "./RotateHint";
 import Entrance from "./Entrance";
 import CounterFood from "./CounterFood";
 import LanguagePicker from "./LanguagePicker";
@@ -136,6 +137,8 @@ export default function Home() {
         </div>
         </div>
         </CafeStage>
+        {/* 📱 휴대폰 세로 화면: 카페 그림이 거의 정사각형이라 아래 반이 빈다. 가로로 돌리라고 알려 준다 */}
+        <RotateHint />
       </section>
 
       {/* 💬 한국어 친구 채팅창: 평소엔 숨기고, 오른쪽 아래 친구 버튼을 누르면 연다 */}
