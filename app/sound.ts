@@ -46,7 +46,7 @@ function koreanUtterance(synth: SpeechSynthesis, text: string, voice?: "male") {
   const shortWord = syllables <= 3;
   const u = new SpeechSynthesisUtterance(shortWord && !/[.!?]$/.test(text) ? `${text}.` : text);
   u.lang = "ko-KR";
-  u.rate = syllables <= 1 ? 0.6 : shortWord ? 0.7 : 0.9; // 배우는 사람을 위해 조금 천천히
+  u.rate = syllables <= 1 ? 0.6 : shortWord ? 0.65 : 0.8; // 배우는 사람을 위해 조금 천천히
   const koVoices = synth.getVoices().filter((v) => v.lang.startsWith("ko"));
   const male = voice === "male" ? koVoices.find((v) => /InJoon|\bmale\b|남/i.test(v.name)) : undefined;
   const chosen = male ?? koVoices[0];
@@ -83,12 +83,12 @@ export function speakAlong(words: string[], onWord: (index: number) => void, voi
   const timers: ReturnType<typeof setTimeout>[] = [];
   const stopGuess = () => timers.splice(0).forEach(clearTimeout);
   u.onstart = () => {
-    // 어림잡기: 한 글자에 약 0.24초 (조금 천천히 읽으니까)
+    // 어림잡기: 한 글자에 약 0.28초 (조금 천천히 읽으니까)
     let at = 0;
     clean.forEach((w, i) => {
       if (!w) return;
       timers.push(setTimeout(() => onWord(i), at));
-      at += (w.replace(/[^\p{Script=Hangul}0-9]/gu, "").length || 1) * 240 + 120;
+      at += (w.replace(/[^\p{Script=Hangul}0-9]/gu, "").length || 1) * 280 + 140;
     });
   };
   u.onboundary = (e) => {
