@@ -172,7 +172,7 @@ export default function ChatPanel() {
             // 옆의 🌐 언어 고르기와 같은 모양(둥근 흰 알약, 같은 높이)으로 맞춘다
             className="flex shrink-0 items-center gap-1 whitespace-nowrap rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-gray-800 shadow-lg hover:bg-amber-50 disabled:opacity-50"
           >
-            🔄 새 대화
+            🔄 새 대화 <span className="text-xs font-medium text-gray-500">{t.newChat}</span>
           </button>
           <LanguagePicker />
         </div>
