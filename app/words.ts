@@ -167,9 +167,10 @@ export const words = {
     ko: "새", roman: "sae",
     names: { en: "bird", de: "Vogel", ja: "鳥", zh: "鸟", es: "pájaro", vi: "con chim" },
   },
-  birdcage: {
-    ko: "새장", roman: "saejang",
-    names: { en: "birdcage", de: "Vogelkäfig", ja: "鳥かご", zh: "鸟笼", es: "jaula", vi: "lồng chim" },
+  // 새장 모양이지만 안에 불이 켜진 전등이다
+  light: {
+    ko: "전등", roman: "jeondeung",
+    names: { en: "light", de: "Licht", ja: "電灯", zh: "电灯", es: "luz", vi: "đèn" },
   },
   yellow: {
     ko: "노란색", roman: "noransaek",
