@@ -273,19 +273,50 @@ function StaffSays({ ko, roman, mean }: { ko: string; roman: string; mean: strin
   return (
     <div className="flex items-end gap-2">
       <Image src="/barista.png" alt="" width={60} height={112} className="h-[112px] w-auto" />
-      <SpeakLine ko={ko} roman={roman} mean={mean} className="mb-4 rounded-2xl rounded-bl-none bg-amber-50 px-3 py-2 text-sm shadow" />
+      <SpeakLine ko={ko} roman={roman} mean={mean} autoPlay className="mb-4 rounded-2xl rounded-bl-none bg-amber-50 px-3 py-2 text-sm shadow" />
     </div>
   );
 }
 
-// 내가 하는 말: 먼저 🔊로 들어 보고, "말하기"를 누르면 다음으로 넘어간다
+// 내가 하는 말: "말하기"를 누르면 내 말을 소리 내 읽고(형광펜이 따라감), 다 읽으면 다음으로 넘어간다.
+// 다음 장면의 점원 말은 나오자마자 읽어 준다 (StaffSays autoPlay)
 function ISay({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
+  const { t } = useLanguage();
+  const [at, setAt] = useState(-1);
+  const [saying, setSaying] = useState(false);
+  function say() {
+    if (saying) return;
+    setSaying(true);
+    let done = false;
+    const next = () => {
+      if (done) return;
+      done = true;
+      setSaying(false);
+      onClick();
+    };
+    speakAlong(ko.split(" "), setAt, undefined, next);
+    // 브라우저가 끝났다고 알려 주지 않아도 멈추지 않게, 넉넉한 시간이 지나면 넘어간다
+    setTimeout(next, 1500 + ko.length * 300);
+  }
   return (
     <div className="mt-3 flex items-center gap-2 rounded-xl bg-amber-50 px-3 py-2 text-sm shadow ring-2 ring-amber-300">
       <span className="text-lg">🙋</span>
-      <SpeakLine ko={ko} roman={roman} mean={mean} className="flex-1" />
-      <button type="button" onClick={onClick} className="shrink-0 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-white shadow hover:bg-amber-500">
-        말하기 ▶
+      <div className="flex-1">
+        <p className="font-bold">
+          <Words text={ko} at={at} />
+        </p>
+        <p className="text-[0.8rem] font-semibold italic text-gray-600">
+          KR: <Words text={roman} at={at} />
+        </p>
+        <p className="text-[0.8rem] font-medium text-gray-600">{mean}</p>
+      </div>
+      <button
+        type="button"
+        onClick={say}
+        disabled={saying}
+        className="shrink-0 rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-white shadow hover:bg-amber-500 disabled:opacity-60"
+      >
+        🗣️ 말하기 ▶<span className="block text-[10px] font-medium">{t.say}</span>
       </button>
     </div>
   );

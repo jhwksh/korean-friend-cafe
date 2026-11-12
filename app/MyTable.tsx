@@ -62,7 +62,7 @@ function withObjectRoman(name: string) {
 }
 
 // 한 입 먹을 때마다 작아진다 (남은 입: 3, 2, 1)
-const SIZE = ["", "text-3xl", "text-4xl", "text-5xl"];
+const SIZE = ["", "text-5xl", "text-6xl", "text-7xl"];
 
 export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => void; onHiddenPicture: () => void }) {
   const { lang, t } = useLanguage();
@@ -113,7 +113,7 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
       )}
 
       {/* 동그란 나무 탁자 */}
-      <div className="flex min-h-[120px] w-full max-w-[460px] flex-wrap items-center justify-center gap-3 rounded-[50%] border-[6px] border-[#4a2e17] bg-[radial-gradient(circle,#8a5a33,#5e3b1f)] px-10 py-5 shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
+      <div className="flex min-h-[160px] w-full max-w-[600px] flex-wrap items-center justify-center gap-3 rounded-[50%] border-[6px] border-[#4a2e17] bg-[radial-gradient(circle,#8a5a33,#5e3b1f)] px-10 py-5 shadow-[0_10px_25px_rgba(0,0,0,0.5)]">
         {orders.length === 0 ? (
           <p className="text-center text-xs text-amber-100">{t.noOrder}</p>
         ) : (
@@ -135,13 +135,13 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
                     mean: `${t[how.soundMean]}! ${t[how.verbMean].replace("{x}", nameIn(o.name))}`,
                   });
                 }}
-                className="flex w-16 flex-col items-center rounded-full transition-transform hover:scale-110 disabled:hover:scale-100"
+                className="flex w-24 flex-col items-center rounded-full transition-transform hover:scale-110 disabled:hover:scale-100"
               >
                 {/* 하얀 접시 위에 놓는다. 다 먹으면 빈 접시만 남는다 */}
-                <span className="grid h-16 w-16 place-items-center rounded-full border-2 border-gray-200 bg-[radial-gradient(circle,#ffffff_55%,#e9e6e1)] shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
+                <span className="grid h-24 w-24 place-items-center rounded-full border-2 border-gray-200 bg-[radial-gradient(circle,#ffffff_55%,#e9e6e1)] shadow-[0_3px_6px_rgba(0,0,0,0.35)]">
                   {!empty && <span className={SIZE[o.bites]}>{o.emoji}</span>}
                 </span>
-                <span className="text-xs font-bold text-amber-50">{empty ? how.done : o.name}</span>
+                <span className="text-sm font-bold text-amber-50">{empty ? how.done : o.name}</span>
                 <span className="text-xs font-medium leading-tight text-amber-200">{empty ? t[how.doneMean] : nameIn(o.name)}</span>
               </button>
             );
