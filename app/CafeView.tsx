@@ -214,13 +214,27 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
                   </div>
                 ))}
               </div>
-              <button
-                type="button"
-                onClick={() => setFramesOpen(false)}
-                className="rounded-full bg-white/90 px-4 py-1 text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
-              >
-                ↩ 360으로 돌아가기 · {t.back360}
-              </button>
+              {/* 아래에 나가는 길 두 개: 360으로 / 2D 카페로 (위쪽 버튼이 화면 밖으로 밀려도 나갈 수 있게) */}
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFramesOpen(false)}
+                  className="rounded-full bg-white/90 px-4 py-1 text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
+                >
+                  ↩ 360으로 돌아가기 · {t.back360}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFramesOpen(false);
+                    setLook360(false);
+                    setSeated(false);
+                  }}
+                  className="rounded-full bg-orange-500 px-4 py-1 text-sm font-semibold text-white shadow-lg hover:bg-orange-600"
+                >
+                  🏠 카페로 돌아가기 · {t.back2d}
+                </button>
+              </div>
             </div>
           )}
           {!seated && (
