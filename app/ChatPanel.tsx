@@ -7,7 +7,7 @@ import { useFound } from "./FoundProvider";
 import { useLanguage } from "./LanguageProvider";
 import { useOrders } from "./OrderProvider";
 import { practiceParts } from "./sound";
-import SpeakLine, { SpeakWords } from "./SpeakLine";
+import SpeakLine, { FriendText } from "./SpeakLine";
 import { scenes } from "./scenes";
 import { supabase } from "./supabase";
 
@@ -199,15 +199,8 @@ export default function ChatPanel() {
                 key={m.id}
                 className="max-w-[85%] self-start whitespace-pre-wrap break-words rounded-2xl rounded-bl-sm bg-white px-3 py-2 text-sm text-gray-800 shadow"
               >
-                {m.text}
-                {/* 🔊 연습할 말마다 버튼 하나. 옆 글에 읽는 낱말을 따라 형광펜이 칠해진다 */}
-                {practiceParts(m.text).length > 0 && (
-                  <span className="mt-1 flex flex-wrap gap-2">
-                    {practiceParts(m.text).map((p) => (
-                      <SpeakWords key={p} text={p} />
-                    ))}
-                  </span>
-                )}
+                {/* 🔊 설명 중간의 한국어 자리에 형광펜이 칠해진다. 아래에는 연습할 말 모음 */}
+                <FriendText text={m.text} extra={practiceParts(m.text)} />
               </div>
             ),
         )}

@@ -88,3 +88,67 @@ export function SpeakWords({ text }: { text: string }) {
     </span>
   );
 }
+
+// 💬 친구 답 전체를 보여 준다. 설명 중간의 "한국어 (KR: 발음)" 자리에 🔊를 붙이고,
+// 누르면 바로 그 자리의 한국어와 KR 발음에 형광펜이 같이 따라간다 (아래 연습 버튼을 눌러도 같은 자리가 칠해진다)
+const MARKED = /([가-힣][가-힣0-9\s,.!?~'"]*[가-힣.!?]?)(\s*\(KR:\s*)([^)]*)\)/g;
+export function FriendText({ text, extra }: { text: string; extra: string[] }) {
+  const [now, setNow] = useState({ p: "", at: -1 });
+  const play = (p: string) => speakAlong(p.split(" "), (at) => setNow({ p, at }));
+  const atOf = (p: string) => (now.p === p ? now.at : -1);
+
+  const pieces: React.ReactNode[] = [];
+  let last = 0;
+  for (const m of text.matchAll(MARKED)) {
+    const ko = m[1].trim();
+    pieces.push(text.slice(last, m.index));
+    pieces.push(
+      <span key={m.index}>
+        <b className="font-bold">
+          <Words text={ko} at={atOf(ko)} />
+        </b>{" "}
+        <button
+          type="button"
+          onClick={() => play(ko)}
+          aria-label={`${ko} 듣기`}
+          className="inline-grid h-5 w-5 place-items-center rounded-full bg-amber-100 align-middle text-[11px] hover:bg-amber-200"
+        >
+          🔊
+        </button>
+        {" (KR: "}
+        <i className="font-semibold">
+          <Words text={m[3].trim()} at={atOf(ko)} />
+        </i>
+        {")"}
+      </span>,
+    );
+    last = m.index + m[0].length;
+  }
+  pieces.push(text.slice(last));
+
+  return (
+    <>
+      {pieces}
+      {/* 🔊 연습할 말 모음. 눌러도 위 문장 속 같은 자리에 형광펜이 칠해진다 */}
+      {extra.length > 0 && (
+        <span className="mt-1 flex flex-wrap gap-2">
+          {extra.map((p) => (
+            <span key={p} className="inline-flex items-center gap-1 text-xs text-gray-600">
+              <button
+                type="button"
+                onClick={() => play(p)}
+                aria-label={`${p} 듣기`}
+                className="inline-grid h-5 w-5 place-items-center rounded-full bg-amber-100 text-[11px] hover:bg-amber-200"
+              >
+                🔊
+              </button>
+              <span>
+                <Words text={p} at={atOf(p)} />
+              </span>
+            </span>
+          ))}
+        </span>
+      )}
+    </>
+  );
+}
