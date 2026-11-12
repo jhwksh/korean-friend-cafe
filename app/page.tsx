@@ -8,7 +8,7 @@ import Checkout from "./Checkout";
 import { FoundProvider } from "./FoundProvider";
 import { OrderProvider } from "./OrderProvider";
 import FoundScore from "./FoundScore";
-import ChatPanel from "./ChatPanel";
+import ChatDock from "./ChatDock";
 import Entrance from "./Entrance";
 import CounterFood from "./CounterFood";
 import LanguagePicker from "./LanguagePicker";
@@ -138,10 +138,8 @@ export default function Home() {
         </CafeStage>
       </section>
 
-      {/* 오른쪽: 한국어 친구 채팅창 */}
-      <section className="flex flex-1 p-4 md:max-w-md md:p-6">
-        <ChatPanel />
-      </section>
+      {/* 💬 한국어 친구 채팅창: 평소엔 숨기고, 오른쪽 아래 친구 버튼을 누르면 연다 */}
+      <ChatDock />
     </main>
     </Entrance>
     </OrderProvider>
