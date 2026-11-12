@@ -81,6 +81,9 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
   };
 
   return (
+    <>
+    {/* 📱 테이블 패드 창은 아래 탁자 칸 밖에서 연다 (탁자 칸 안에서 열면 창이 잘려서 안 보였다) */}
+    {padOpen && <KioskPay pad onClose={() => setPadOpen(false)} />}
     <div className="absolute inset-x-0 bottom-0 z-[42] flex flex-col items-center gap-2 p-3">
       {/* 🧺 들고 온 쟁반: 내려놓으면 탁자에 놓인다 */}
       {carrying.length > 0 && (
@@ -98,7 +101,6 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
 
       {/* 🍽️ 다 먹으면: 이제 카페를 구경해 볼까요? (📸 인증샷, 🖼️ 숨은 그림, 👀 구경하기) */}
       {allEaten && <AfterMeal onHiddenPicture={onHiddenPicture} onLookAround={onStand} onOrderMore={() => setPadOpen(true)} />}
-      {padOpen && <KioskPay pad onClose={() => setPadOpen(false)} />}
 
       {/* 방금 먹은 것의 소리 흉내말 */}
       {said && (
@@ -178,5 +180,6 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
         🚶 일어나기 · {t.standUp}
       </button>
     </div>
+    </>
   );
 }
