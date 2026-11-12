@@ -487,7 +487,11 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 <button
                   key={item.name}
                   type="button"
-                  onClick={() => addToCart(item)}
+                  onClick={() => {
+                    addToCart(item);
+                    // 하나 고르면 "더 주문하실 거 있으세요?"를 묻는다. 합계는 맨 마지막(주문 내역 확인)에만 보여 준다
+                    setScene(-2);
+                  }}
                   className="rounded-lg bg-white px-1 py-2 text-center text-xs font-bold text-[#1f3b57] hover:bg-sky-50"
                 >
                   <span className="block text-2xl">{item.emoji}</span>
@@ -511,10 +515,6 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                     </span>
                   </li>
                 ))}
-                <li className="mt-1 flex justify-between border-t pt-1 font-bold">
-                  <span>합계</span>
-                  <span>{won(total)}</span>
-                </li>
               </ul>
             )}
             {cart.length > 0 && (
@@ -522,6 +522,23 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 <KioskButton ko="주문하기" roman="jumunhagi" mean={t.orderBtn} onClick={() => setScene(1)} />
               </div>
             )}
+          </>
+        )}
+        {/* 하나 고른 뒤: 더 주문할지 묻는다 → 이게 다면 주문 내역과 합계(가격은 마지막에) */}
+        {scene === -2 && (
+          <>
+            <Big ko="더 주문하실 거 있으세요?" roman="deo jumunhasil geo isseuseyo?" mean={t.askMore} />
+            <ul className="mt-3 rounded-lg bg-white/90 p-2 text-sm text-[#1f3b57]">
+              {cart.map((c) => (
+                <li key={c.id}>
+                  {c.emoji} {c.name}{c.option && <span className="text-xs font-medium text-gray-500"> {c.option}</span>}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-3 flex gap-2">
+              <KioskButton ko="네, 더 주문할게요." roman="ne, deo jumunhalgeyo." mean={t.moreYes} onClick={() => setScene(-1)} />
+              <KioskButton ko="아니요, 이게 다예요." roman="aniyo, ige dayeyo." mean={t.moreNo} onClick={() => setScene(1)} />
+            </div>
           </>
         )}
         {scene === 0 && (
