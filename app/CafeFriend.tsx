@@ -3,6 +3,11 @@
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
+import { speakAlong } from "./sound";
+import { Words } from "./SpeakLine";
+
+const BUBBLE = "같이 주문해 볼까?";
+const BUBBLE_ROMAN = "gachi jumunhae bolkka?";
 
 // 카페 바닥에 서서, 마우스(손가락)를 따라 좌우로 걸어 다니는 한국어 친구.
 // 캐릭터 그림(public/friend.png)은 사용자가 Gemini로 만든 그림이다 (실제 사람 아님).
@@ -15,6 +20,7 @@ export default function CafeFriend() {
   const { t } = useLanguage();
   // 머리 위 말풍선: 처음엔 숨겨 두고, 친구를 누르면 보였다가 다시 누르면 사라진다
   const [showBubble, setShowBubble] = useState(false);
+  const [at, setAt] = useState(-1); // 🖍️ 형광펜이 칠할 낱말 번호
 
   useEffect(() => {
     const friend = friendRef.current;
@@ -75,7 +81,14 @@ export default function CafeFriend() {
         <div
           className={`mb-2 whitespace-nowrap rounded-2xl bg-white px-3 py-1 text-sm text-gray-800 shadow-lg transition-opacity ${showBubble ? "opacity-100" : "invisible opacity-0"}`}
         >
-          같이 주문해 볼까? ☕
+          {/* 🖍️ 친구가 말하는 동안 형광펜이 낱말을 따라간다 (점원과 같은 모양) */}
+          <span className="font-semibold">
+            <Words text={BUBBLE} at={at} /> ☕
+          </span>
+          <br />
+          <span className="text-xs italic text-gray-500">
+            KR: <Words text={BUBBLE_ROMAN} at={at} />
+          </span>
           <br />
           <span className="text-xs text-gray-500">{t.friendBubble}</span>
         </div>
@@ -83,6 +96,8 @@ export default function CafeFriend() {
           ref={facingRef}
           type="button"
           onClick={() => {
+            // 말풍선이 나타날 때 친구가 소리 내어 말한다
+            if (!showBubble) speakAlong(BUBBLE.split(" "), setAt);
             setShowBubble((v) => !v);
             setSpinCount((n) => n + 1);
           }}
