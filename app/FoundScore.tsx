@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { STAMPS_PER_COUPON, TOTAL_WORDS, useFound } from "./FoundProvider";
+import { STAMPS_ON } from "./features";
 import { useLanguage } from "./LanguageProvider";
 import { missions } from "./missions";
 import { StampRules } from "./Stamps";
@@ -25,6 +26,8 @@ export default function FoundScore() {
 
   const [seen, setSeen] = useState<string[] | null>(null);
   const [showCard, setShowCard] = useState(false);
+  // 점수판은 처음엔 동그란 도장 모양 버튼으로 접혀 있고, 누르면 펼쳐진다 (카페 화면을 가리지 않게)
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     try {
@@ -51,16 +54,37 @@ export default function FoundScore() {
 
   return (
     <>
-      {/* 점수판 */}
+      {/* ⭐ 동그란 도장 모양 버튼: 누르면 점수판이 열리고 닫힌다 */}
       <button
         type="button"
-        onClick={() => setShowCard(true)}
-        className="absolute right-3 top-3 z-40 w-[170px] rounded-xl bg-white/90 px-3 py-1.5 text-left text-[#5c3a1c] shadow-lg hover:bg-white"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        aria-label="미션 · Missions"
+        className="absolute right-3 top-3 z-40 grid h-14 w-14 -rotate-12 place-items-center rounded-full border-4 border-double border-rose-400 bg-white/95 text-center leading-none text-rose-500 shadow-lg hover:scale-105"
       >
+        <span className="text-xl">⭐</span>
+        <span className="text-[10px] font-bold">
+          {stamps.length}/{missions.length}
+        </span>
+      </button>
+
+      {/* 점수판 */}
+      {open && (
+      <button
+        type="button"
+        onClick={() => STAMPS_ON && setShowCard(true)}
+        className="absolute right-3 top-[76px] z-40 w-[170px] rounded-xl bg-white/90 px-3 py-1.5 text-left text-[#5c3a1c] shadow-lg hover:bg-white"
+      >
+        {STAMPS_ON ? (
+        <>
         <span className="block text-sm font-semibold">
           📇 스탬프 {onCard} / 10 {readyCoupons > 0 && <span className="text-rose-500">· 🎟️{readyCoupons}</span>}
         </span>
         <span className="block text-xs font-medium text-gray-600">☕ +1: 🖼️⭐ / 💳 &quot;적립해 주세요&quot;</span>
+        </>
+        ) : (
+          <span className="block text-sm font-semibold">⭐ 미션 <span className="text-xs font-medium text-gray-500">{stamps.length} / {missions.length}</span></span>
+        )}
         {current && (
           <span className="mt-1 block rounded-md bg-amber-50 px-1.5 py-1 text-[11px] leading-tight">
             📜 {t.nowMission}: {current.emoji} <b>{words[current.place].ko}</b>
@@ -70,18 +94,19 @@ export default function FoundScore() {
             </span>
           </span>
         )}
-        <span className="mt-1 flex gap-0.5">
+        {STAMPS_ON && <span className="mt-1 flex gap-0.5">
           {Array.from({ length: 10 }, (_, i) => (
             <span key={i} className={`h-2 flex-1 rounded-full ${i < onCard ? "bg-rose-400" : "bg-amber-100"}`} />
           ))}
-        </span>
+        </span>}
         <span className="mt-1 block text-[10px] text-gray-600">
           📝 {found.length} / {TOTAL_WORDS} · {t.wordsPracticed}
         </span>
       </button>
+      )}
 
       {/* 새 상품을 받았을 때 한 번 뜨는 쿠폰 창 */}
-      {fresh && (
+      {STAMPS_ON && fresh && (
         <div className="absolute inset-0 z-50 grid place-items-center bg-black/40">
           <div className="w-[320px] rounded-2xl bg-white p-5 text-center text-[#3b2a1a] shadow-2xl">
             <p className="text-4xl">🎉</p>

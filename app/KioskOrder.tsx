@@ -6,6 +6,7 @@ import { useLanguage } from "./LanguageProvider";
 import { menu } from "./menu";
 import { useOrders, won } from "./OrderProvider";
 import SpeakLine from "./SpeakLine";
+import { STAMPS_ON } from "./features";
 import { CouponPicker, StampRules } from "./Stamps";
 
 // 📱 카페 안에 서 있는 키오스크: 진짜 한국 키오스크처럼 처음부터 끝까지 혼자 주문한다.
@@ -33,7 +34,7 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
   const [large, setLarge] = useState(false);
   const [phone, setPhone] = useState(false);
   const [earned, setEarned] = useState(false);
-  const [tapping, tap] = useCardTap(() => setScreen("points"));
+  const [tapping, tap] = useCardTap(() => setScreen(STAMPS_ON ? "points" : "receipt"));
 
   // 메뉴를 누르면: 음료는 옵션 화면으로, 빵은 바로 장바구니로
   function choose(item: MenuItem) {
@@ -192,7 +193,7 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
           <>
             <Big ko="결제 수단을 선택해 주세요" roman="gyeolje sudaneul seontaekae juseyo" mean={t.payMethod} />
             <CartList items={cart} total={total} />
-            <CouponPicker dark />
+            {STAMPS_ON && <CouponPicker dark />}
             <div className="h-3" />
             <div className="flex gap-2">
               <KioskButton

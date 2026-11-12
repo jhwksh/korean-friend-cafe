@@ -8,6 +8,7 @@ import { menu } from "./menu";
 import { useOrders, won, type CartItem } from "./OrderProvider";
 import { playBell, speakAlong } from "./sound";
 import SpeakLine, { Words } from "./SpeakLine";
+import { STAMPS_ON } from "./features";
 import { CouponPicker, StampRules } from "./Stamps";
 
 // 🧾 주문서 → 💳 계산(점원 또는 키오스크) → 📳 진동벨 → 받으러 가기.
@@ -374,7 +375,7 @@ function StaffPay({ onClose }: { onClose: () => void }) {
       {scene === 1 && (
         <>
           <StaffSays ko="드시고 가세요?" roman="deusigo gaseyo?" mean={t.staffHere} />
-          <ISay ko="네, 먹고 갈게요." roman="ne, meokgo galgeyo." mean={t.meHere} onClick={() => setScene(5)} />
+          <ISay ko="네, 먹고 갈게요." roman="ne, meokgo galgeyo." mean={t.meHere} onClick={() => setScene(STAMPS_ON ? 5 : 2)} />
         </>
       )}
       {/* 💳 계산하기 바로 전: 점원이 적립을 묻는다 (한국 카페에서 거의 항상 듣는 말) */}
@@ -401,7 +402,7 @@ function StaffPay({ onClose }: { onClose: () => void }) {
             roman={`${wonRoman(total)}imnida. gyeoljeneun eotteoke hasigesseoyo?`}
             mean={t.staffPay}
           />
-          {!tapping && <CouponPicker />}
+          {STAMPS_ON && !tapping && <CouponPicker />}
           {tapping ? (
             <p className="mt-3 text-center text-sm font-bold">💳 ··· 띡!</p>
           ) : (
@@ -473,7 +474,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
   const [scene, setScene] = useState(pad ? -1 : 0);
   const [earn, setEarn] = useState(false);
   // 카드를 넣으면 "적립하시겠어요?"(4) → 끝(3)
-  const [tapping, tap] = useCardTap(() => setScene(4));
+  const [tapping, tap] = useCardTap(() => setScene(STAMPS_ON ? 4 : 3));
 
   return (
     <Dialog onClose={onClose}>
@@ -555,7 +556,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
           <>
             <Big ko="주문 내역을 확인해 주세요" roman="jumun naeyeogeul hwaginhae juseyo" mean={t.kioskCheck} />
             <CartList items={cart} total={total} />
-            <CouponPicker dark />
+            {STAMPS_ON && <CouponPicker dark />}
             <div className="flex">
               <KioskButton ko="결제하기" roman="gyeoljehagi" mean={t.kioskPayBtn} onClick={() => setScene(2)} />
             </div>

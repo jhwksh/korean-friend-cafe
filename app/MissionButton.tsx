@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useFound } from "./FoundProvider";
+import { STAMPS_ON } from "./features";
 import { useLanguage } from "./LanguageProvider";
 import { missions, type MissionId } from "./missions";
 import { playCoffee, speakAlong } from "./sound";
@@ -89,7 +90,7 @@ export default function MissionButton({ id, className = "" }: { id: MissionId; c
           {done ? (
             <div className="mt-1 flex items-center gap-1.5 text-[11px] font-semibold text-emerald-700">
               {/* 스탬프 도장 쾅! */}
-              <span className="grid h-8 w-8 -rotate-12 place-items-center rounded-full border-2 border-rose-500 bg-rose-50 text-base animate-[stamp-pop_0.4s_ease-out]">☕</span>
+              <span className="grid h-8 w-8 -rotate-12 place-items-center rounded-full border-2 border-rose-500 bg-rose-50 text-base animate-[stamp-pop_0.4s_ease-out]">{STAMPS_ON ? "☕" : "✅"}</span>
               <span>
                 {result === "almost" && (
                   <span className="block text-[10px] font-normal text-amber-700">
