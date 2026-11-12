@@ -161,8 +161,28 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
           </button>
         ),
       },
+      {
+        // 🚪 문: 누르면 360에서 나가 2D 카페로 돌아간다
+        id: "exit-door",
+        lon: 248,
+        lat: -11,
+        node: (
+          <button
+            type="button"
+            onClick={() => {
+              setLook360(false);
+              setFramesOpen(false);
+              setSeated(false);
+            }}
+            className="-translate-x-1/2 whitespace-nowrap rounded-full border-2 border-white bg-orange-500 px-3 py-1 text-left text-xs font-bold text-white shadow-lg animate-[word-glow_2.4s_ease-in-out_infinite] hover:bg-orange-600"
+          >
+            🚪 카페로 나가기
+            <span className="block text-[10px] font-normal text-orange-50">{t.back2d}</span>
+          </button>
+        ),
+      },
     ],
-    [t.hiddenPicture, t.sitHere],
+    [t.hiddenPicture, t.sitHere, t.back2d],
   );
 
   return (
