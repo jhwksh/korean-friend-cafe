@@ -358,7 +358,7 @@ export function useCardTap(onDone: () => void) {
 // 🧑‍🍳 점원에게 계산: 주문 → 매장/포장 → 적립 → (쿠폰) 카드 → 진동벨
 function StaffPay({ onClose }: { onClose: () => void }) {
   const { t } = useLanguage();
-  const { cart, total, pay } = useOrders();
+  const { cart, total, pay, setTogo } = useOrders();
   const [scene, setScene] = useState(0);
   const [earn, setEarn] = useState(false);
   const [tapping, tap] = useCardTap(() => setScene(3));
@@ -375,7 +375,24 @@ function StaffPay({ onClose }: { onClose: () => void }) {
       {scene === 1 && (
         <>
           <StaffSays ko="드시고 가세요?" roman="deusigo gaseyo?" mean={t.staffHere} />
-          <ISay ko="네, 먹고 갈게요." roman="ne, meokgo galgeyo." mean={t.meHere} onClick={() => setScene(STAMPS_ON ? 5 : 2)} />
+          <ISay
+            ko="네, 먹고 갈게요."
+            roman="ne, meokgo galgeyo."
+            mean={t.meHere}
+            onClick={() => {
+              setTogo(false);
+              setScene(STAMPS_ON ? 5 : 2);
+            }}
+          />
+          <ISay
+            ko="아니요, 포장해 주세요."
+            roman="aniyo, pojanghae juseyo."
+            mean={`🛍️ ${t.meTogo}`}
+            onClick={() => {
+              setTogo(true);
+              setScene(STAMPS_ON ? 5 : 2);
+            }}
+          />
         </>
       )}
       {/* 💳 계산하기 바로 전: 점원이 적립을 묻는다 (한국 카페에서 거의 항상 듣는 말) */}
@@ -470,7 +487,7 @@ export function KioskButton({ ko, roman, mean, onClick }: { ko: string; roman: s
 // 매장/포장은 묻지 않고, 메뉴 고르기부터 시작한다 → 주문 확인 → 카드 → 진동벨
 export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: boolean }) {
   const { t } = useLanguage();
-  const { cart, total, pay, addToCart, removeFromCart } = useOrders();
+  const { cart, total, pay, addToCart, removeFromCart, setTogo } = useOrders();
   const [scene, setScene] = useState(pad ? -1 : 0);
   const [earn, setEarn] = useState(false);
   // 카드를 넣으면 "적립하시겠어요?"(4) → 끝(3)
@@ -547,8 +564,8 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
           <>
             <Big ko="어디에서 드시겠어요?" roman="eodieseo deusigesseoyo?" mean={t.kioskWhere} />
             <div className="mt-4 flex gap-2">
-              <KioskButton ko="🍽️ 매장" roman="maejang" mean={t.kioskHere} onClick={() => setScene(1)} />
-              <KioskButton ko="🛍️ 포장" roman="pojang" mean={t.kioskTogo} onClick={() => setScene(1)} />
+              <KioskButton ko="🍽️ 매장" roman="maejang" mean={t.kioskHere} onClick={() => { setTogo(false); setScene(1); }} />
+              <KioskButton ko="🛍️ 포장" roman="pojang" mean={t.kioskTogo} onClick={() => { setTogo(true); setScene(1); }} />
             </div>
           </>
         )}
@@ -640,7 +657,25 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
 // 📳 받으러 가기: 계산대에서 점원이 쟁반을 준다
 function Pickup() {
   const { t } = useLanguage();
-  const { paid, takeTray } = useOrders();
+  const { paid, takeTray, togo, takeAway } = useOrders();
+  // 🛍️ 포장이면 쟁반 대신 종이봉투에 담아 주고, 받으면 인사하고 나간다
+  if (togo)
+    return (
+      <Dialog>
+        <StaffSays ko="주문하신 메뉴 포장해 드렸어요. 맛있게 드세요!" roman="jumunhasin menyu pojanghae deuryeosseoyo. masitge deuseyo!" mean={t.staffTogoReady} />
+        <div className="mx-auto my-2 flex w-fit flex-col items-center rounded-b-xl rounded-t-md border-2 border-[#a07a4f] bg-[#d9b98c] px-6 pb-3 pt-2 shadow-inner">
+          <span className="text-xs font-bold text-[#5c3a1c]">🛍️ 포장 · {t.kioskTogo}</span>
+          <span className="mt-1 flex gap-2">
+            {paid.map((p) => (
+              <span key={p.id} className="text-4xl">
+                {p.emoji}
+              </span>
+            ))}
+          </span>
+        </div>
+        <ISay ko="감사합니다! 안녕히 계세요." roman="gamsahamnida! annyeonghi gyeseyo." mean={t.meBye} onClick={takeAway} />
+      </Dialog>
+    );
   return (
     <Dialog>
       <StaffSays ko="주문하신 메뉴 나왔습니다. 맛있게 드세요!" roman="jumunhasin menyu nawatseumnida. masitge deuseyo!" mean={t.staffReady} />

@@ -26,7 +26,7 @@ const LARGE_EXTRA = 500;
 
 export default function KioskOrder({ onClose }: { onClose: () => void }) {
   const { t } = useLanguage();
-  const { cart, total, addToCart, removeFromCart, pay } = useOrders();
+  const { cart, total, addToCart, removeFromCart, pay, setTogo } = useOrders();
   const [screen, setScreen] = useState<Screen>("start");
   const [tab, setTab] = useState<Kind>("coffee");
   const [picked, setPicked] = useState<MenuItem | null>(null);
@@ -79,8 +79,8 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
           <>
             <Big ko="어디에서 드시겠어요?" roman="eodieseo deusigesseoyo?" mean={t.kioskWhere} />
             <div className="mt-4 flex gap-2">
-              <KioskButton ko="🍽️ 매장" roman="maejang" mean={t.kioskHere} onClick={() => setScreen("menu")} />
-              <KioskButton ko="🛍️ 포장" roman="pojang" mean={t.kioskTogo} onClick={() => setScreen("menu")} />
+              <KioskButton ko="🍽️ 매장" roman="maejang" mean={t.kioskHere} onClick={() => { setTogo(false); setScreen("menu"); }} />
+              <KioskButton ko="🛍️ 포장" roman="pojang" mean={t.kioskTogo} onClick={() => { setTogo(true); setScreen("menu"); }} />
             </div>
           </>
         )}

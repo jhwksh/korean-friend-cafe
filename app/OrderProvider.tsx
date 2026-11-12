@@ -45,11 +45,17 @@ type Ctx = {
   putDown: () => void;
   orders: Order[];
   eat: (id: number) => void;
+  togo: boolean; // 🛍️ 포장으로 골랐는지 (메뉴가 나오면 쟁반 대신 종이봉투)
+  setTogo: (togo: boolean) => void;
+  takeAway: () => void;
   padOpen: boolean; // 📱 자리의 테이블 패드를 열고 있는지 (열려 있으면 계산대 주문서는 숨는다)
   setPadOpen: (open: boolean) => void;
 };
 
 const OrderContext = createContext<Ctx>({
+  togo: false,
+  setTogo: () => {},
+  takeAway: () => {},
   padOpen: false,
   setPadOpen: () => {},
   cart: [],
@@ -96,6 +102,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [pickupOpen, setPickupOpen] = useState(false);
   const [carrying, setCarrying] = useState<CartItem[]>([]);
   const [padOpen, setPadOpen] = useState(false);
+  const [togo, setTogo] = useState(false);
   const [orders, setOrders] = useState<Order[]>([]);
   const bellTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { addBuyStamps, spendCoupons } = useFound();
@@ -180,6 +187,15 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
     setPaid([]);
     setStep("ordering");
     setPickupOpen(false);
+    setTogo(false);
+  }
+
+  // 🛍️ 포장: 봉투를 받아 들고 카페를 나간다 (자리에 앉지 않는다). 다시 주문할 수 있다
+  function takeAway() {
+    setPaid([]);
+    setStep("ordering");
+    setPickupOpen(false);
+    setTogo(false);
   }
 
   // 자리에 앉아 쟁반을 내려놓으면 내 탁자에 놓인다 (탁자가 꽉 차면 가장 먼저 받은 것을 치운다)
@@ -196,7 +212,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <OrderContext.Provider
-      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen }}
+      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway }}
     >
       {children}
     </OrderContext.Provider>
