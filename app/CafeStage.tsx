@@ -22,7 +22,13 @@ export default function CafeStage({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <div ref={outerRef} className="relative aspect-[8/7] w-full overflow-hidden">
+    // 큰 화면에서 너비에만 맞추면 세로가 화면보다 길어져 위쪽 버튼이 밖으로 밀려난다.
+    // 그래서 화면 높이에도 맞춘다: 너비는 (화면 높이 × 8/7)을 넘지 않고, 가운데에 둔다
+    <div
+      ref={outerRef}
+      className="relative mx-auto aspect-[8/7] w-full overflow-hidden"
+      style={{ maxWidth: "calc(100dvh * 8 / 7)" }}
+    >
       <div
         className="absolute left-0 top-0 origin-top-left"
         style={{
