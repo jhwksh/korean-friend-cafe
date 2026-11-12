@@ -138,7 +138,7 @@ ${languageRule} Keep it under 5 lines.`;
 
 type Content = { role: string; parts: { text: string }[] };
 
-// Gemini에게 묻는다. 모델이 붐비거나(503) 너무 오래 걸리면(25초) 다음 Flash 모델로 넘어간다
+// Gemini에게 묻는다. 모델이 붐비거나(503) 너무 오래 걸리면(12초) 다음 Flash 모델로 넘어간다
 async function askGemini(
   apiKey: string,
   systemText: string,
@@ -155,7 +155,7 @@ async function askGemini(
           contents,
           generationConfig: { maxOutputTokens: MAX_OUTPUT_TOKENS },
         }),
-        signal: AbortSignal.timeout(25000),
+        signal: AbortSignal.timeout(12000),
       });
     } catch (err) {
       if (err instanceof Error && err.name === "TimeoutError") {
