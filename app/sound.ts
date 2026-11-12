@@ -41,9 +41,11 @@ export function speak(text: string, voice?: "male", onEnd?: () => void) {
 // 한국어 목소리로 읽을 준비 (speak와 speakAlong이 같이 쓴다)
 // voice: "male"이면 남자 목소리를 찾고(예: Microsoft InJoon), 없으면 목소리를 낮춰서 남자처럼 들리게 한다
 function koreanUtterance(synth: SpeechSynthesis, text: string, voice?: "male") {
-  const u = new SpeechSynthesisUtterance(text);
+  // 한 글자 낱말(예: 벽)은 목소리가 너무 짧게 끊어 읽어서 어색하다: 마침표로 끝을 맺고 더 천천히 읽는다
+  const oneSyllable = (text.match(/\p{Script=Hangul}/gu) ?? []).length === 1;
+  const u = new SpeechSynthesisUtterance(oneSyllable && !/[.!?]$/.test(text) ? `${text}.` : text);
   u.lang = "ko-KR";
-  u.rate = 0.9; // 배우는 사람을 위해 조금 천천히
+  u.rate = oneSyllable ? 0.7 : 0.9; // 배우는 사람을 위해 조금 천천히
   const koVoices = synth.getVoices().filter((v) => v.lang.startsWith("ko"));
   const male = voice === "male" ? koVoices.find((v) => /InJoon|\bmale\b|남/i.test(v.name)) : undefined;
   const chosen = male ?? koVoices[0];
