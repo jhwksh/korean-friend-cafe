@@ -68,7 +68,7 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
             <span className="block text-5xl">☕</span>
             <span className="mt-2 block text-lg font-bold">한국어 친구 카페</span>
             <span className="mt-4 block animate-pulse">
-              <SpeakLine ko="주문하시려면 화면을 눌러 주세요" roman="jumunhasiryeomyeon hwamyeoneul nulleo juseyo" mean={t.kioskStart} tone="dark" />
+              <SpeakLine ko="주문하시려면 화면을 눌러 주세요" roman="jumunhasiryeomyeon hwamyeoneul nulleo juseyo" mean={t.kioskStart} tone="dark" autoPlay />
             </span>
           </button>
         )}

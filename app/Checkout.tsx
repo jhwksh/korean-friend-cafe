@@ -418,7 +418,8 @@ function StaffPay({ onClose }: { onClose: () => void }) {
 
 // 키오스크 화면 글자: 크게 한국어, 그 아래 KR 발음과 내 언어 (🔊 형광펜)
 export function Big({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
-  return <SpeakLine ko={ko} roman={roman} mean={mean} tone="dark" className="text-center text-lg text-white" />;
+  // 화면이 바뀌면(버튼을 누르면) 키오스크가 바로 읽어 준다. 진짜 한국 키오스크처럼
+  return <SpeakLine ko={ko} roman={roman} mean={mean} tone="dark" autoPlay className="text-center text-lg text-white" />;
 }
 
 export function KioskButton({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
