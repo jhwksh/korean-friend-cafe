@@ -60,7 +60,7 @@ export default function MusicButton() {
       type="button"
       onClick={toggle}
       aria-pressed={playing}
-      className="absolute left-3 top-[62px] z-40 rounded-full bg-white/90 px-3 py-1 text-left text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
+      className="absolute left-3 top-[62px] z-[46] rounded-full bg-white/90 px-3 py-1 text-left text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
     >
       {playing ? "🎵 음악 끄기" : "🎵 음악 켜기"}
       <span className="block text-[10px] font-normal text-gray-500">

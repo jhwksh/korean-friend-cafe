@@ -240,7 +240,7 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
           setFramesOpen(false);
           setSeated(false);
         }}
-        className="absolute left-3 top-3 z-40 rounded-full bg-white/90 px-3 py-1 text-left text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
+        className="absolute left-3 top-3 z-[46] rounded-full bg-white/90 px-3 py-1 text-left text-sm font-semibold text-[#5c3a1c] shadow-lg hover:bg-white"
       >
         {look360 ? "↩ 카페로 돌아가기" : "🌀 둘러보기"}
         <span className="block text-[10px] font-normal text-gray-500">{look360 ? t.back2d : t.look360}</span>
