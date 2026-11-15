@@ -39,14 +39,16 @@ export default function ChatDock() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label={`한국어 친구 · ${t.friend}`}
-          className="fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full bg-white py-1.5 pl-1.5 pr-4 text-left text-[#5c3a1c] shadow-[0_8px_20px_rgba(0,0,0,0.45)] ring-2 ring-amber-400 hover:bg-amber-50"
+          className="compact-pad fixed bottom-4 right-4 z-[60] flex items-center gap-2 rounded-full bg-white py-1.5 pl-1.5 pr-4 text-left text-[#5c3a1c] shadow-[0_8px_20px_rgba(0,0,0,0.45)] ring-2 ring-amber-400 hover:bg-amber-50"
         >
           {/* 친구 그림에서 얼굴 부분만 동그랗게 (채팅창 프로필과 같다) */}
           <span
             className="h-12 w-12 shrink-0 rounded-full bg-gradient-to-br from-pink-200 to-amber-200 bg-no-repeat"
             style={{ backgroundImage: "url(/friend.png)", backgroundSize: "240%", backgroundPosition: "62% 6%" }}
           />
-          <span className="text-sm font-bold">
+          {/* 휴대폰처럼 작은 화면에서는 이름 대신 💬만 (카페 그림을 덜 가리게, globals.css의 compact-) */}
+          <span className="compact-only hidden text-xl">💬</span>
+          <span className="compact-hide text-sm font-bold">
             💬 한국어 친구
             <span className="block text-xs font-medium text-gray-500">{t.friend}</span>
           </span>

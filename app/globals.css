@@ -65,3 +65,10 @@ body {
   60% { transform: rotate(-8deg); }
   80% { transform: rotate(8deg); }
 }
+
+/* 💬 휴대폰처럼 작은 화면(좁거나 낮은 화면): 친구 버튼을 얼굴 + 💬만 남기고 작게 (ChatDock) */
+@media (max-width: 639px), (max-height: 500px) {
+  .compact-hide { display: none; }
+  .compact-only { display: inline; }
+  .compact-pad { padding-right: 0.75rem; }
+}

@@ -65,13 +65,20 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
       <div className="rounded-2xl border-[10px] border-gray-800 bg-[#1f3b57] p-4">
         {/* 1. 처음 화면 */}
         {screen === "start" && (
-          <button type="button" onClick={() => setScreen("where")} className="w-full py-8 text-white">
+          // 버튼 안에 🔊 버튼을 넣을 수 없어서(HTML 규칙) 바깥은 "눌리는 칸(div)"으로 만든다. 🔊은 소리만 낸다
+          <div
+            role="button"
+            tabIndex={0}
+            onClick={() => setScreen("where")}
+            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setScreen("where")}
+            className="w-full cursor-pointer py-8 text-center text-white"
+          >
             <span className="block text-5xl">☕</span>
             <span className="mt-2 block text-lg font-bold">한국어 친구 카페</span>
             <span className="mt-4 block animate-pulse">
               <SpeakLine ko="주문하시려면 화면을 눌러 주세요" roman="jumunhasiryeomyeon hwamyeoneul nulleo juseyo" mean={t.kioskStart} tone="dark" autoPlay />
             </span>
-          </button>
+          </div>
         )}
 
         {/* 2. 매장 / 포장 */}
