@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 
 // 🎵 카페 음악: 누르면 켜지고 다시 누르면 꺼진다.
@@ -56,6 +57,7 @@ export default function MusicButton() {
   }
 
   return (
+    <Hud>
     <button
       type="button"
       onClick={toggle}
@@ -67,5 +69,6 @@ export default function MusicButton() {
         {playing ? `♪ ${TRACKS[index].title}` : t.music}
       </span>
     </button>
+    </Hud>
   );
 }

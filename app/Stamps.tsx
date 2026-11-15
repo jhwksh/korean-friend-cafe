@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useFound } from "./FoundProvider";
+import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import { useOrders } from "./OrderProvider";
 
@@ -81,6 +82,7 @@ export function StampToast() {
   }, [gain]);
   if (!gain || gain.at === hiddenAt) return null;
   return (
+    <Hud>
     <div className="pointer-events-none absolute left-1/2 top-[90px] z-[60] -translate-x-1/2 animate-[stamp-pop_0.5s_ease-out] rounded-2xl border-4 border-rose-400 bg-white px-5 py-2 text-center text-[#5c3a1c] shadow-2xl">
       <p className="text-2xl font-extrabold">☕ +{gain.n} 도장!</p>
       <p className="text-sm font-bold">{gain.why === "mission" ? "🖼️⭐ 미션 성공" : `💳 음료 ${gain.n}잔 적립`}</p>
@@ -88,5 +90,6 @@ export function StampToast() {
         {gain.why === "mission" ? t.gainMission : t.gainBuy} · 📇 {totalStamps}
       </p>
     </div>
+    </Hud>
   );
 }

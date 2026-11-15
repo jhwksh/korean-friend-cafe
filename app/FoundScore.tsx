@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { STAMPS_PER_COUPON, TOTAL_WORDS, useFound } from "./FoundProvider";
 import { STAMPS_ON } from "./features";
+import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import { missions } from "./missions";
 import { StampRules } from "./Stamps";
@@ -53,7 +54,8 @@ export default function FoundScore() {
   }
 
   return (
-    <>
+    <Hud>
+<>
       {/* ⭐ 동그란 도장 모양 버튼: 누르면 점수판이 열리고 닫힌다 */}
       <button
         type="button"
@@ -175,5 +177,6 @@ export default function FoundScore() {
         </div>
       )}
     </>
+    </Hud>
   );
 }

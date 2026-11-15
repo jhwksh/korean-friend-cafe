@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import Panorama, { type PanoFocus, type PanoMarker } from "./Panorama";
 import MissionButton from "./MissionButton";
@@ -188,6 +189,8 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
   return (
     <>
       {show360 ? (
+        // 360° 화면은 카페 그림이 아니라 화면 전체를 덮는다 (그림을 확대해도 잘리지 않게)
+        <Hud>
         <div className="absolute inset-0 z-30 select-none bg-black">
           <Panorama src="/cafe-360.jpg" markers={markers} focus={seated ? SEATED_VIEW : null} />
           {seated && (
@@ -243,10 +246,12 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
             </p>
           )}
         </div>
+        </Hud>
       ) : (
         children
       )}
 
+      <Hud>
       <button
         type="button"
         onClick={() => {
@@ -259,6 +264,7 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
         {look360 ? "↩ 카페로 돌아가기" : "🌀 둘러보기"}
         <span className="block text-[10px] font-normal text-gray-500">{look360 ? t.back2d : t.look360}</span>
       </button>
+      </Hud>
     </>
   );
 }

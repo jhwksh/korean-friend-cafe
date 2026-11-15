@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import KioskOrder from "./KioskOrder";
 import { menu } from "./menu";
@@ -94,9 +95,12 @@ export default function Checkout() {
       </button>
       {kioskOpen && <KioskOrder onClose={() => setKioskOpen(false)} />}
 
+      {/* 아래 쟁반·주문서·진동벨은 화면에 고정 (Hud): 카페 그림을 확대하거나 밀어도 늘 보인다 */}
+      <Hud>
+
       {/* 🧺 받은 쟁반을 들고 있을 때: 자리에 앉아 내려놓으라고 알려 준다 */}
       {carrying.length > 0 && (
-        <div className="absolute bottom-3 right-3 z-40 w-[190px] rounded-xl border-2 border-amber-400 bg-white/95 px-3 py-2 text-center text-[#5c3a1c] shadow-lg">
+        <div className="absolute bottom-[84px] right-3 z-40 w-[190px] rounded-xl border-2 border-amber-400 bg-white/95 px-3 py-2 text-center text-[#5c3a1c] shadow-lg">
           <SpeakLine ko="쟁반을 들고 있어요" roman="jaengbaneul deulgo isseoyo" mean={t.carrying} className="text-sm" />
           <div className="my-1 rounded-lg border-2 border-[#8b5a2b] bg-[#c8a27a] py-1 text-2xl">
             {carrying.map((c) => (
@@ -230,6 +234,8 @@ export default function Checkout() {
         </div>
       )}
 
+      </Hud>
+
       {payWith === "staff" && <StaffPay onClose={() => setPayWith(null)} />}
       {payWith === "kiosk" && <KioskPay onClose={() => setPayWith(null)} />}
       {pickupOpen && <Pickup />}
@@ -241,6 +247,7 @@ export default function Checkout() {
 export function Dialog({ children, onClose }: { children: React.ReactNode; onClose?: () => void }) {
   const { t } = useLanguage();
   return (
+    <Hud>
     <div className="absolute inset-0 z-50 grid place-items-center bg-black/50 p-4">
       <div className="relative max-h-full w-full max-w-[460px] overflow-y-auto rounded-2xl bg-white p-4 text-[#5c3a1c] shadow-2xl">
         {onClose && (
@@ -251,6 +258,7 @@ export function Dialog({ children, onClose }: { children: React.ReactNode; onClo
         {children}
       </div>
     </div>
+    </Hud>
   );
 }
 

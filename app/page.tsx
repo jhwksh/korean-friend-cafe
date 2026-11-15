@@ -9,7 +9,7 @@ import { FoundProvider } from "./FoundProvider";
 import { OrderProvider } from "./OrderProvider";
 import FoundScore from "./FoundScore";
 import ChatDock from "./ChatDock";
-import RotateHint from "./RotateHint";
+import Hud from "./Hud";
 import Entrance from "./Entrance";
 import CounterFood from "./CounterFood";
 import LanguagePicker from "./LanguagePicker";
@@ -28,8 +28,8 @@ export default function Home() {
     <OrderProvider>
     <Entrance>
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
-      {/* 왼쪽: 가상 카페 화면. 화면 너비에 맞춰 통째로 커지고 작아진다 (CafeStage) */}
-      <section className="flex-1">
+      {/* 왼쪽: 가상 카페 화면. 화면을 꽉 채우고, 밀어서 보고, + − 로 크기를 바꾼다 (CafeStage) */}
+      <section className="min-w-0 flex-1">
         <CafeStage>
         <div className="relative h-full overflow-hidden bg-[#e9e4dc]">
         {/* 🌀 둘러보기 버튼을 누르면 이 2D 카페 대신 360° 카페가 보인다 (CafeView) */}
@@ -132,13 +132,13 @@ export default function Home() {
         <StampToast />
 
         {/* 🌐 언어 고르기: 고른 언어로 설명과 안내가 바뀐다 (2D와 360 둘 다에서 보인다) */}
-        <div className="absolute left-1/2 top-3 z-40 -translate-x-1/2">
+        <Hud>
+        <div className="absolute left-1/2 top-[62px] z-40 -translate-x-1/2 sm:top-3">
           <LanguagePicker />
         </div>
+        </Hud>
         </div>
         </CafeStage>
-        {/* 📱 휴대폰 세로 화면: 카페 그림이 거의 정사각형이라 아래 반이 빈다. 가로로 돌리라고 알려 준다 */}
-        <RotateHint />
       </section>
 
       {/* 💬 한국어 친구 채팅창: 평소엔 숨기고, 오른쪽 아래 친구 버튼을 누르면 연다 */}
