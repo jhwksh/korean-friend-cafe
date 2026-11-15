@@ -84,7 +84,8 @@ export default function MyTable({ onStand, onHiddenPicture }: { onStand: () => v
     <>
     {/* 📱 테이블 패드 창은 아래 탁자 칸 밖에서 연다 (탁자 칸 안에서 열면 창이 잘려서 안 보였다) */}
     {padOpen && <KioskPay pad onClose={() => setPadOpen(false)} />}
-    <div className="absolute inset-x-0 bottom-0 z-[42] flex flex-col items-center gap-2 p-3">
+    {/* 좁은 휴대폰(세로)에서는 오른쪽 아래 친구 버튼이 패드 버튼을 가려서, 그만큼 위로 올린다 */}
+    <div className="absolute inset-x-0 bottom-0 z-[42] flex flex-col items-center gap-2 p-3 max-sm:pb-20">
       {/* 🧺 들고 온 쟁반: 내려놓으면 탁자에 놓인다 */}
       {carrying.length > 0 && (
         <button

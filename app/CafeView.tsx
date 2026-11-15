@@ -204,10 +204,11 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
             />
           )}
           {framesOpen && (
-            <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-2 bg-black/85 p-3">
+            <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-2 bg-black/85 p-3 pt-24 sm:pt-16">
               <p className="text-sm font-bold text-white">🖼️ 숨은 그림 찾기 · {t.typePrompt}</p>
               {/* 액자 벽 사진 위에 숨은 단어 (가로·세로 %로 자리를 잡는다) */}
-              <div className="relative w-full" style={{ aspectRatio: "1228 / 637" }}>
+              {/* 그림은 화면 높이에도 맞춘다: 위 제목·버튼과 아래 돌아가기 버튼이 늘 화면 안에 보이게 */}
+              <div className="relative w-full" style={{ aspectRatio: "1228 / 637", maxWidth: "calc((100dvh - 190px) * 1228 / 637)" }}>
                 <Image src="/frames-wall.jpg" alt="" fill sizes="60vw" className="rounded-lg object-cover" />
                 {/* ⭐ 미션: 새 그림을 보고 "새가 있어요" */}
                 <MissionButton id="picture" className="left-[3%] top-[22%]" />
