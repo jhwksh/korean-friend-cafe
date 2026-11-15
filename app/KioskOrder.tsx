@@ -75,8 +75,12 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
           >
             <span className="block text-5xl">☕</span>
             <span className="mt-2 block text-lg font-bold">한국어 친구 카페</span>
-            <span className="mt-4 block animate-pulse">
+            <span className="mt-4 block">
               <SpeakLine ko="주문하시려면 화면을 눌러 주세요" roman="jumunhasiryeomyeon hwamyeoneul nulleo juseyo" mean={t.kioskStart} tone="dark" autoPlay />
+            </span>
+            {/* 👆 한국어를 몰라도 어디를 누를지 알게: 노란 시작 버튼 (눌러도, 화면 아무 곳을 눌러도 시작) */}
+            <span className="mt-4 inline-block animate-pulse rounded-full bg-amber-400 px-6 py-2 text-base font-bold text-white shadow-lg">
+              👆 주문 시작 · {t.kioskGo}
             </span>
           </div>
         )}
