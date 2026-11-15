@@ -363,7 +363,7 @@ export function useCardTap(onDone: () => void) {
   return [tapping, tap] as const;
 }
 
-// 🧑‍🍳 점원에게 계산: 주문 → 매장/포장 → 적립 → (쿠폰) 카드 → 진동벨
+// 🧑‍🍳 점원에게 계산: 주문 확인(이미 주문서를 다 썼으니 "주문하시겠어요?"가 아니라 확인) → 매장/포장 → 적립 → (쿠폰) 카드 → 진동벨
 function StaffPay({ onClose }: { onClose: () => void }) {
   const { t } = useLanguage();
   const { cart, total, pay, setTogo } = useOrders();
@@ -375,9 +375,9 @@ function StaffPay({ onClose }: { onClose: () => void }) {
     <Dialog onClose={onClose}>
       {scene === 0 && (
         <>
-          <StaffSays ko="주문하시겠어요?" roman="jumunhasigesseoyo?" mean={t.staffOrder} />
+          <StaffSays ko="주문 확인해 드릴게요. 이거 맞으세요?" roman="jumun hwaginhae deurilgeyo. igeo majeuseyo?" mean={t.staffOrder} />
           <CartList items={cart} total={total} />
-          <ISay ko="네, 이거 주세요." roman="ne, igeo juseyo." mean={t.meYes} onClick={() => setScene(1)} />
+          <ISay ko="네, 맞아요." roman="ne, majayo." mean={t.meYes} onClick={() => setScene(1)} />
         </>
       )}
       {scene === 1 && (
