@@ -51,11 +51,10 @@ export default function CounterTalk({ onClose, onDone }: { onClose: () => void; 
     <Dialog onClose={onClose}>
       {way === "pick" && (
         <>
-          <div className="flex items-end gap-2">
-            <Image src="/friend.png" alt="" width={60} height={112} className="h-[112px] w-auto" />
-            <SpeakLine ko="어떻게 주문할래요?" roman="eotteoke jumunhallaeyo?" mean={t.howOrder} className="mb-4 rounded-2xl rounded-bl-none bg-sky-50 px-3 py-2 text-sm shadow" />
-          </div>
-          <div className="mt-3 grid grid-cols-3 gap-2">
+          {/* 누른 사람(남자 점원)이 말한다. 고르는 버튼은 사람 그림 없이 아래에 작게 */}
+          <StaffSays ko="어서 오세요! 주문하시겠어요?" roman="eoseo oseyo! jumunhasigesseoyo?" mean={`${t.welcome} ${t.staffAskOrder}`} />
+          <p className="mt-2 text-xs font-medium text-gray-500">🙋 {t.howOrder}</p>
+          <div className="mt-1 grid grid-cols-3 gap-2">
             <WayButton icon="👆" ko="버튼" mean={t.wayTap} onClick={() => setWay("tap")} />
             <WayButton icon="🧩" ko="블록" mean={t.wayBlocks} onClick={() => setWay("blocks")} />
             <WayButton icon="🎤" ko="말하기" mean={`${t.wayVoice} · ${t.soon}`} disabled />

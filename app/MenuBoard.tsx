@@ -1,13 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import { menu } from "./menu";
 import MissionButton from "./MissionButton";
+import { useOrders } from "./OrderProvider";
+import { speakAlong } from "./sound";
 import WordTag from "./WordTag";
 
 // 유리 메뉴판. 뒤의 나무 선반이 뿌옇게 비쳐 보인다. 한국어 이름 아래에 고른 언어 이름을 보여 준다.
 export default function MenuBoard() {
   const { lang, t } = useLanguage();
+  const { addToCart, step, padOpen } = useOrders();
+  const [picked, setPicked] = useState(""); // 방금 담은 메뉴 (잠깐 노랗게 표시)
+  const canPick = step === "ordering" && !padOpen;
 
   return (
     <div className="relative w-full overflow-visible rounded-2xl border border-white/70 bg-gradient-to-br from-white/45 via-white/20 to-white/35 px-4 py-2 text-[#2a1c10] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_18px_30px_rgba(0,0,0,0.25)] backdrop-blur-[3px] transition-transform duration-700 ease-out [text-shadow:0_0_6px_rgba(255,255,255,0.95)] [transform:rotateY(-10deg)_rotateX(3deg)] hover:[transform:rotateY(0deg)_rotateX(0deg)]">
@@ -21,14 +27,28 @@ export default function MenuBoard() {
       <h2 className="mb-1 text-center text-lg font-semibold tracking-widest">
         메뉴 <span className="text-sm font-normal text-[#6b5a4a]">· {t.menu}</span>
       </h2>
+      {/* 👆 메뉴 줄을 누르면 주문서에 담긴다 (실제 카페처럼 메뉴판을 보고 고른다. 작은 화면에서도 누르기 쉽게 줄 전체가 버튼) */}
       <ul className="grid grid-cols-2 gap-x-5 gap-y-1 font-mono">
         {menu.map((item) => (
-          <li key={item.name} className="flex justify-between border-b border-dashed border-[#3b2a1a]/20 pb-1">
-            <span className="flex flex-col leading-tight">
-              <span>{item.name}</span>
-              <span className="text-xs text-[#6b5a4a]">{item.names[lang] ?? item.names.en}</span>
-            </span>
-            <span className="whitespace-nowrap font-semibold text-[#9a4d0f]">{item.price}</span>
+          <li key={item.name}>
+            <button
+              type="button"
+              disabled={!canPick}
+              onClick={() => {
+                addToCart(item);
+                speakAlong([item.name], () => {});
+                setPicked(item.name);
+                setTimeout(() => setPicked((p) => (p === item.name ? "" : p)), 900);
+              }}
+              aria-label={`${item.name} 담기`}
+              className={`flex w-full justify-between rounded-md border-b border-dashed border-[#3b2a1a]/20 pb-1 text-left transition-colors hover:bg-amber-200/60 disabled:cursor-default disabled:hover:bg-transparent ${picked === item.name ? "bg-amber-300/80" : ""}`}
+            >
+              <span className="flex flex-col leading-tight">
+                <span>{picked === item.name ? "✅ " : ""}{item.name}</span>
+                <span className="text-xs text-[#6b5a4a]">{item.names[lang] ?? item.names.en}</span>
+              </span>
+              <span className="whitespace-nowrap font-semibold text-[#9a4d0f]">{item.price}</span>
+            </button>
           </li>
         ))}
       </ul>
