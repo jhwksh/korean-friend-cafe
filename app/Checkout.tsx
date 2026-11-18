@@ -11,6 +11,8 @@ import { playBell, speakAlong } from "./sound";
 import SpeakLine, { Words } from "./SpeakLine";
 import { STAMPS_ON } from "./features";
 import { CouponPicker, StampRules } from "./Stamps";
+import CounterTalk from "./CounterTalk";
+import type { MenuEntry } from "./orderJudge";
 
 // 🧾 주문서 → 💳 계산(점원 또는 키오스크) → 📳 진동벨 → 받으러 가기.
 // 주문서와 진동벨은 2D와 360 둘 다에서 보인다. 계산과 받기는 카페 화면 위에 창으로 뜬다.
@@ -44,8 +46,18 @@ function Reply({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: 
 
 export default function Checkout() {
   const { t } = useLanguage();
-  const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy, padOpen } = useOrders();
+  const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy, padOpen, talkOpen, setTalkOpen, addToCart } = useOrders();
   const [payWith, setPayWith] = useState<PayWith>(null);
+  // 🗣️ 말로 주문하고 왔으면 점원 계산을 "드시고 가세요?"부터 한다 (주문 확인은 이미 했다)
+  const [staffStart, setStaffStart] = useState(0);
+  function talkDone(item: MenuEntry, ice: boolean) {
+    addToCart(item, ice && item.hot ? { label: "ICE", extra: 0, hot: false } : undefined);
+    setTalkOpen(false);
+    setStaffStart(1);
+    setPayWith("staff");
+  }
+  // 점원과 말하는 중이거나 점원에게 계산하는 중이면, 뒤의 주문서는 숨긴다 (주문서의 점원 말이 겹쳐 들리지 않게)
+  const staffBusy = talkOpen || (payWith === "staff" && step === "ordering");
   const [answer, setAnswer] = useState<Answer | null>(null);
   // 📱 카페 안 키오스크로 처음부터 주문하는 중 (그동안 점원은 주문서에서 묻지 않는다)
   const [kioskOpen, setKioskOpen] = useState(false);
@@ -67,7 +79,7 @@ export default function Checkout() {
   }, [step, pickupOpen]);
 
   // 📱 테이블 패드로 주문하는 동안에는 계산대 주문서를 숨긴다 (같은 장바구니를 써서 두 주문이 섞이지 않게)
-  const showSlip = !padOpen && (cart.length > 0 || step !== "ordering");
+  const showSlip = !padOpen && !staffBusy && (cart.length > 0 || step !== "ordering");
   // 🧾 주문서 → (이게 다예요) 계산서: 낼 돈이 정해져 더 못 뺀다 → (결제) 영수증
   const isBill = asking === "how";
   const paidTotal = paid.reduce((sum, p) => sum + p.price, 0);
@@ -111,7 +123,7 @@ export default function Checkout() {
         </div>
       )}
       {/* 👀 처음 메뉴를 고르면 주문서가 어디 있는지 알려 준다 (계산 방법을 고르기 전까지 반짝인다) */}
-      {step === "ordering" && cart.length > 0 && asking !== "how" && !kioskOpen && !padOpen && (
+      {step === "ordering" && cart.length > 0 && asking !== "how" && !kioskOpen && !padOpen && !staffBusy && (
         <p className="absolute right-[248px] top-[180px] z-40 animate-pulse whitespace-nowrap rounded-full bg-amber-400 px-3 py-1 text-xs font-bold text-white shadow">
           주문서를 보세요 👉 <span className="block text-xs font-medium">{t.lookSlip}</span>
         </p>
@@ -236,7 +248,16 @@ export default function Checkout() {
 
       </Hud>
 
-      {payWith === "staff" && <StaffPay onClose={() => setPayWith(null)} />}
+      {talkOpen && <CounterTalk onClose={() => setTalkOpen(false)} onDone={talkDone} />}
+      {payWith === "staff" && (
+        <StaffPay
+          start={staffStart}
+          onClose={() => {
+            setPayWith(null);
+            setStaffStart(0);
+          }}
+        />
+      )}
       {payWith === "kiosk" && <KioskPay onClose={() => setPayWith(null)} />}
       {pickupOpen && <Pickup />}
     </>
@@ -279,7 +300,7 @@ function wonRoman(n: number) {
 }
 
 // 점원이 하는 말: 바리스타 그림 + 말풍선 (🔊 듣기와 형광펜, KR 발음, 내 언어 뜻)
-function StaffSays({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
+export function StaffSays({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
   return (
     <div className="flex items-end gap-2">
       <Image src="/barista.png" alt="" width={60} height={112} className="h-[112px] w-auto" />
@@ -290,7 +311,7 @@ function StaffSays({ ko, roman, mean }: { ko: string; roman: string; mean: strin
 
 // 내가 하는 말: "말하기"를 누르면 내 말을 소리 내 읽고(형광펜이 따라감), 다 읽으면 다음으로 넘어간다.
 // 다음 장면의 점원 말은 나오자마자 읽어 준다 (StaffSays autoPlay)
-function ISay({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
+export function ISay({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: string; onClick: () => void }) {
   const { t } = useLanguage();
   const [at, setAt] = useState(-1);
   const [saying, setSaying] = useState(false);
@@ -364,10 +385,10 @@ export function useCardTap(onDone: () => void) {
 }
 
 // 🧑‍🍳 점원에게 계산: 주문 확인(이미 주문서를 다 썼으니 "주문하시겠어요?"가 아니라 확인) → 매장/포장 → 적립 → (쿠폰) 카드 → 진동벨
-function StaffPay({ onClose }: { onClose: () => void }) {
+function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number }) {
   const { t } = useLanguage();
   const { cart, total, pay, setTogo } = useOrders();
-  const [scene, setScene] = useState(0);
+  const [scene, setScene] = useState(start);
   const [earn, setEarn] = useState(false);
   const [tapping, tap] = useCardTap(() => setScene(3));
 

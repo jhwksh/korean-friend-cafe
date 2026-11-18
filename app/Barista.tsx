@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import MissionButton from "./MissionButton";
+import { useOrders } from "./OrderProvider";
 import { speakAlong } from "./sound";
 import { Words } from "./SpeakLine";
 import WordTag from "./WordTag";
@@ -21,6 +22,7 @@ const RANGE = { left: -70, right: 40 }; // 처음 자리에서 왼쪽·오른쪽
 
 export default function Barista() {
   const { t } = useLanguage();
+  const { step, cart, padOpen, setTalkOpen } = useOrders();
   const [showBubble, setShowBubble] = useState(false);
   const [spinCount, setSpinCount] = useState(0);
   const [at, setAt] = useState(-1); // 🖍️ 형광펜이 칠할 낱말 번호
@@ -82,6 +84,8 @@ export default function Barista() {
             if (!showBubble) speakAlong(GREETING.split(" "), setAt, "male");
             setShowBubble((v) => !v);
             setSpinCount((n) => n + 1);
+            // 🗣️ 아직 아무것도 안 골랐으면 "어떻게 주문할래요?" 창이 열린다 (CounterTalk.tsx)
+            if (step === "ordering" && cart.length === 0 && !padOpen) setTalkOpen(true);
           }}
           aria-pressed={showBubble}
           aria-label="바리스타"

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { STAMPS_PER_COUPON, TOTAL_WORDS, useFound } from "./FoundProvider";
 import { MISSIONS_ON, STAMPS_ON } from "./features";
 import Hud from "./Hud";
+import { useOrders } from "./OrderProvider";
 import { useLanguage } from "./LanguageProvider";
 import { missions } from "./missions";
 import { StampRules } from "./Stamps";
@@ -53,8 +54,8 @@ export default function FoundScore() {
     } catch {}
   }
 
-  // 🔧 미션도 도장도 꺼져 있으면 점수판을 통째로 숨긴다 (다음 단계에서 '주문 별'을 여기에 넣는다)
-  if (!MISSIONS_ON && !STAMPS_ON) return null;
+  // 🔧 미션도 도장도 꺼져 있으면 미션 점수판 대신 ⭐ 주문 별만 보여 준다
+  if (!MISSIONS_ON && !STAMPS_ON) return <OrderStars />;
 
   return (
     <Hud>
@@ -180,6 +181,45 @@ export default function FoundScore() {
         </div>
       )}
     </>
+    </Hud>
+  );
+}
+
+// ⭐ 주문 별: 카운터에서 말로 주문하고 친구에게 받은 별(1~3개).
+// 오른쪽 위 동그란 ⭐ 버튼에 마지막 별이 보이고, 누르면 최근 5번이 펼쳐진다. 아직 한 번도 안 했으면 숨는다.
+function OrderStars() {
+  const { t } = useLanguage();
+  const { orderStars } = useOrders();
+  const [open, setOpen] = useState(false);
+  if (orderStars.length === 0) return null;
+  const last = orderStars[orderStars.length - 1];
+  const row = (n: number) => "⭐".repeat(n) + "☆".repeat(3 - n);
+  return (
+    <Hud>
+      <>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          aria-label={`주문 별 · ${t.orderStars}`}
+          className="absolute right-3 top-3 z-40 grid h-14 w-14 -rotate-12 place-items-center rounded-full border-4 border-double border-rose-400 bg-white/95 text-center leading-none text-rose-500 shadow-lg hover:scale-105"
+        >
+          <span className="text-xl">⭐</span>
+          <span className="text-[10px] font-bold">{last}/3</span>
+        </button>
+        {open && (
+          <div className="absolute right-3 top-[76px] z-40 w-[170px] rounded-xl bg-white/90 px-3 py-1.5 text-left text-[#5c3a1c] shadow-lg">
+            <p className="text-sm font-semibold">
+              ⭐ 주문 <span className="text-xs font-medium text-gray-500">{t.orderStars}</span>
+            </p>
+            <ul className="mt-1 space-y-0.5 text-sm tracking-wider">
+              {orderStars.slice(-5).reverse().map((n, i) => (
+                <li key={i}>{row(n)}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </>
     </Hud>
   );
 }

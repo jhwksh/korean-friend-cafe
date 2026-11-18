@@ -16,6 +16,8 @@ import { playCoffee } from "./sound";
 export const BITES = 3;
 const MAX_ON_TABLE = 6;
 const BELL_DELAY = 10000; // 계산하고 10초 뒤 진동벨이 울린다
+const STARS_KEY = "kfc-order-stars"; // ⭐ 말로 주문해서 받은 별 (이 브라우저에 저장)
+const MAX_STARS = 20; // 최근 20번만 남긴다
 
 export type MenuItem = { name: string; emoji?: string; hot?: boolean; price?: string };
 export type CartItem = { id: number; name: string; emoji: string; hot: boolean; price: number; option?: string };
@@ -50,6 +52,10 @@ type Ctx = {
   takeAway: () => void;
   padOpen: boolean; // 📱 자리의 테이블 패드를 열고 있는지 (열려 있으면 계산대 주문서는 숨는다)
   setPadOpen: (open: boolean) => void;
+  talkOpen: boolean; // 🗣️ 카운터에서 점원과 말로 주문하는 창이 열려 있는지 (점원을 누르면 열린다)
+  setTalkOpen: (open: boolean) => void;
+  orderStars: number[]; // ⭐ 말로 주문해서 받은 별 (최근 것이 끝에). 이 브라우저에 저장한다
+  addOrderStars: (stars: number) => void;
 };
 
 const OrderContext = createContext<Ctx>({
@@ -58,6 +64,10 @@ const OrderContext = createContext<Ctx>({
   takeAway: () => {},
   padOpen: false,
   setPadOpen: () => {},
+  talkOpen: false,
+  setTalkOpen: () => {},
+  orderStars: [],
+  addOrderStars: () => {},
   cart: [],
   addToCart: () => {},
   removeFromCart: () => {},
@@ -107,10 +117,32 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const bellTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { addBuyStamps, spendCoupons } = useFound();
   const [applied, setApplied] = useState<string[]>([]); // 이번 계산에 쓰기로 한 쿠폰
+  const [talkOpen, setTalkOpen] = useState(false);
+  const [orderStars, setOrderStars] = useState<number[]>([]);
 
   useEffect(() => () => {
     if (bellTimer.current) clearTimeout(bellTimer.current);
   }, []);
+
+  // ⭐ 주문 별은 이 브라우저에 저장해 둔다 (새로고침해도 남게). 저장소를 못 쓰면 이번 방문에만 보인다
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STARS_KEY) ?? "[]");
+      // 브라우저 저장소는 화면이 뜬 뒤에만 읽을 수 있어서(서버엔 없음) 여기서 불러오는 것이 맞다
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (Array.isArray(saved)) setOrderStars(saved.filter((n) => typeof n === "number").slice(-MAX_STARS));
+    } catch {}
+  }, []);
+
+  function addOrderStars(stars: number) {
+    setOrderStars((prev) => {
+      const next = [...prev, stars].slice(-MAX_STARS);
+      try {
+        localStorage.setItem(STARS_KEY, JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  }
 
   function addToCart(item: MenuItem, option?: ItemOption) {
     setCart((prev) => [
@@ -212,7 +244,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <OrderContext.Provider
-      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway }}
+      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway, talkOpen, setTalkOpen, orderStars, addOrderStars }}
     >
       {children}
     </OrderContext.Provider>
