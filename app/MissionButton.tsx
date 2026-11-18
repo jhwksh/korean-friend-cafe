@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFound } from "./FoundProvider";
-import { STAMPS_ON } from "./features";
+import { MISSIONS_ON, STAMPS_ON } from "./features";
 import { useLanguage } from "./LanguageProvider";
 import { missions, type MissionId } from "./missions";
 import { playCoffee, speakAlong } from "./sound";
@@ -36,6 +36,8 @@ export default function MissionButton({ id, className = "" }: { id: MissionId; c
   const done = stamps.includes(id);
   // 미션은 하나씩: 앞 미션을 다 해야 이 미션이 나타난다
   const current = missions.find((x) => !stamps.includes(x.id));
+  // 🔧 미션 스위치가 꺼져 있으면 별 동그라미를 숨긴다 (features.ts)
+  if (!MISSIONS_ON) return null;
   if (!done && current?.id !== id) return null;
 
   function check(e: React.FormEvent) {

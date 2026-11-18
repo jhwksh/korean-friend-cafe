@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { STAMPS_PER_COUPON, TOTAL_WORDS, useFound } from "./FoundProvider";
-import { STAMPS_ON } from "./features";
+import { MISSIONS_ON, STAMPS_ON } from "./features";
 import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import { missions } from "./missions";
@@ -52,6 +52,9 @@ export default function FoundScore() {
       localStorage.setItem(SEEN_KEY, JSON.stringify(next));
     } catch {}
   }
+
+  // 🔧 미션도 도장도 꺼져 있으면 점수판을 통째로 숨긴다 (다음 단계에서 '주문 별'을 여기에 넣는다)
+  if (!MISSIONS_ON && !STAMPS_ON) return null;
 
   return (
     <Hud>
