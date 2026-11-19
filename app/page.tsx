@@ -16,6 +16,7 @@ import LanguagePicker from "./LanguagePicker";
 import MissionButton from "./MissionButton";
 import { LanguageProvider, T } from "./LanguageProvider";
 import LeaveGuard from "./LeaveGuard";
+import PromiseCard from "./PromiseCard";
 import WordTag from "./WordTag";
 import MenuBoard from "./MenuBoard";
 import MusicButton from "./MusicButton";
@@ -33,6 +34,8 @@ export default function Home() {
     <VisitTracker />
     {/* 🚪 주문 중에 뒤로 가기를 누르면 딱 한 번 물어본다 */}
     <LeaveGuard />
+    {/* 🤙 주문이 다 끝나면(자리에 앉거나 포장을 받으면) 한 번 물어보는 약속 카드 */}
+    <PromiseCard />
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
       {/* 왼쪽: 가상 카페 화면. 화면을 꽉 채우고, 밀어서 보고, + − 로 크기를 바꾼다 (CafeStage) */}
       <section className="min-w-0 flex-1">

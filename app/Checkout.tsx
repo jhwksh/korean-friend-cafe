@@ -157,7 +157,7 @@ export default function Checkout() {
       )}
       {showSlip && (
         <div
-          className={`absolute right-3 top-[170px] z-40 w-[230px] rounded-xl bg-white/95 px-3 py-2 text-[#5c3a1c] shadow-lg ${step === "ordering" && asking !== "how" ? "ring-4 ring-amber-400 animate-[word-glow_2.4s_ease-in-out_infinite]" : ""}`}
+          className={`absolute right-3 top-[170px] z-40 w-[230px] rounded-xl bg-white/95 px-3 py-2 text-[#5c3a1c] shadow-lg ${step === "ordering" && asking !== "how" ? "ring-4 ring-amber-400 animate-[slip-glow_2.4s_ease-in-out_infinite]" : ""}`}
         >
           {step === "ordering" ? (
             <>

@@ -57,6 +57,7 @@ type Ctx = {
   applyCoupon: (coupon: Coupon) => boolean;
   alertBy: AlertBy;
   paidCount: number; // 계산을 마친 횟수 (계산이 끝나면 채팅을 새로 시작하는 데 쓴다)
+  doneCount: number; // 주문이 끝난 횟수 (자리에 쟁반을 내려놓거나 🛍️ 포장 봉투를 받으면 1씩 는다)
   pickupOpen: boolean;
   openPickup: () => void;
   takeTray: () => void;
@@ -104,6 +105,7 @@ const OrderContext = createContext<Ctx>({
   applyCoupon: () => false,
   alertBy: "bell",
   paidCount: 0,
+  doneCount: 0,
   pickupOpen: false,
   openPickup: () => {},
   takeTray: () => {},
@@ -150,6 +152,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [paid, setPaid] = useState<CartItem[]>([]);
   const [alertBy, setAlertBy] = useState<AlertBy>("bell");
   const [paidCount, setPaidCount] = useState(0);
+  const [doneCount, setDoneCount] = useState(0);
   const [pickupOpen, setPickupOpen] = useState(false);
   const [carrying, setCarrying] = useState<CartItem[]>([]);
   const [padOpen, setPadOpen] = useState(false);
@@ -335,6 +338,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   // 🛍️ 포장: 봉투를 받아 들고 카페를 나간다 (자리에 앉지 않는다). 다시 주문할 수 있다
   function takeAway() {
     track("pickup", { togo: true });
+    setDoneCount((n) => n + 1);
     setPaid([]);
     setStep("ordering");
     setPickupOpen(false);
@@ -343,6 +347,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   // 자리에 앉아 쟁반을 내려놓으면 내 탁자에 놓인다 (탁자가 꽉 차면 가장 먼저 받은 것을 치운다)
   function putDown() {
+    if (carrying.length > 0) setDoneCount((n) => n + 1);
     setOrders((prev) => [...prev, ...carrying.map((c) => ({ ...c, bites: BITES }))].slice(-MAX_ON_TABLE));
     setCarrying([]);
   }
@@ -355,7 +360,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <OrderContext.Provider
-      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway, talkOpen, setTalkOpen, orderStars, addOrderStars, upstairs, setUpstairs, upstairsTick, goUpstairs }}
+      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, doneCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway, talkOpen, setTalkOpen, orderStars, addOrderStars, upstairs, setUpstairs, upstairsTick, goUpstairs }}
     >
       {children}
     </OrderContext.Provider>
