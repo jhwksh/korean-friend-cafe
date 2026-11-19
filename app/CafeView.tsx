@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
+import HiddenPictureGame from "./HiddenPictureGame";
 import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import Panorama, { type PanoFocus, type PanoMarker } from "./Panorama";
@@ -79,27 +79,6 @@ const PANO_MISSIONS: [MissionId, number, number][] = [
   ["restroom", 184, -8],
   ["bye", 252, 2],
 ];
-// 🖼️ 숨은 그림 찾기: 새 그림 액자 벽(public/frames-wall.jpg, 360 원본에서 크게 잘라 냄)을 크게 열고,
-// 그림 속 물건 자리(가로 %, 세로 %)에 숨은 단어를 찾는다. 360에서는 너무 작아 안 보이는 것들이다.
-const FRAME_WORDS: [WordKey, number, number][] = [
-  ["bird", 12.2, 38.5],
-  ["flower", 20.4, 33],
-  ["branch", 33.4, 41.6],
-  ["butterfly", 12.6, 62.8],
-  ["grass", 11.4, 70.6],
-  ["wing", 21.6, 68.3],
-  ["nest", 32.6, 74.6],
-  ["light", 48, 42.4],
-  ["tail", 67.4, 34.8], // 오른쪽 위 새의 꼬리
-  ["leaf", 77, 32.2],
-  ["yellow", 90.4, 32.2],
-  ["green", 66, 68.3],
-  ["nest", 77.2, 72.2],
-  ["berry", 91.5, 72.6], // 분홍 열매
-  ["frame", 9, 28],
-  ["brick", 52.9, 88],
-];
-
 // 🪑 앉는 자리: 새 그림 액자 벽 앞의 동그란 탁자와 회색 의자 2개. 앉으면 이 탁자를 가까이 내려다본다
 const SEAT = { lon: 219, lat: -12 };
 const SEATED_VIEW: PanoFocus = { lon: 219, lat: -16, fov: 45 };
@@ -219,20 +198,9 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
             />
           )}
           {framesOpen && (
-            <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-2 bg-black/85 p-3 pt-24 sm:pt-16">
-              <p className="text-sm font-bold text-white">🖼️ 숨은 그림 찾기 · {t.typePrompt}</p>
-              {/* 액자 벽 사진 위에 숨은 단어 (가로·세로 %로 자리를 잡는다) */}
-              {/* 그림은 화면 높이에도 맞춘다: 위 제목·버튼과 아래 돌아가기 버튼이 늘 화면 안에 보이게 */}
-              <div className="relative w-full" style={{ aspectRatio: "1228 / 637", maxWidth: "calc((100dvh - 190px) * 1228 / 637)" }}>
-                <Image src="/frames-wall.jpg" alt="" fill sizes="60vw" className="rounded-lg object-cover" />
-                {/* ⭐ 미션: 새 그림을 보고 "새가 있어요" */}
-                <MissionButton id="picture" className="left-[3%] top-[22%]" />
-                {FRAME_WORDS.map(([word, x, y], i) => (
-                  <div key={`${word}-${i}`} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${x}%`, top: `${y}%` }}>
-                    <WordTag word={word} />
-                  </div>
-                ))}
-              </div>
+            <div className="absolute inset-0 z-[45] flex flex-col items-center justify-center gap-2 bg-black/85 p-3 pt-16 sm:pt-14">
+              {/* 친구가 묻고, 손님은 그 액자를 통째로 누른다 */}
+              <HiddenPictureGame />
               {/* 아래에 나가는 길 두 개: 360으로 / 2D 카페로 (위쪽 버튼이 화면 밖으로 밀려도 나갈 수 있게) */}
               <div className="flex flex-wrap justify-center gap-2">
                 <button

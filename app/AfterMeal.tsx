@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { useLanguage } from "./LanguageProvider";
 import { useOrders } from "./OrderProvider";
@@ -22,7 +23,6 @@ export default function AfterMeal({
   const { t } = useLanguage();
   const { orders } = useOrders();
   const [photo, setPhoto] = useState<string | null>(null);
-  const [showLookHow, setShowLookHow] = useState(false);
 
   // 먹은 것 이름으로 해시태그를 만든다: #카페 #토스트 #녹차라테 #맛있다 #인증샷
   const names = [...new Set(orders.map((o) => o.name))];
@@ -62,33 +62,28 @@ export default function AfterMeal({
 
   return (
     <div className="w-full max-w-[460px] rounded-2xl bg-white/95 p-3 text-[#5c3a1c] shadow-lg">
-      <SpeakLine ko="다 먹었어요! 이제 카페를 구경해 볼까요?" roman="da meogeosseoyo! ije kapereul gugyeonghae bolkkayo?" mean={t.lookNow} className="text-center" />
+      {/* 친구가 먼저 말을 건다: 다 먹었으니 가기 전에 같이 둘러보자 */}
+      <div className="flex items-end gap-2">
+        <Image src="/friend.png" alt="" width={30} height={56} className="h-[52px] w-auto shrink-0" />
+        <SpeakLine ko="다 먹었다! 가기 전에 우리 같이 둘러봐요." roman="da meogeotda! gagi jeone uri gachi dulleobwayo." mean={t.lookNow} className="min-w-0 flex-1" />
+      </div>
+      <div className="mt-2 grid grid-cols-2 gap-2">
+        <button type="button" onClick={onHiddenPicture} className="rounded-xl bg-amber-400 px-3 py-2 text-left text-sm font-bold text-white shadow hover:bg-amber-500">
+          🌀 같이 둘러봐요 <span className="block text-xs font-medium text-amber-50">{t.lookHidden}</span>
+        </button>
+        <button type="button" onClick={onLookAround} className={choice}>
+          👀 혼자 볼게요 <span className="block text-xs font-medium text-gray-500">{t.standUp}</span>
+        </button>
+      </div>
       <p className="mt-1 text-center text-xs font-medium text-gray-500">📸 {t.snsTip}</p>
-      {/* 더 먹고 싶으면: 탁자 위 📱 패드로 다시 주문 */}
-      <button type="button" onClick={onOrderMore} className="mt-2 w-full rounded-xl bg-[#1f3b57] px-3 py-1.5 text-sm font-bold text-white shadow hover:brightness-110">
-        📱 더 먹고 싶으면 테이블 패드로 주문 <span className="block text-xs font-medium text-gray-300">{t.padHere}</span>
-      </button>
-
-      <div className="mt-2 grid grid-cols-3 gap-2">
+      <div className="mt-2 grid grid-cols-2 gap-2">
         <button type="button" onClick={takePhoto} className={choice}>
           📸 인증샷 <span className="block text-xs font-medium text-gray-500">{t.takePhoto}</span>
         </button>
-        <button type="button" onClick={onHiddenPicture} className={choice}>
-          🖼️ 숨은 그림 <span className="block text-xs font-medium text-gray-500">{t.lookHidden}</span>
-        </button>
-        <button type="button" onClick={() => setShowLookHow((v) => !v)} className={choice}>
-          👀 구경하기 <span className="block text-xs font-medium text-gray-500">{t.lookWords}</span>
+        <button type="button" onClick={onOrderMore} className={choice}>
+          📱 더 주문하기 <span className="block text-xs font-medium text-gray-500">{t.padHere}</span>
         </button>
       </div>
-
-      {showLookHow && (
-        <div className="mt-2 rounded-lg bg-amber-50 p-2 text-center text-xs">
-          <p>✨ {t.lookWordsHow}</p>
-          <button type="button" onClick={onLookAround} className="mt-1 rounded-full bg-amber-400 px-3 py-1 font-bold text-white hover:bg-amber-500">
-            🚶 일어나서 구경하기 · {t.standUp}
-          </button>
-        </div>
-      )}
 
       {/* 📸 찍은 인증샷: 보고, 저장하고, 한국어 해시태그를 배운다 */}
       {photo && (

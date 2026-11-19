@@ -55,20 +55,57 @@ export default function Panorama({
     let dragging = false;
     const start = { x: 0, y: 0, lon: 0, lat: 0 };
 
+    // 📱 두 손가락으로 벌리고 오므리면 크게·작게 (fov가 작을수록 가까이)
+    const pointers = new Map<number, { x: number; y: number }>();
+    let pinch: { dist: number; fov: number } | null = null;
+    const pinchDist = () => {
+      const [a, b] = [...pointers.values()];
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    };
+
     const onDown = (e: PointerEvent) => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      mount.setPointerCapture(e.pointerId);
+      if (pointers.size === 2) {
+        dragging = false;
+        pinch = { dist: pinchDist(), fov: camera.fov };
+        return;
+      }
       dragging = true;
       start.x = e.clientX;
       start.y = e.clientY;
       start.lon = lon;
       start.lat = lat;
-      mount.setPointerCapture(e.pointerId);
     };
     const onMove = (e: PointerEvent) => {
+      if (pointers.has(e.pointerId)) pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      if (pinch && pointers.size >= 2) {
+        const d = pinchDist();
+        if (d > 0) {
+          camera.fov = Math.min(Math.max((pinch.fov * pinch.dist) / d, 40), 90);
+          camera.updateProjectionMatrix();
+        }
+        return;
+      }
       if (!dragging) return;
       lon = start.lon - (e.clientX - start.x) * 0.15;
       lat = start.lat + (e.clientY - start.y) * 0.15;
     };
-    const onUp = () => {
+    const onUp = (e: PointerEvent) => {
+      pointers.delete(e.pointerId);
+      if (pinch) {
+        pinch = null;
+        // 한 손가락이 남아 있으면 그 손가락으로 이어서 돌린다
+        const rest = [...pointers.values()][0];
+        if (rest) {
+          dragging = true;
+          start.x = rest.x;
+          start.y = rest.y;
+          start.lon = lon;
+          start.lat = lat;
+        }
+        return;
+      }
       dragging = false;
     };
     const onWheel = (e: WheelEvent) => {
