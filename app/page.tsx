@@ -19,6 +19,7 @@ import WordTag from "./WordTag";
 import MenuBoard from "./MenuBoard";
 import MusicButton from "./MusicButton";
 import { StampToast } from "./Stamps";
+import VisitTracker from "./VisitTracker";
 
 export default function Home() {
   return (
@@ -27,6 +28,8 @@ export default function Home() {
     <FoundProvider>
     <OrderProvider>
     <Entrance>
+    {/* 📊 방문·머문 시간·언어를 센다 (화면에는 안 보임) */}
+    <VisitTracker />
     <main className="flex min-h-screen flex-col bg-[#2b1d14] md:flex-row">
       {/* 왼쪽: 가상 카페 화면. 화면을 꽉 채우고, 밀어서 보고, + − 로 크기를 바꾼다 (CafeStage) */}
       <section className="min-w-0 flex-1">

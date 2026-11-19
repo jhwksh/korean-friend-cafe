@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useFound, type Coupon } from "./FoundProvider";
 import { menu } from "./menu";
 import { playCoffee } from "./sound";
+import { track } from "./tracking";
 
 // 카페에서 주문하고 먹기까지 (요즘 한국 카페 순서):
 // 1. 채팅창 메뉴에서 고르면 🧾 주문서(cart)에 담긴다
@@ -27,6 +28,8 @@ export type Order = CartItem & { bites: number };
 export type OrderStep = "ordering" | "waiting" | "ready";
 // 다 되면 무엇이 알려 주나: 📳 진동벨(카운터·키오스크) 또는 📱 탁자 위 테이블 패드
 export type AlertBy = "bell" | "pad";
+// 📊 어디서 계산했나 (성과 보드용): 카운터 점원 / 키오스크 / 탁자 위 테이블 패드
+export type PayVia = "staff" | "kiosk" | "pad";
 
 type Ctx = {
   cart: CartItem[];
@@ -35,7 +38,7 @@ type Ctx = {
   total: number;
   step: OrderStep;
   paid: CartItem[];
-  pay: (by?: AlertBy, earn?: boolean) => void;
+  pay: (by?: AlertBy, earn?: boolean, via?: PayVia) => void;
   applied: string[];
   applyCoupon: (coupon: Coupon) => boolean;
   alertBy: AlertBy;
@@ -132,6 +135,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   function goUpstairs() {
     setUpstairs(true);
     setUpstairsTick((n) => n + 1);
+    track("upstairs");
   }
 
   useEffect(() => () => {
@@ -149,6 +153,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   function addOrderStars(stars: number) {
+    track("stars", { stars });
     setOrderStars((prev) => {
       const next = [...prev, stars].slice(-MAX_STARS);
       try {
@@ -159,6 +164,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   }
 
   function addToCart(item: MenuItem, option?: ItemOption) {
+    track("cart", { item: item.name });
     setCart((prev) => [
       ...prev,
       {
@@ -209,8 +215,9 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   // 계산 끝: 주문서를 넘기고 진동벨을 받는다. 점원이 커피를 내리기 시작한다
   // earn: "적립해 주세요"라고 했으면 음료 1잔에 도장 1개. 쓴 쿠폰은 여기서 다 쓴 것으로 바뀐다
-  function pay(by: AlertBy = "bell", earn = false) {
+  function pay(by: AlertBy = "bell", earn = false, via: PayVia = by === "pad" ? "pad" : "staff") {
     if (cart.length === 0 || step !== "ordering") return;
+    track("paid", { via, items: cart.length });
     if (earn) addBuyStamps(cart.filter((c) => isDrink(c.name) && c.price > 0).length);
     spendCoupons(applied);
     setApplied([]);
@@ -229,6 +236,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   // 쟁반을 받아 들고 간다
   function takeTray() {
+    track("pickup", { togo: false });
     setCarrying((prev) => [...prev, ...paid]);
     setPaid([]);
     setStep("ordering");
@@ -238,6 +246,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   // 🛍️ 포장: 봉투를 받아 들고 카페를 나간다 (자리에 앉지 않는다). 다시 주문할 수 있다
   function takeAway() {
+    track("pickup", { togo: true });
     setPaid([]);
     setStep("ordering");
     setPickupOpen(false);

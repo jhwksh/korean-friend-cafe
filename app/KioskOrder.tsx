@@ -293,7 +293,7 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
                 roman="jindongbel batgi"
                 mean={t.takeBell}
                 onClick={() => {
-                  pay("bell", earned);
+                  pay("bell", earned, "kiosk");
                   onClose();
                 }}
               />

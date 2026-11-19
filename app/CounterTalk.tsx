@@ -7,6 +7,7 @@ import { useLanguage } from "./LanguageProvider";
 import { useOrders } from "./OrderProvider";
 import { DRINKS, judgeOrder, type Judged, type MenuEntry } from "./orderJudge";
 import SpeakLine from "./SpeakLine";
+import { track } from "./tracking";
 
 // 🗣️ 카운터에서 점원에게 말로 주문하기. 점원(바리스타)을 누르면 열린다.
 // 1. 고르기: 👆 버튼(레벨 1, 지금처럼 메뉴판) / 🧩 블록(레벨 2) / 🎤 말하기(레벨 3, 다음 단계에서 만든다)
@@ -55,8 +56,14 @@ export default function CounterTalk({ onClose, onDone }: { onClose: () => void; 
           <StaffSays ko="어서 오세요! 주문하시겠어요?" roman="eoseo oseyo! jumunhasigesseoyo?" mean={`${t.welcome} ${t.staffAskOrder}`} />
           <p className="mt-2 text-xs font-medium text-gray-500">🙋 {t.howOrder}</p>
           <div className="mt-1 grid grid-cols-3 gap-2">
-            <WayButton icon="👆" ko="버튼" mean={t.wayTap} onClick={() => setWay("tap")} />
-            <WayButton icon="🧩" ko="블록" mean={t.wayBlocks} onClick={() => setWay("blocks")} />
+            <WayButton icon="👆" ko="버튼" mean={t.wayTap} onClick={() => {
+                setWay("tap");
+                track("talk_way", { way: "tap" });
+              }} />
+            <WayButton icon="🧩" ko="블록" mean={t.wayBlocks} onClick={() => {
+                setWay("blocks");
+                track("talk_way", { way: "blocks" });
+              }} />
             <WayButton icon="🎤" ko="말하기" mean={`${t.wayVoice} · ${t.soon}`} disabled />
           </div>
         </>

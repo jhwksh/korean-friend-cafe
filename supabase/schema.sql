@@ -63,3 +63,23 @@ $$;
 
 revoke all on function public.use_chat_turn() from public, anon;
 grant execute on function public.use_chat_turn() to authenticated;
+
+-- ─────────────────────────────────────────────
+-- 📊 카페 성과 보드: 카페에서 일어난 일을 이름 없이 기록하는 표 (2026-11-19)
+-- 이름·이메일·IP는 저장하지 않는다. 방문자 번호는 브라우저가 만든 무작위 번호다.
+create table if not exists public.cafe_events (
+  id         bigint generated always as identity primary key,
+  created_at timestamptz not null default now(),             -- 언제
+  visitor    text not null check (char_length(visitor) between 8 and 64), -- 이름 없는 방문자 번호
+  session    text not null check (char_length(session) between 8 and 64), -- 이번 방문 번호
+  name       text not null check (char_length(name) <= 40),  -- 무슨 일 (예: visit, paid, promise)
+  data       jsonb not null default '{}'::jsonb check (pg_column_size(data) <= 2000), -- 추가 정보
+  country    text check (char_length(country) <= 2)          -- 나라 (예: US)
+);
+create index if not exists cafe_events_name_time on public.cafe_events (name, created_at);
+
+-- 보안: 누구나 "남기기"만 가능, "읽기"는 아무도 못 함 (읽기 규칙을 일부러 안 만든다)
+alter table public.cafe_events enable row level security;
+create policy "기록 남기기만" on public.cafe_events
+  for insert to anon, authenticated with check (true);
+grant insert on public.cafe_events to anon, authenticated;

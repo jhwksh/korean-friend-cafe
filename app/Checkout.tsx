@@ -12,6 +12,7 @@ import SpeakLine, { Words } from "./SpeakLine";
 import { STAMPS_ON } from "./features";
 import { CouponPicker, StampRules } from "./Stamps";
 import CounterTalk from "./CounterTalk";
+import { track } from "./tracking";
 import type { MenuEntry } from "./orderJudge";
 
 // 🧾 주문서 → 💳 계산(점원 또는 키오스크) → 📳 진동벨 → 받으러 가기.
@@ -58,6 +59,13 @@ export default function Checkout() {
   }
   // 점원과 말하는 중이거나 점원에게 계산하는 중이면, 뒤의 주문서는 숨긴다 (주문서의 점원 말이 겹쳐 들리지 않게)
   const staffBusy = talkOpen || (payWith === "staff" && step === "ordering");
+  // 📊 계산 방법을 고르면 센다 (주문 단계: 메뉴 담기 → 계산 방법 → 결제 완료)
+  useEffect(() => {
+    if (payWith) track("pay_start", { via: payWith });
+  }, [payWith]);
+  useEffect(() => {
+    if (padOpen) track("pay_start", { via: "pad" });
+  }, [padOpen]);
   const [answer, setAnswer] = useState<Answer | null>(null);
   // 📱 카페 안 키오스크로 처음부터 주문하는 중 (그동안 점원은 주문서에서 묻지 않는다)
   const [kioskOpen, setKioskOpen] = useState(false);
@@ -668,7 +676,7 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
                 roman="jindongbel batgi"
                 mean={t.takeBell}
                 onClick={() => {
-                  pay("bell", earn);
+                  pay("bell", earn, "kiosk");
                   onClose();
                 }}
               />

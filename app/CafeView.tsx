@@ -8,6 +8,7 @@ import Panorama, { type PanoFocus, type PanoMarker } from "./Panorama";
 import MissionButton from "./MissionButton";
 import MyTable from "./MyTable";
 import { useOrders } from "./OrderProvider";
+import { track } from "./tracking";
 import type { MissionId } from "./missions";
 import WordTag from "./WordTag";
 import type { WordKey } from "./words";
@@ -165,7 +166,10 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
         node: (
           <button
             type="button"
-            onClick={() => setSeated(true)}
+            onClick={() => {
+              setSeated(true);
+              track("sit");
+            }}
             className="-translate-x-1/2 whitespace-nowrap rounded-full border-2 border-amber-400 bg-white/95 px-3 py-1 text-left text-xs font-bold text-[#5c3a1c] shadow-lg animate-[word-glow_2.4s_ease-in-out_infinite] hover:bg-amber-50"
           >
             🪑 여기 앉기

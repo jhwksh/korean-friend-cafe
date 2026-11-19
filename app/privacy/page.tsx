@@ -31,6 +31,14 @@ export default function PrivacyPage() {
           We only use it to save your study progress (words, stamps, coupons, missions) so it follows you to other devices.
           We do not use it for ads or sell it.
         </p>
+        <p>
+          서비스를 더 좋게 만들려고 <b>이름 없는 사용 기록</b>(들어온 날짜, 머문 시간, 주문 단계, 고른 언어, 나라 이름)을 모읍니다.
+          브라우저가 만든 무작위 번호만 쓰고, 이름·이메일·IP 주소는 함께 저장하지 않습니다.
+        </p>
+        <p className="text-sm text-stone-500">
+          To improve the cafe, we collect anonymous usage records (visit date, time spent, ordering steps, chosen language, country name).
+          They use only a random number made by your browser; your name, email and IP address are not stored with them.
+        </p>
       </section>
 
       <section className="mt-6 space-y-2">

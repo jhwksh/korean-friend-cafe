@@ -1,14 +1,20 @@
 "use client";
 
 import Image from "next/image";
+import { useEffect } from "react";
 import { useAuth } from "./AuthProvider";
 import { useLanguage } from "./LanguageProvider";
+import { trackOnce } from "./tracking";
 
 // 🏖️ 카페 입구. 처음에는 카페를 보여 주지 않고 부산 바닷가 테라스 사진과 가운데 로그인만 보인다.
 // 구글로 로그인해야 카페로 들어간다 (사용자 결정: 로그인이 중요하다).
 export default function Entrance({ children }: { children: React.ReactNode }) {
   const { enabled, ready, user, signIn } = useAuth();
   const { t } = useLanguage();
+  // 📊 로그인 화면까지 온 사람을 센다 (로그인 때문에 몇 명이 돌아가는지 알려고)
+  useEffect(() => {
+    if (enabled && ready && !user) trackOnce("entrance");
+  }, [enabled, ready, user]);
 
   // 로그인 기능이 꺼져 있거나(키 없음), 로그인했으면 카페를 보여 준다
   if (!enabled || user) return <>{children}</>;
