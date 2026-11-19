@@ -202,6 +202,8 @@ const en = {
   friend2: "Nice! Add 한 잔 (one cup) next time for 3 stars.",
   friend1: "Just a word worked too! Next time add 주세요 (please).",
   orderStars: "Order stars",
+  upstairsAsk: "There are seats upstairs. Shall we go up?",
+  goUpstairs: "Go upstairs",
 };
 
 export type UiKey = keyof typeof en;
@@ -388,6 +390,8 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     friend2: "Gut! Sag nächstes Mal noch 한 잔 (eine Tasse) für 3 Sterne.",
     friend1: "Schon ein Wort hat gereicht! Sag nächstes Mal noch 주세요 (bitte).",
     orderStars: "Bestellsterne",
+    upstairsAsk: "Oben gibt es Plätze. Gehen wir hoch?",
+    goUpstairs: "Nach oben gehen",
   },
   ja: {
     title: "韓国語フレンドカフェ",
@@ -569,6 +573,8 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     friend2: "いいね！次は「한 잔（1杯）」も付けたら星3つ！",
     friend1: "単語だけでも通じたね！次は「주세요（ください）」を付けてみよう。",
     orderStars: "注文の星",
+    upstairsAsk: "上の階に席があるよ。上がろうか？",
+    goUpstairs: "上の階へ",
   },
   zh: {
     title: "韩语朋友咖啡馆",
@@ -750,6 +756,8 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     friend2: "不错！下次加上「한 잔（一杯）」就能拿3颗星。",
     friend1: "只说单词也通了！下次加上「주세요（请给我）」。",
     orderStars: "点单星星",
+    upstairsAsk: "楼上有座位。我们上去吧？",
+    goUpstairs: "去楼上",
   },
   es: {
     title: "Café Amigo Coreano",
@@ -931,6 +939,8 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     friend2: "¡Bien! Añade 한 잔 (una taza) la próxima vez para 3 estrellas.",
     friend1: "¡Con una palabra bastó! La próxima vez añade 주세요 (por favor).",
     orderStars: "Estrellas de pedido",
+    upstairsAsk: "Hay sitio arriba. ¿Subimos?",
+    goUpstairs: "Subir",
   },
   vi: {
     title: "Quán cà phê Bạn Hàn Quốc",
@@ -1112,5 +1122,7 @@ export const ui: Record<LangCode, Record<UiKey, string>> = {
     friend2: "Tốt lắm! Lần sau thêm 한 잔 (một ly) để được 3 sao.",
     friend1: "Chỉ một từ cũng hiểu rồi! Lần sau thêm 주세요 (cho tôi) nhé.",
     orderStars: "Sao gọi món",
+    upstairsAsk: "Trên lầu có chỗ ngồi. Mình lên nhé?",
+    goUpstairs: "Lên lầu",
   },
 };

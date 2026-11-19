@@ -48,12 +48,25 @@ export default function CafeFriend() {
       lastMouse = performance.now();
     };
 
+    // 🧑‍🍳 친구는 점원 옆까지만 온다: 점원(과 그 오른쪽 키오스크) 앞을 막으면 점원을 누를 수 없다.
+    // 점원은 계산대 뒤를 조금씩 걸어 다니니까, 매번 점원이 지금 있는 자리를 보고 그 왼쪽에서 멈춘다
+    const barista = area.querySelector<HTMLElement>('[aria-label="바리스타"]');
+    const maxX = () => {
+      const edge = area.offsetWidth - friend.offsetWidth;
+      if (!barista) return edge;
+      const rect = area.getBoundingClientRect();
+      const s = rect.width / area.offsetWidth;
+      const baristaLeft = (barista.getBoundingClientRect().left - rect.left) / s;
+      return Math.min(edge, baristaLeft - friend.offsetWidth + 10);
+    };
+
     let frame = 0;
     const step = (time: number) => {
       if (time - lastMouse > 4000 && time > nextWander) {
-        targetX = Math.random() * (area.offsetWidth - friend.offsetWidth);
+        targetX = Math.random() * maxX();
         nextWander = time + 4000 + Math.random() * 4000;
       }
+      targetX = Math.min(targetX, maxX());
       // 한 번에 가지 않고 조금씩 다가가서 '쫓아오는' 느낌을 준다
       const dx = (targetX - x) * 0.05;
       x += dx;

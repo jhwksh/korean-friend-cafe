@@ -46,7 +46,7 @@ function Reply({ ko, roman, mean, onClick }: { ko: string; roman: string; mean: 
 
 export default function Checkout() {
   const { t } = useLanguage();
-  const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy, padOpen, talkOpen, setTalkOpen, addToCart } = useOrders();
+  const { cart, removeFromCart, total, step, openPickup, pickupOpen, carrying, paid, alertBy, padOpen, talkOpen, setTalkOpen, addToCart, upstairs, goUpstairs } = useOrders();
   const [payWith, setPayWith] = useState<PayWith>(null);
   // 🗣️ 말로 주문하고 왔으면 점원 계산을 "드시고 가세요?"부터 한다 (주문 확인은 이미 했다)
   const [staffStart, setStaffStart] = useState(0);
@@ -119,7 +119,25 @@ export default function Checkout() {
               <span key={c.id}>{c.emoji}</span>
             ))}
           </div>
-          <p className="text-xs font-medium text-gray-500">🪑 {t.sitToPut}</p>
+          {upstairs ? (
+            <p className="text-xs font-medium text-gray-500">🪑 {t.sitToPut}</p>
+          ) : (
+            <>
+              {/* 앉는 자리는 위층(둘러보기 360)에 있다. 처음 온 사람은 모르니까 친구가 알려 주고, 큰 버튼으로 바로 올라간다 */}
+              <div className="flex items-end gap-1 text-left">
+                <Image src="/friend.png" alt="" width={30} height={56} className="h-[52px] w-auto" />
+                <SpeakLine ko="위층에 자리 있어요. 올라갈까요?" roman="wicheunge jari isseoyo. ollagalkkayo?" mean={t.upstairsAsk} autoPlay className="rounded-xl rounded-bl-none bg-sky-50 px-2 py-1 text-xs" />
+              </div>
+              <button
+                type="button"
+                onClick={goUpstairs}
+                className="mt-2 w-full rounded-full bg-amber-400 px-3 py-2 text-sm font-bold text-white shadow animate-[word-glow_2.4s_ease-in-out_infinite] hover:bg-amber-500"
+              >
+                ⬆️ 위층으로 올라가기
+                <span className="block text-[11px] font-medium">{t.goUpstairs}</span>
+              </button>
+            </>
+          )}
         </div>
       )}
       {/* 👀 처음 메뉴를 고르면 주문서가 어디 있는지 알려 준다 (계산 방법을 고르기 전까지 반짝인다) */}

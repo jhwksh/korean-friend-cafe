@@ -56,6 +56,10 @@ type Ctx = {
   setTalkOpen: (open: boolean) => void;
   orderStars: number[]; // ⭐ 말로 주문해서 받은 별 (최근 것이 끝에). 이 브라우저에 저장한다
   addOrderStars: (stars: number) => void;
+  upstairs: boolean; // 🌀 둘러보기(360) = 앉는 자리가 있는 위층에 있는지
+  setUpstairs: React.Dispatch<React.SetStateAction<boolean>>;
+  upstairsTick: number; // ⬆️ "위층으로 올라가기"를 누를 때마다 1씩 는다 (위층에서 자리 쪽을 바라보게)
+  goUpstairs: () => void;
 };
 
 const OrderContext = createContext<Ctx>({
@@ -68,6 +72,10 @@ const OrderContext = createContext<Ctx>({
   setTalkOpen: () => {},
   orderStars: [],
   addOrderStars: () => {},
+  upstairs: false,
+  setUpstairs: () => {},
+  upstairsTick: 0,
+  goUpstairs: () => {},
   cart: [],
   addToCart: () => {},
   removeFromCart: () => {},
@@ -119,6 +127,12 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [applied, setApplied] = useState<string[]>([]); // 이번 계산에 쓰기로 한 쿠폰
   const [talkOpen, setTalkOpen] = useState(false);
   const [orderStars, setOrderStars] = useState<number[]>([]);
+  const [upstairs, setUpstairs] = useState(false);
+  const [upstairsTick, setUpstairsTick] = useState(0);
+  function goUpstairs() {
+    setUpstairs(true);
+    setUpstairsTick((n) => n + 1);
+  }
 
   useEffect(() => () => {
     if (bellTimer.current) clearTimeout(bellTimer.current);
@@ -244,7 +258,7 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <OrderContext.Provider
-      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway, talkOpen, setTalkOpen, orderStars, addOrderStars }}
+      value={{ cart, addToCart, removeFromCart, total, step, paid, pay, applied, applyCoupon, alertBy, paidCount, pickupOpen, openPickup, takeTray, carrying, putDown, orders, eat, padOpen, setPadOpen, togo, setTogo, takeAway, talkOpen, setTalkOpen, orderStars, addOrderStars, upstairs, setUpstairs, upstairsTick, goUpstairs }}
     >
       {children}
     </OrderContext.Provider>

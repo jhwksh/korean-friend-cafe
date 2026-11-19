@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Hud from "./Hud";
 import { useLanguage } from "./LanguageProvider";
 import Panorama, { type PanoFocus, type PanoMarker } from "./Panorama";
@@ -122,12 +122,23 @@ const BASE_MARKERS: PanoMarker[] = [
 // 360 사진: Poly Haven "Comfy Cafe" (CC0, 누구나 무료로 사용 가능)
 export default function CafeView({ children }: { children: React.ReactNode }) {
   const { t } = useLanguage();
-  const [look360, setLook360] = useState(false);
   const [framesOpen, setFramesOpen] = useState(false);
   const [seated, setSeated] = useState(false);
   // 📳 받으러 가는 동안에는 계산대(2D)를 보여 준다. 받고 나면 있던 자리(360)로 돌아온다
-  const { pickupOpen } = useOrders();
+  // 360(둘러보기) = 앉는 자리가 있는 위층. 쟁반을 받으면 "⬆️ 위층으로 올라가기" 버튼으로도 온다 (Checkout.tsx)
+  const { pickupOpen, upstairs: look360, setUpstairs: setLook360, upstairsTick } = useOrders();
   const show360 = look360 && !pickupOpen;
+  // ⬆️ 버튼으로 올라오면 잠깐 🪑 자리 쪽으로 고개를 돌려 준다 (위층에서 자리를 찾기 어려워서). 그 뒤엔 마음대로 둘러본다
+  const [glance, setGlance] = useState<PanoFocus | null>(null);
+  useEffect(() => {
+    if (upstairsTick === 0) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setGlance({ lon: SEAT.lon, lat: -4, fov: 75 });
+    setSeated(false);
+    setFramesOpen(false);
+    const timer = setTimeout(() => setGlance(null), 2500);
+    return () => clearTimeout(timer);
+  }, [upstairsTick]);
 
   // 360 단어들 + 새 그림 액자 옆 "숨은 그림 찾기" 표시판 (누르면 액자 벽을 크게 연다) + 🪑 앉기 버튼
   const markers = useMemo<PanoMarker[]>(
@@ -183,7 +194,7 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
         ),
       },
     ],
-    [t.hiddenPicture, t.sitHere, t.back2d],
+    [t.hiddenPicture, t.sitHere, t.back2d, setLook360],
   );
 
   return (
@@ -192,7 +203,7 @@ export default function CafeView({ children }: { children: React.ReactNode }) {
         // 360° 화면은 카페 그림이 아니라 화면 전체를 덮는다 (그림을 확대해도 잘리지 않게)
         <Hud>
         <div className="absolute inset-0 z-30 select-none bg-black">
-          <Panorama src="/cafe-360.jpg" markers={markers} focus={seated ? SEATED_VIEW : null} />
+          <Panorama src="/cafe-360.jpg" markers={markers} focus={seated ? SEATED_VIEW : glance} />
           {seated && (
             <MyTable
               onStand={() => setSeated(false)}

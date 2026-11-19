@@ -18,7 +18,7 @@ export function practiceParts(text: string) {
 }
 
 // 🔊 한국어를 소리 내어 읽는다
-// voice: "male"이면 남자 목소리를 찾고(예: Microsoft InJoon), 없으면 목소리를 낮춰서 남자처럼 들리게 한다
+// voice: "male"이면 남자 목소리를 찾는다(예: 엣지 InJoon). 없으면 기본 목소리 그대로 (억지로 낮추지 않는다)
 // onEnd: 다 읽은 뒤에 할 일 (소리를 못 내는 브라우저면 바로 한다)
 export function speak(text: string, voice?: "male", onEnd?: () => void) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) {
@@ -33,25 +33,58 @@ export function speak(text: string, voice?: "male", onEnd?: () => void) {
     onEnd?.();
     return;
   }
-  const u = koreanUtterance(synth, clean, voice);
-  if (onEnd) u.onend = u.onerror = () => onEnd();
-  synth.speak(u);
+  withVoices(synth, () => {
+    const u = koreanUtterance(synth, clean, voice);
+    if (onEnd) u.onend = u.onerror = () => onEnd();
+    synth.speak(u);
+  });
 }
 
+// ⏳ 크롬은 목소리 목록을 늦게 불러온다. 목록이 비어 있을 때 읽으면 오래된 기계음이 나와서,
+// 목록이 올 때까지 잠깐(최대 0.8초) 기다렸다가 읽는다.
+// 기다리는 사이에 새로 읽으라고 하면 마지막 것만 읽는다 (여러 말이 줄줄이 겹쳐 나오지 않게)
+let latest = 0;
+function withVoices(synth: SpeechSynthesis, run: () => void) {
+  const id = ++latest;
+  if (synth.getVoices().length > 0) return run();
+  let done = false;
+  const go = () => {
+    if (done) return;
+    done = true;
+    synth.removeEventListener("voiceschanged", go);
+    if (id !== latest) return;
+    synth.cancel();
+    run();
+  };
+  synth.addEventListener("voiceschanged", go);
+  setTimeout(go, 800);
+}
+// 페이지가 열리면 바로 목록을 불러오기 시작한다 (처음 누를 때 기다리지 않게)
+if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.getVoices();
+
 // 한국어 목소리로 읽을 준비 (speak와 speakAlong이 같이 쓴다)
-// voice: "male"이면 남자 목소리를 찾고(예: Microsoft InJoon), 없으면 목소리를 낮춰서 남자처럼 들리게 한다
+// voice: "male"이면 남자 목소리를 찾는다(예: 엣지 InJoon). 없으면 기본 목소리 그대로 (억지로 낮추지 않는다)
 function koreanUtterance(synth: SpeechSynthesis, text: string, voice?: "male") {
   // 짧은 낱말(예: 벽, 꼬리)은 목소리가 너무 짧게 끊어 읽어서 어색하다: 마침표로 끝을 맺고 더 천천히 읽는다
   const syllables = (text.match(/\p{Script=Hangul}/gu) ?? []).length;
   const shortWord = syllables <= 3;
   const u = new SpeechSynthesisUtterance(shortWord && !/[.!?]$/.test(text) ? `${text}.` : text);
   u.lang = "ko-KR";
-  u.rate = syllables <= 1 ? 0.6 : shortWord ? 0.65 : 0.8; // 배우는 사람을 위해 조금 천천히
+  // 너무 느리면 로봇처럼 늘어진다: 문장은 사람 대화처럼(0.95), 짧은 낱말만 조금 천천히(0.85)
+  u.rate = shortWord ? 0.85 : 0.95;
+  u.pitch = 1.02; // 아주 살짝 따뜻하게
+  // 🗣️ 자연스러운 목소리를 먼저 고른다 (점수가 높은 것부터):
+  // 아이폰 고음질 "유나(Yuna) Premium/Enhanced" > 크롬 "Google 한국의"·엣지 "선희(SunHi) Online (Natural)" > 아이폰 "유나" > 나머지(오래된 기계음)
   const koVoices = synth.getVoices().filter((v) => v.lang.startsWith("ko"));
-  const male = voice === "male" ? koVoices.find((v) => /InJoon|\bmale\b|남/i.test(v.name)) : undefined;
-  const chosen = male ?? koVoices[0];
+  const score = (v: SpeechSynthesisVoice) =>
+    /Premium/i.test(v.name) ? 4 : /Enhanced/i.test(v.name) ? 3 : /Google|Natural|Online/i.test(v.name) ? 2 : /Yuna/i.test(v.name) ? 1 : 0;
+  const best = (list: SpeechSynthesisVoice[]) => list.reduce<SpeechSynthesisVoice | undefined>((a, v) => (!a || score(v) > score(a) ? v : a), undefined);
+  const isMale = (v: SpeechSynthesisVoice) => /InJoon|\bmale\b|남/i.test(v.name);
+  const male = voice === "male" ? best(koVoices.filter(isMale)) : undefined;
+  const chosen = male ?? best(koVoices.filter((v) => !isMale(v))) ?? best(koVoices);
   if (chosen) u.voice = chosen;
-  if (voice === "male" && !male) u.pitch = 0.6; // 남자 목소리가 없는 컴퓨터에서는 낮은 음으로
+  // 남자 목소리가 없는 컴퓨터(예: 크롬)에서도 목소리를 억지로 낮추지 않는다: 낮추면 괴물 목소리처럼 어색하다.
+  // 점원 남자 목소리는 다음에 AI 음성 파일로 바꾼다
   return u;
 }
 
@@ -78,17 +111,29 @@ export function speakAlong(words: string[], onWord: (index: number) => void, voi
     return;
   }
 
-  const u = koreanUtterance(synth, text.trim(), voice);
+  withVoices(synth, () => speakWords(synth, text.trim(), clean, starts, onWord, voice, onEnd));
+}
+
+function speakWords(
+  synth: SpeechSynthesis,
+  text: string,
+  clean: string[],
+  starts: number[],
+  onWord: (index: number) => void,
+  voice?: "male",
+  onEnd?: () => void,
+) {
+  const u = koreanUtterance(synth, text, voice);
 
   const timers: ReturnType<typeof setTimeout>[] = [];
   const stopGuess = () => timers.splice(0).forEach(clearTimeout);
   u.onstart = () => {
-    // 어림잡기: 한 글자에 약 0.28초 (조금 천천히 읽으니까)
+    // 어림잡기: 한 글자에 약 0.24초 (거의 보통 빠르기로 읽으니까)
     let at = 0;
     clean.forEach((w, i) => {
       if (!w) return;
       timers.push(setTimeout(() => onWord(i), at));
-      at += (w.replace(/[^\p{Script=Hangul}0-9]/gu, "").length || 1) * 280 + 140;
+      at += (w.replace(/[^\p{Script=Hangul}0-9]/gu, "").length || 1) * 240 + 120;
     });
   };
   u.onboundary = (e) => {
