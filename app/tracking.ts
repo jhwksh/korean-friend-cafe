@@ -21,6 +21,7 @@ export const EVENTS = {
   cart: "funnel",
   pay_start: "funnel",
   paid: "funnel",
+  leave_ask: "funnel",
   pickup: "funnel",
   upstairs: "funnel",
   sit: "funnel",

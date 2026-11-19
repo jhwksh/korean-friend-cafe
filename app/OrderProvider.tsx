@@ -13,12 +13,14 @@ import { track } from "./tracking";
 // 4. 받으러 가면(pickupOpen) 계산대에서 쟁반을 받아 🧺 들고 다닌다 (carrying)
 // 5. 360° 카페에서 자리에 앉아 쟁반을 내려놓으면(putDown) 내 탁자(orders)에 놓인다
 // 6. 하나씩 누르면 먹는 소리가 나며 줄어든다 (bites)
-// 새로고침하면 모두 비워진다 (새로 주문하면 된다).
+// 새로고침하거나 잠깐 나갔다 와도 주문은 그대로 남는다 (2시간까지).
 export const BITES = 3;
 const MAX_ON_TABLE = 6;
 const BELL_DELAY = 10000; // 계산하고 10초 뒤 진동벨이 울린다
 const STARS_KEY = "kfc-order-stars"; // ⭐ 말로 주문해서 받은 별 (이 브라우저에 저장)
 const MAX_STARS = 20; // 최근 20번만 남긴다
+const SAVE_KEY = "kfc-order-save"; // 🧾 주문하던 것 (이 브라우저에 저장)
+const SAVE_LIFE = 2 * 60 * 60 * 1000; // 2시간이 지난 저장은 버린다
 
 export type MenuItem = { name: string; emoji?: string; hot?: boolean; price?: string };
 export type CartItem = { id: number; name: string; emoji: string; hot: boolean; price: number; option?: string };
@@ -30,6 +32,18 @@ export type OrderStep = "ordering" | "waiting" | "ready";
 export type AlertBy = "bell" | "pad";
 // 📊 어디서 계산했나 (성과 보드용): 카운터 점원 / 키오스크 / 탁자 위 테이블 패드
 export type PayVia = "staff" | "kiosk" | "pad";
+// 🧾 브라우저에 저장해 두는 주문 (열린 창은 저장하지 않는다: 다시 들어오면 닫힌 채로 시작)
+type OrderSave = {
+  at: number; // 저장한 시각
+  cart: CartItem[];
+  paid: CartItem[];
+  step: OrderStep;
+  carrying: CartItem[];
+  orders: Order[];
+  togo: boolean;
+  alertBy: AlertBy;
+  upstairs: boolean;
+};
 
 type Ctx = {
   cart: CartItem[];
@@ -109,6 +123,22 @@ function priceOf(price?: string) {
   return Number((price ?? "0").replace(/[^0-9]/g, "")) || 0;
 }
 
+// 저장된 값이 우리가 아는 모양인지 가볍게 확인한다 (망가진 저장 때문에 카페가 멈추지 않게)
+function isCartItem(v: unknown): v is CartItem {
+  if (!v || typeof v !== "object") return false;
+  const c = v as Partial<CartItem>;
+  return typeof c.id === "number" && typeof c.name === "string" && typeof c.emoji === "string" && typeof c.hot === "boolean" && typeof c.price === "number";
+}
+function isOrder(v: unknown): v is Order {
+  return isCartItem(v) && typeof (v as Partial<Order>).bites === "number";
+}
+function isCartList(v: unknown): v is CartItem[] {
+  return Array.isArray(v) && v.every(isCartItem);
+}
+function isOrderList(v: unknown): v is Order[] {
+  return Array.isArray(v) && v.every(isOrder);
+}
+
 // 8000 → "8,000원"
 export function won(n: number) {
   return `${n.toLocaleString("ko-KR")}원`;
@@ -132,6 +162,8 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
   const [orderStars, setOrderStars] = useState<number[]>([]);
   const [upstairs, setUpstairs] = useState(false);
   const [upstairsTick, setUpstairsTick] = useState(0);
+  const [restored, setRestored] = useState(false); // 저장해 둔 주문을 다 읽었는지
+  const lastSave = useRef<string | null>(null); // 방금 저장한 내용 (그대로면 다시 쓰지 않는다)
   function goUpstairs() {
     setUpstairs(true);
     setUpstairsTick((n) => n + 1);
@@ -151,6 +183,62 @@ export function OrderProvider({ children }: { children: React.ReactNode }) {
       if (Array.isArray(saved)) setOrderStars(saved.filter((n) => typeof n === "number").slice(-MAX_STARS));
     } catch {}
   }, []);
+
+  // 🧾 저장해 둔 주문을 되살린다 (2시간 안에 다시 들어왔을 때만)
+  useEffect(() => {
+    let save: Partial<OrderSave> | null = null;
+    try {
+      save = JSON.parse(localStorage.getItem(SAVE_KEY) ?? "null");
+    } catch {}
+    if (
+      save &&
+      typeof save.at === "number" &&
+      Date.now() - save.at <= SAVE_LIFE &&
+      isCartList(save.cart) &&
+      isCartList(save.paid) &&
+      isCartList(save.carrying) &&
+      isOrderList(save.orders)
+    ) {
+      // 나가 있는 동안 진동벨이 이미 울린 것으로 친다
+      const nextStep: OrderStep = save.step === "waiting" || save.step === "ready" ? "ready" : "ordering";
+      const nextTogo = save.togo === true;
+      const nextAlertBy: AlertBy = save.alertBy === "pad" ? "pad" : "bell";
+      const nextUpstairs = save.upstairs === true;
+      // 브라우저 저장소는 화면이 뜬 뒤에만 읽을 수 있어서(서버엔 없음) 여기서 불러오는 것이 맞다
+      /* eslint-disable react-hooks/set-state-in-effect */
+      setCart(save.cart);
+      setPaid(save.paid);
+      setCarrying(save.carrying);
+      setOrders(save.orders);
+      setStep(nextStep);
+      setTogo(nextTogo);
+      setAlertBy(nextAlertBy);
+      setUpstairs(nextUpstairs);
+      setRestored(true);
+      /* eslint-enable react-hooks/set-state-in-effect */
+      // 방금 되살린 그대로는 다시 쓰지 않는다 (저장한 시각이 새로워지지 않게)
+      lastSave.current = JSON.stringify({ cart: save.cart, paid: save.paid, step: nextStep, carrying: save.carrying, orders: save.orders, togo: nextTogo, alertBy: nextAlertBy, upstairs: nextUpstairs });
+    } else {
+      // 2시간이 지났거나 모양이 깨진 저장은 버린다
+      if (save) {
+        try {
+          localStorage.removeItem(SAVE_KEY);
+        } catch {}
+      }
+      setRestored(true);
+    }
+  }, []);
+
+  // 주문이 바뀔 때마다 저장한다. 열린 창(pickupOpen·talkOpen·padOpen)은 저장하지 않는다
+  useEffect(() => {
+    if (!restored) return;
+    const body = JSON.stringify({ cart, paid, step, carrying, orders, togo, alertBy, upstairs });
+    if (body === lastSave.current) return;
+    lastSave.current = body;
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ at: Date.now(), cart, paid, step, carrying, orders, togo, alertBy, upstairs }));
+    } catch {}
+  }, [restored, cart, paid, step, carrying, orders, togo, alertBy, upstairs]);
 
   function addOrderStars(stars: number) {
     track("stars", { stars });
