@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Big, CartList, Dialog, KioskButton, useCardTap } from "./Checkout";
+import { Big, CardTerminal, CartList, Dialog, KioskButton, useCardTap } from "./Checkout";
 import { useLanguage } from "./LanguageProvider";
 import { menu } from "./menu";
 import { useOrders, won } from "./OrderProvider";
@@ -239,11 +239,11 @@ export default function KioskOrder({ onClose }: { onClose: () => void }) {
             )}
             <div className="mt-4 flex">
               {tapping ? (
-                <p className="flex-1 text-center text-lg font-bold text-white">{phone ? "📱" : "💳"} ··· 삐빅!</p>
+                <CardTerminal kind={tapping} dark />
               ) : phone ? (
-                <KioskButton ko="📱 휴대폰 대기" roman="hyudaepon daegi" mean={t.tapPhoneBtn} onClick={tap} />
+                <KioskButton ko="📱 휴대폰 대기" roman="hyudaepon daegi" mean={t.tapPhoneBtn} onClick={() => tap(true)} />
               ) : (
-                <KioskButton ko="💳 카드 넣기" roman="kadeu neoki" mean={t.meCard} onClick={tap} />
+                <KioskButton ko="💳 카드 넣기" roman="kadeu neoki" mean={t.meCard} onClick={() => tap()} />
               )}
             </div>
           </>

@@ -245,6 +245,23 @@ export function playChew() {
 }
 
 // 📳 진동벨 소리: "띠리리리" 높은 소리가 빠르게 오르내린다 (약 0.8초)
+// 💳 카드 단말기 "삑!" (카드를 꽂거나 휴대폰을 대면 한 번 짧게 울린다)
+export function playBeep() {
+  const ac = audio();
+  if (!ac) return;
+  const t = ac.currentTime;
+  const osc = ac.createOscillator();
+  osc.type = "sine";
+  osc.frequency.value = 2100;
+  const gain = ac.createGain();
+  gain.gain.setValueAtTime(0.2, t);
+  gain.gain.setValueAtTime(0.2, t + 0.14);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+  osc.connect(gain).connect(ac.destination);
+  osc.start(t);
+  osc.stop(t + 0.2);
+}
+
 export function playBell() {
   const ac = audio();
   if (!ac) return;

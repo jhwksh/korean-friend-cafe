@@ -10,6 +10,7 @@ export const TRACK = {
   route: true, // 👆🧩📱 주문 방법(버튼·블록·키오스크)과 받은 별
   promise: true, // 🤙 "다음엔 진짜 한국에서" 약속 카드 대답
   lang: true, // 🌐 고른 언어
+  surprise: true, // 🧑‍🍳 점원의 깜짝 질문에 무엇이라고 대답했나
 };
 
 // 기록 이름 → 어느 스위치에 속하는지. 서버도 이 목록에 있는 이름만 받는다 (엉뚱한 기록이 쌓이지 않게)
@@ -27,6 +28,7 @@ export const EVENTS = {
   stars: "route",
   promise: "promise",
   lang: "lang",
+  surprise: "surprise",
 } as const satisfies Record<string, keyof typeof TRACK>;
 export type EventName = keyof typeof EVENTS;
 

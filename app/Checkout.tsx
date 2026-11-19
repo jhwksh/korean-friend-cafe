@@ -7,12 +7,13 @@ import { useLanguage } from "./LanguageProvider";
 import KioskOrder from "./KioskOrder";
 import { menu } from "./menu";
 import { useOrders, won, type CartItem } from "./OrderProvider";
-import { playBell, speakAlong } from "./sound";
+import { playBeep, playBell, speak, speakAlong } from "./sound";
 import SpeakLine, { Words } from "./SpeakLine";
 import { STAMPS_ON } from "./features";
 import { CouponPicker, StampRules } from "./Stamps";
 import CounterTalk from "./CounterTalk";
 import { track } from "./tracking";
+import { BUZZER_ANSWER, BUZZER_ASK, BUZZER_TIP, COFFEE_NAMES, pickSurprise, POINTS_DONE, rememberSurprise, POINTS_FRIEND, POINTS_STAFF, type Line, type Surprise } from "./surprises";
 import type { MenuEntry } from "./orderJudge";
 
 // 🧾 주문서 → 💳 계산(점원 또는 키오스크) → 📳 진동벨 → 받으러 가기.
@@ -398,25 +399,98 @@ export function CartList({ items, total }: { items: CartItem[]; total: number })
   );
 }
 
-// 💳 카드를 대면 1.2초 뒤 "결제되었습니다". 누를 때 한 번만 센다
+// 💳 카드를 꽂으면 진짜 단말기처럼 "삑!" + "결제되었습니다. 카드를 빼 주세요." (휴대폰이면 "결제되었습니다.")
+// 단말기 말이 끝나면 다음 화면으로 간다. 누를 때 한 번만 센다
 // (전에는 화면이 바뀔 때마다 다시 세어서, 적립·영수증 화면에서 결제 다음 화면으로 되돌아갔다)
 export function useCardTap(onDone: () => void) {
-  const [tapping, setTapping] = useState(false);
-  function tap() {
+  const [tapping, setTapping] = useState<false | "card" | "phone">(false);
+  function tap(phone = false) {
     if (tapping) return;
-    setTapping(true);
-    setTimeout(onDone, 1200);
+    setTapping(phone ? "phone" : "card");
+    playBeep();
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      onDone();
+    };
+    setTimeout(() => speak((phone ? TERMINAL_PHONE : TERMINAL_CARD).ko, undefined, finish), 400);
+    setTimeout(finish, 4500); // 소리를 못 내는 브라우저에서도 멈추지 않게
   }
   return [tapping, tap] as const;
 }
 
+// 💳 단말기가 하는 말 (기계 목소리). 외국인이 한국에서 가장 많이 듣는 말 중 하나
+const TERMINAL_CARD: Line = {
+  ko: "결제되었습니다. 카드를 빼 주세요.",
+  roman: "gyeoljedoeeotseumnida. kadeureul ppae juseyo.",
+  mean: {
+    en: "Payment complete. Please remove your card.",
+    de: "Zahlung abgeschlossen. Bitte Karte entnehmen.",
+    ja: "お支払いが完了しました。カードをお抜きください。",
+    zh: "付款完成。请取出银行卡。",
+    es: "Pago completado. Retire su tarjeta.",
+    vi: "Thanh toán thành công. Vui lòng rút thẻ ra.",
+  },
+};
+const TERMINAL_PHONE: Line = {
+  ko: "결제되었습니다.",
+  roman: "gyeoljedoeeotseumnida.",
+  mean: { en: "Payment complete.", de: "Zahlung abgeschlossen.", ja: "お支払いが完了しました。", zh: "付款完成。", es: "Pago completado.", vi: "Thanh toán thành công." },
+};
+
+// 💳 카드를 꽂은 순간 화면: "삑!" + 단말기 말 (로마자·뜻과 함께). dark = 키오스크(어두운 화면)
+export function CardTerminal({ kind, dark = false }: { kind: "card" | "phone"; dark?: boolean }) {
+  const { lang } = useLanguage();
+  const line = kind === "phone" ? TERMINAL_PHONE : TERMINAL_CARD;
+  return (
+    <div className={`mt-3 flex-1 text-center ${dark ? "text-white" : ""}`}>
+      <p className="text-lg font-bold">{kind === "phone" ? "📱" : "💳"} 삑!</p>
+      <p className="text-sm font-bold">🔊 {line.ko}</p>
+      <p className="text-xs italic opacity-80">KR: {line.roman}</p>
+      <p className="text-xs opacity-80">{line.mean[lang]}</p>
+    </div>
+  );
+}
+
 // 🧑‍🍳 점원에게 계산: 주문 확인(이미 주문서를 다 썼으니 "주문하시겠어요?"가 아니라 확인) → 매장/포장 → 적립 → (쿠폰) 카드 → 진동벨
 function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number }) {
-  const { t } = useLanguage();
-  const { cart, total, pay, setTogo } = useOrders();
+  const { t, lang } = useLanguage();
+  const { cart, total, pay, setTogo, removeFromCart, addToCart } = useOrders();
   const [scene, setScene] = useState(start);
   const [earn, setEarn] = useState(false);
   const [tapping, tap] = useCardTap(() => setScene(3));
+  // 🧑‍🍳 이번 계산에 나올 점원의 깜짝 질문 (가끔만 나온다. 없으면 null)
+  const [surprise] = useState<Surprise | null>(() => pickSurprise(cart.map((c) => c.name), STAMPS_ON));
+  const [pointsAsked, setPointsAsked] = useState(false); // 포인트: "전화번호 누르면 돼요?"를 골랐다
+  const [receiptDone, setReceiptDone] = useState(false); // 결제 뒤 깜짝 질문(영수증)에 대답했다
+  const [buzzerAsked, setBuzzerAsked] = useState(false); // "진동벨 울리면 어디로 가요?"를 물었다
+  useEffect(() => {
+    if (surprise) rememberSurprise(surprise.id);
+  }, [surprise]);
+  const afterPay = () => setScene(STAMPS_ON ? 5 : 2);
+  // 매장/포장을 고른 뒤: 계산 전 깜짝 질문이 있으면 먼저 (머그컵 질문은 매장에서 먹을 때만)
+  function chooseHere(togo: boolean) {
+    setTogo(togo);
+    if (surprise?.when === "before" && !(surprise.id === "mug" && togo)) setScene(7);
+    else afterPay();
+  }
+  function answer(s: Surprise, i: 0 | 1) {
+    track("surprise", { id: s.id, answer: i });
+    if (s.id === "mug" && i === 1) setTogo(true);
+    if (s.id === "decaf" && i === 1) {
+      // 커피 하나를 녹차라테로 바꾼다 (금액도 녹차라테 값으로)
+      const coffee = cart.find((c) => COFFEE_NAMES.includes(c.name));
+      const tea = menu.find((m) => m.name === "녹차라테");
+      if (coffee && tea) {
+        removeFromCart(coffee.id);
+        addToCart(tea);
+      }
+    }
+    if (s.id === "points" && i === 1) return setPointsAsked(true);
+    if (s.when === "after") return setReceiptDone(true);
+    afterPay();
+  }
 
   return (
     <Dialog onClose={onClose}>
@@ -434,20 +508,23 @@ function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number 
             ko="네, 먹고 갈게요."
             roman="ne, meokgo galgeyo."
             mean={t.meHere}
-            onClick={() => {
-              setTogo(false);
-              setScene(STAMPS_ON ? 5 : 2);
-            }}
+            onClick={() => chooseHere(false)}
           />
           <ISay
             ko="아니요, 포장해 주세요."
             roman="aniyo, pojanghae juseyo."
             mean={`🛍️ ${t.meTogo}`}
-            onClick={() => {
-              setTogo(true);
-              setScene(STAMPS_ON ? 5 : 2);
-            }}
+            onClick={() => chooseHere(true)}
           />
+        </>
+      )}
+      {/* 🧑‍🍳 계산 전 깜짝 질문 (머그컵·원두·디카페인·포인트) */}
+      {scene === 7 && surprise && !pointsAsked && <SurpriseAsk s={surprise} onAnswer={(i) => answer(surprise, i)} />}
+      {scene === 7 && pointsAsked && (
+        <>
+          <StaffSays ko={POINTS_STAFF.ko} roman={POINTS_STAFF.roman} mean={POINTS_STAFF.mean[lang]} />
+          <FriendNote ko={POINTS_FRIEND.ko} roman={POINTS_FRIEND.roman} mean={POINTS_FRIEND.mean[lang]} />
+          <ISay ko={POINTS_DONE.ko} roman={POINTS_DONE.roman} mean={POINTS_DONE.mean[lang]} onClick={afterPay} />
         </>
       )}
       {/* 💳 계산하기 바로 전: 점원이 적립을 묻는다 (한국 카페에서 거의 항상 듣는 말) */}
@@ -476,10 +553,10 @@ function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number 
           />
           {STAMPS_ON && !tapping && <CouponPicker />}
           {tapping ? (
-            <p className="mt-3 text-center text-sm font-bold">💳 ··· 띡!</p>
+            <CardTerminal kind={tapping} />
           ) : (
             <>
-              <ISay ko="카드로 할게요." roman="kadeuro halgeyo." mean={`💳 ${t.meCard}`} onClick={tap} />
+              <ISay ko="카드로 할게요." roman="kadeuro halgeyo." mean={`💳 ${t.meCard}`} onClick={() => tap()} />
               <ISay ko="현금으로 할게요." roman="hyeongeumeuro halgeyo." mean={`💵 ${t.meCash}`} onClick={() => setScene(6)} />
             </>
           )}
@@ -500,12 +577,28 @@ function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number 
           </>
         );
       })()}
-      {scene === 3 && (
+      {/* 🧑‍🍳 결제 뒤 깜짝 질문 (영수증) */}
+      {scene === 3 && surprise?.when === "after" && !receiptDone && (
         <>
           <p className="mb-2 text-center text-sm font-bold text-green-600">
             ✅ 결제되었습니다. <span className="font-normal text-gray-500">· {t.paid}</span>
           </p>
-          <StaffSays ko="진동벨 드릴게요. 울리면 가지러 오세요." roman="jindongbel deurilgeyo. ullimyeon gajireo oseyo." mean={t.staffBell} />
+          <SurpriseAsk s={surprise} onAnswer={(i) => answer(surprise, i)} />
+        </>
+      )}
+      {scene === 3 && (surprise?.when !== "after" || receiptDone) && (
+        <>
+          <p className="mb-2 text-center text-sm font-bold text-green-600">
+            ✅ 결제되었습니다. <span className="font-normal text-gray-500">· {t.paid}</span>
+          </p>
+          {buzzerAsked ? (
+            <>
+              <StaffSays ko={BUZZER_ANSWER.ko} roman={BUZZER_ANSWER.roman} mean={BUZZER_ANSWER.mean[lang]} />
+              <Tip text={BUZZER_TIP[lang]} />
+            </>
+          ) : (
+            <StaffSays ko="진동벨 드릴게요. 울리면 가지러 오세요." roman="jindongbel deurilgeyo. ullimyeon gajireo oseyo." mean={t.staffBell} />
+          )}
           <ISay
             ko="감사합니다!"
             roman="gamsahamnida!"
@@ -515,6 +608,10 @@ function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number 
               onClose();
             }}
           />
+          {/* 📳 한국 카페는 직접 가지러 간다: 어디로 가는지 물어볼 수도 있다 */}
+          {!buzzerAsked && (
+            <ISay ko={BUZZER_ASK.ko} roman={BUZZER_ASK.roman} mean={BUZZER_ASK.mean[lang]} onClick={() => setBuzzerAsked(true)} />
+          )}
         </>
       )}
     </Dialog>
@@ -522,6 +619,35 @@ function StaffPay({ onClose, start = 0 }: { onClose: () => void; start?: number 
 }
 
 // 키오스크 화면 글자: 크게 한국어, 그 아래 KR 발음과 내 언어 (🔊 형광펜)
+// 🧑‍🍳 점원의 깜짝 질문 한 장면: 점원 말 + 💡 문화 팁 + 내 대답 두 개
+function SurpriseAsk({ s, onAnswer }: { s: Surprise; onAnswer: (i: 0 | 1) => void }) {
+  const { lang } = useLanguage();
+  return (
+    <>
+      <StaffSays ko={s.staff.ko} roman={s.staff.roman} mean={s.staff.mean[lang]} />
+      <Tip text={s.tip[lang]} />
+      {s.replies.map((r, i) => (
+        <ISay key={r.ko} ko={r.ko} roman={r.roman} mean={r.mean[lang]} onClick={() => onAnswer(i as 0 | 1)} />
+      ))}
+    </>
+  );
+}
+
+// 💡 문화 팁 상자
+function Tip({ text }: { text: string }) {
+  return <p className="mt-2 rounded-lg bg-sky-50 px-3 py-2 text-xs font-medium text-sky-900">💡 {text}</p>;
+}
+
+// 🧑 친구가 옆에서 한마디 (점원 말과 겹치지 않게 저절로 읽지 않는다. 🔊로 듣기)
+function FriendNote({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
+  return (
+    <div className="mt-2 flex items-end gap-1">
+      <Image src="/friend.png" alt="" width={30} height={56} className="h-[52px] w-auto" />
+      <SpeakLine ko={ko} roman={roman} mean={mean} className="rounded-xl rounded-bl-none bg-sky-50 px-2 py-1 text-xs" />
+    </div>
+  );
+}
+
 export function Big({ ko, roman, mean }: { ko: string; roman: string; mean: string }) {
   // 화면이 바뀌면(버튼을 누르면) 키오스크가 바로 읽어 준다. 진짜 한국 키오스크처럼
   return <SpeakLine ko={ko} roman={roman} mean={mean} tone="dark" autoPlay className="text-center text-lg text-white" />;
@@ -639,9 +765,9 @@ export function KioskPay({ onClose, pad = false }: { onClose: () => void; pad?: 
             <Big ko="카드를 꽂아 주세요" roman="kadeureul kkoja juseyo" mean={t.kioskCard} />
             <div className="mt-4 flex">
               {tapping ? (
-                <p className="flex-1 text-center text-lg font-bold text-white">💳 ··· 삐빅!</p>
+                <CardTerminal kind={tapping} dark />
               ) : (
-                <KioskButton ko="💳 카드 넣기" roman="kadeu neoki" mean={t.meCard} onClick={tap} />
+                <KioskButton ko="💳 카드 넣기" roman="kadeu neoki" mean={t.meCard} onClick={() => tap()} />
               )}
             </div>
           </>
