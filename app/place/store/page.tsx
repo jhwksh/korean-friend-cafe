@@ -1,4 +1,5 @@
 import CafeStage from "../../CafeStage";
+import InAppNotice from "../../InAppNotice";
 import { LanguageProvider } from "../../LanguageProvider";
 import Store from "./Store";
 
@@ -7,6 +8,8 @@ import Store from "./Store";
 export default function StorePage() {
   return (
     <LanguageProvider>
+      {/* 🔇 앱 안 브라우저면 크롬/사파리로 넘기거나 안내 */}
+      <InAppNotice />
       <main className="flex min-h-screen flex-col bg-[#2b1d14]">
         <section className="min-w-0 flex-1">
           <CafeStage>

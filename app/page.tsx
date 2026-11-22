@@ -21,11 +21,14 @@ import WordTag from "./WordTag";
 import MenuBoard from "./MenuBoard";
 import MusicButton from "./MusicButton";
 import { StampToast } from "./Stamps";
+import InAppNotice from "./InAppNotice";
 import VisitTracker from "./VisitTracker";
 
 export default function Home() {
   return (
     <LanguageProvider>
+    {/* 🔇 카톡·쓰레드 같은 앱 안에서 열면 소리(와 구글 로그인)가 안 돼서, 크롬/사파리로 넘기거나 안내한다 (로그인 화면 전에) */}
+    <InAppNotice />
     <AuthProvider>
     <FoundProvider>
     <OrderProvider>

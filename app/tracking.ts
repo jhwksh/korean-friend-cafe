@@ -32,6 +32,7 @@ export const EVENTS = {
   lang: "lang",
   surprise: "surprise",
   hidden_picture: "game",
+  inapp: "visit",
   store_visit: "visit",
   store_start: "funnel",
   store_done: "funnel",
