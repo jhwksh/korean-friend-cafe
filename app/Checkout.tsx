@@ -431,12 +431,13 @@ const TERMINAL_CARD: Line = {
     zh: "付款完成。请取出银行卡。",
     es: "Pago completado. Retire su tarjeta.",
     vi: "Thanh toán thành công. Vui lòng rút thẻ ra.",
+    ru: "Оплата прошла. Пожалуйста, заберите карту.",
   },
 };
 const TERMINAL_PHONE: Line = {
   ko: "결제되었습니다.",
   roman: "gyeoljedoeeotseumnida.",
-  mean: { en: "Payment complete.", de: "Zahlung abgeschlossen.", ja: "お支払いが完了しました。", zh: "付款完成。", es: "Pago completado.", vi: "Thanh toán thành công." },
+  mean: { en: "Payment complete.", de: "Zahlung abgeschlossen.", ja: "お支払いが完了しました。", zh: "付款完成。", es: "Pago completado.", vi: "Thanh toán thành công.", ru: "Оплата прошла." },
 };
 
 // 💳 카드를 꽂은 순간 화면: "삑!" + 단말기 말 (로마자·뜻과 함께). dark = 키오스크(어두운 화면)

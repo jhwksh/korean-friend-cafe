@@ -21,6 +21,7 @@ const ASK: Line = {
     zh: "咦？这就要走吗？你还有正在点的单呢！",
     es: "¿Eh? ¿Ya te vas? ¡Todavía tienes un pedido en marcha!",
     vi: "Ơ? Về sớm thế à? Bạn còn món đang đặt mà!",
+    ru: "Ой? Уже уходишь? У тебя же заказ ещё не оформлен!",
   },
 };
 
@@ -34,6 +35,7 @@ const STAY: Line = {
     zh: "我再待一会儿。",
     es: "Me quedo un poco más.",
     vi: "Mình ở lại thêm chút nữa.",
+    ru: "Я останусь ещё немного.",
   },
 };
 
@@ -47,6 +49,7 @@ const LEAVE: Line = {
     zh: "我走了。",
     es: "Me voy ya.",
     vi: "Mình đi đây.",
+    ru: "Я пойду.",
   },
 };
 

@@ -13,18 +13,19 @@ export const STORE_SUB: Tr = {
   zh: "韩语朋友便利店",
   es: "Tienda de conveniencia Amigo Coreano",
   vi: "Cửa hàng tiện lợi Bạn Hàn",
+  ru: "Магазин у дома «Корейский друг»",
 };
 
 // 🧺 장바구니
 export const CART_TITLE: Line = {
   ko: "장바구니",
   roman: "jangbaguni",
-  mean: { en: "Basket", de: "Einkaufskorb", ja: "買い物かご", zh: "购物篮", es: "Cesta", vi: "Giỏ hàng" },
+  mean: { en: "Basket", de: "Einkaufskorb", ja: "買い物かご", zh: "购物篮", es: "Cesta", vi: "Giỏ hàng", ru: "Корзина" },
 };
 export const TOTAL: Line = {
   ko: "합계",
   roman: "hapgye",
-  mean: { en: "Total", de: "Summe", ja: "合計", zh: "合计", es: "Total", vi: "Tổng cộng" },
+  mean: { en: "Total", de: "Summe", ja: "合計", zh: "合计", es: "Total", vi: "Tổng cộng", ru: "Итого" },
 };
 export const PRACTICE_PRICE: Line = {
   ko: "연습용 가격",
@@ -36,6 +37,7 @@ export const PRACTICE_PRICE: Line = {
     zh: "练习用价格",
     es: "precio de práctica",
     vi: "giá để luyện tập",
+    ru: "учебная цена",
   },
 };
 
@@ -43,7 +45,7 @@ export const PRACTICE_PRICE: Line = {
 export const CALC_BTN: Line = {
   ko: "계산하기",
   roman: "gyesanhagi",
-  mean: { en: "Check out", de: "Bezahlen", ja: "会計する", zh: "结账", es: "Pagar", vi: "Thanh toán" },
+  mean: { en: "Check out", de: "Bezahlen", ja: "会計する", zh: "结账", es: "Pagar", vi: "Thanh toán", ru: "Оплатить" },
 };
 
 // 1) 어떻게 대답할래요?
@@ -57,27 +59,28 @@ export const WAY_TITLE: Line = {
     zh: "你想怎么回答？",
     es: "¿Cómo quieres responder?",
     vi: "Bạn muốn trả lời thế nào?",
+    ru: "Как вы хотите ответить?",
   },
 };
 export const WAY_TAP: Line = {
   ko: "버튼",
   roman: "beoteun",
-  mean: { en: "Buttons", de: "Knöpfe", ja: "ボタン", zh: "按钮", es: "Botones", vi: "Nút" },
+  mean: { en: "Buttons", de: "Knöpfe", ja: "ボタン", zh: "按钮", es: "Botones", vi: "Nút", ru: "Кнопки" },
 };
 export const WAY_BLOCKS: Line = {
   ko: "블록",
   roman: "beullok",
-  mean: { en: "Blocks", de: "Bausteine", ja: "ブロック", zh: "积木", es: "Bloques", vi: "Khối từ" },
+  mean: { en: "Blocks", de: "Bausteine", ja: "ブロック", zh: "积木", es: "Bloques", vi: "Khối từ", ru: "Блоки" },
 };
 export const WAY_VOICE: Line = {
   ko: "말하기",
   roman: "malhagi",
-  mean: { en: "Speaking", de: "Sprechen", ja: "話す", zh: "口语", es: "Hablar", vi: "Nói" },
+  mean: { en: "Speaking", de: "Sprechen", ja: "話す", zh: "口语", es: "Hablar", vi: "Nói", ru: "Говорить" },
 };
 export const SOON: Line = {
   ko: "곧 나와요",
   roman: "got nawayo",
-  mean: { en: "Coming soon", de: "Bald verfügbar", ja: "近日公開", zh: "即将上线", es: "Pronto", vi: "Sắp có" },
+  mean: { en: "Coming soon", de: "Bald verfügbar", ja: "近日公開", zh: "即将上线", es: "Pronto", vi: "Sắp có", ru: "Скоро" },
 };
 
 // 바코드 찍는 동안
@@ -91,6 +94,7 @@ export const SCANNING: Line = {
     zh: "正在扫描条形码",
     es: "Escaneando los códigos de barras...",
     vi: "Đang quét mã vạch...",
+    ru: "Сканируем штрихкоды",
   },
 };
 
@@ -105,6 +109,7 @@ export const GREET: Line = {
     zh: "欢迎光临！",
     es: "¡Bienvenido!",
     vi: "Chào mừng bạn!",
+    ru: "Добро пожаловать!",
   },
 };
 export const HEAT_ASK: Line = {
@@ -117,6 +122,7 @@ export const HEAT_ASK: Line = {
     zh: "要帮您加热吗？",
     es: "¿Se lo caliento?",
     vi: "Tôi hâm nóng giúp bạn nhé?",
+    ru: "Подогреть вам?",
   },
 };
 export const POINTS_ASK: Line = {
@@ -129,6 +135,7 @@ export const POINTS_ASK: Line = {
     zh: "要积分吗？",
     es: "¿Acumula puntos?",
     vi: "Bạn có tích điểm không ạ?",
+    ru: "Вы собираете баллы?",
   },
 };
 export const BAG_ASK: Line = {
@@ -141,6 +148,7 @@ export const BAG_ASK: Line = {
     zh: "需要袋子吗？",
     es: "¿Necesita una bolsa?",
     vi: "Bạn có cần túi không ạ?",
+    ru: "Вам нужен пакет?",
   },
 };
 export const PAY: Line = {
@@ -153,6 +161,7 @@ export const PAY: Line = {
     zh: "请插卡。",
     es: "Inserte su tarjeta, por favor.",
     vi: "Vui lòng cắm thẻ vào ạ.",
+    ru: "Вставьте карту, пожалуйста.",
   },
 };
 export const RECEIPT_ASK: Line = {
@@ -165,6 +174,7 @@ export const RECEIPT_ASK: Line = {
     zh: "需要小票吗？",
     es: "¿Quiere el recibo?",
     vi: "Bạn có cần hóa đơn không ạ?",
+    ru: "Вам нужен чек?",
   },
 };
 export const BYE: Line = {
@@ -177,6 +187,7 @@ export const BYE: Line = {
     zh: "谢谢。再见！",
     es: "Gracias. ¡Adiós!",
     vi: "Cảm ơn bạn. Tạm biệt nhé!",
+    ru: "Спасибо. До свидания!",
   },
 };
 
@@ -191,6 +202,7 @@ export const WAIT: Line = {
     zh: "请稍等。",
     es: "Un momento, por favor.",
     vi: "Vui lòng đợi một chút ạ.",
+    ru: "Одну минуту, пожалуйста.",
   },
 };
 export const PARDON: Line = {
@@ -203,6 +215,7 @@ export const PARDON: Line = {
     zh: "嗯？能再说一遍吗？",
     es: "¿Perdón? ¿Puede repetirlo?",
     vi: "Dạ? Bạn nói lại một lần nữa được không ạ?",
+    ru: "Простите? Не могли бы вы повторить?",
   },
 };
 export const OK_ACK: Line = {
@@ -215,6 +228,7 @@ export const OK_ACK: Line = {
     zh: "好的，明白了。",
     es: "Entendido.",
     vi: "Vâng, tôi hiểu rồi ạ.",
+    ru: "Хорошо, понятно.",
   },
 };
 export const CONFIRM: Line = {
@@ -227,6 +241,7 @@ export const CONFIRM: Line = {
     zh: "是的，没错。",
     es: "Sí, es correcto.",
     vi: "Vâng, đúng rồi.",
+    ru: "Да, верно.",
   },
 };
 
@@ -241,6 +256,7 @@ export const HEAT_YES: Line = {
     zh: "好的，请帮我加热。",
     es: "Sí, caliéntelo, por favor.",
     vi: "Vâng, hâm nóng giúp tôi.",
+    ru: "Да, подогрейте, пожалуйста.",
   },
 };
 export const NO_THANKS: Line = {
@@ -253,6 +269,7 @@ export const NO_THANKS: Line = {
     zh: "不用了，没关系。",
     es: "No, está bien.",
     vi: "Không, không cần đâu ạ.",
+    ru: "Нет, спасибо.",
   },
 };
 export const POINTS_YES: Line = {
@@ -265,6 +282,7 @@ export const POINTS_YES: Line = {
     zh: "好的，我要积分。",
     es: "Sí, acumularé puntos.",
     vi: "Vâng, tôi sẽ tích điểm.",
+    ru: "Да, начислите баллы.",
   },
 };
 export const BAG_YES: Line = {
@@ -277,6 +295,7 @@ export const BAG_YES: Line = {
     zh: "请给我一个袋子。",
     es: "Una bolsa, por favor.",
     vi: "Cho tôi một cái túi.",
+    ru: "Один пакет, пожалуйста.",
   },
 };
 export const RECEIPT_DISCARD: Line = {
@@ -289,6 +308,7 @@ export const RECEIPT_DISCARD: Line = {
     zh: "小票请帮我扔掉。",
     es: "Tire el recibo, por favor.",
     vi: "Hóa đơn thì bỏ giúp tôi nhé.",
+    ru: "Чек выбросьте, пожалуйста.",
   },
 };
 export const RECEIPT_YES: Line = {
@@ -301,6 +321,7 @@ export const RECEIPT_YES: Line = {
     zh: "好的，请给我。",
     es: "Sí, deme uno.",
     vi: "Vâng, cho tôi xin.",
+    ru: "Да, дайте, пожалуйста.",
   },
 };
 
@@ -315,6 +336,7 @@ export const HEAT_ECHO: Line = {
     zh: "啊，要帮您加热吗？",
     es: "Ah, ¿se lo caliento?",
     vi: "À, em hâm nóng cho anh/chị nhé?",
+    ru: "А~ подогреть?",
   },
 };
 export const POINTS_ECHO: Line = {
@@ -327,6 +349,7 @@ export const POINTS_ECHO: Line = {
     zh: "啊，您不积分吗？",
     es: "Ah, ¿no acumula puntos?",
     vi: "À, anh/chị không tích điểm ạ?",
+    ru: "А~ баллы не нужны?",
   },
 };
 export const BAG_ECHO: Line = {
@@ -339,6 +362,7 @@ export const BAG_ECHO: Line = {
     zh: "啊，要袋子吗？",
     es: "Ah, ¿una bolsa?",
     vi: "À, túi ạ?",
+    ru: "А~ пакет?",
   },
 };
 export const RECEIPT_ECHO: Line = {
@@ -351,6 +375,7 @@ export const RECEIPT_ECHO: Line = {
     zh: "啊，要帮您扔掉吗？",
     es: "Ah, ¿se lo tiro?",
     vi: "À, em bỏ đi giúp anh/chị nhé?",
+    ru: "А~ выбросить?",
   },
 };
 
@@ -362,6 +387,7 @@ export const HEAT_TIP: Tr = {
   zh: "店员常常会帮你加热便当。忙的时候，也可能让你用自助微波炉。",
   es: "El personal suele calentar la fiambrera. Si hay mucha gente, puede pedirte que uses el microondas de autoservicio.",
   vi: "Nhân viên thường hâm nóng cơm hộp giúp bạn. Khi đông khách, họ có thể nhờ bạn dùng lò vi sóng tự phục vụ.",
+  ru: "Сотрудники часто подогревают ланч-боксы. Когда много посетителей, вас могут попросить воспользоваться микроволновкой самообслуживания.",
 };
 export const POINTS_TIP: Tr = {
   en: "'아니요, 괜찮아요' works for almost any question when you don't need something.",
@@ -370,6 +396,7 @@ export const POINTS_TIP: Tr = {
   zh: "不需要的时候，“아니요, 괜찮아요”几乎可以用来回答任何问题。",
   es: "«아니요, 괜찮아요» sirve para casi cualquier pregunta cuando no necesitas algo.",
   vi: "«아니요, 괜찮아요» dùng được cho hầu hết câu hỏi khi bạn không cần gì.",
+  ru: "«아니요, 괜찮아요» подходит почти для любого вопроса, если вам что-то не нужно.",
 };
 export const BAG_TIP: Tr = {
   en: "Plastic bags aren't free in Korean stores. You pay a small fee for one.",
@@ -378,6 +405,7 @@ export const BAG_TIP: Tr = {
   zh: "在韩国，塑料袋不是免费的，要付一点钱。",
   es: "En Corea, las bolsas de plástico no son gratis: cuestan un poco.",
   vi: "Ở Hàn, túi ni lông không miễn phí. Bạn phải trả một ít tiền.",
+  ru: "В корейских магазинах пластиковые пакеты не бесплатные. За них нужно немного доплатить.",
 };
 export const RECEIPT_TIP: Tr = {
   en: "'버려 주세요' sounds odd, but it's a common way to say 'I don't need it.'",
@@ -386,13 +414,14 @@ export const RECEIPT_TIP: Tr = {
   zh: "“버려 주세요”听起来奇怪，其实就是“我不需要”的常用说法。",
   es: "«버려 주세요» suena raro, pero es una forma común de decir «no lo necesito».",
   vi: "«버려 주세요» nghe lạ nhưng là cách nói phổ biến nghĩa là “tôi không cần”.",
+  ru: "«버려 주세요» звучит странно, но это обычная фраза со значением «мне не нужно».",
 };
 
 // 결과 화면
 export const RESULT_TITLE: Line = {
   ko: "계산",
   roman: "gyesan",
-  mean: { en: "Checkout", de: "Bezahlen", ja: "会計", zh: "结账", es: "Pago", vi: "Thanh toán" },
+  mean: { en: "Checkout", de: "Bezahlen", ja: "会計", zh: "结账", es: "Pago", vi: "Thanh toán", ru: "Оплата" },
 };
 export const PRAISE_3: Line = {
   ko: "와, 진짜 한국 사람 같아요!",
@@ -404,6 +433,7 @@ export const PRAISE_3: Line = {
     zh: "哇，真的像韩国人一样！",
     es: "¡Vaya, suenas como un coreano de verdad!",
     vi: "Ồ, bạn nói như người Hàn thật ấy!",
+    ru: "Вау, ты говоришь совсем как местный житель!",
   },
 };
 export const PRAISE_2: Line = {
@@ -416,6 +446,7 @@ export const PRAISE_2: Line = {
     zh: "不错！几乎都听懂了。",
     es: "¡Bien! Entendiste casi todo.",
     vi: "Tốt lắm! Bạn hiểu gần hết rồi.",
+    ru: "Отлично! Почти всё получилось!",
   },
 };
 export const PRAISE_1: Line = {
@@ -428,6 +459,7 @@ export const PRAISE_1: Line = {
     zh: "没关系！下次会更好。",
     es: "¡No pasa nada! La próxima vez te irá mejor.",
     vi: "Không sao đâu! Lần sau bạn sẽ làm tốt hơn.",
+    ru: "Ничего страшного! В следующий раз получится лучше!",
   },
 };
 
@@ -435,7 +467,7 @@ export const PRAISE_1: Line = {
 export const AGAIN: Line = {
   ko: "한 번 더",
   roman: "han beon deo",
-  mean: { en: "One more time", de: "Noch einmal", ja: "もう一回", zh: "再来一次", es: "Otra vez", vi: "Một lần nữa" },
+  mean: { en: "One more time", de: "Noch einmal", ja: "もう一回", zh: "再来一次", es: "Otra vez", vi: "Một lần nữa", ru: "Ещё раз" },
 };
 export const TO_CAFE: Line = {
   ko: "카페로 가기",
@@ -447,6 +479,7 @@ export const TO_CAFE: Line = {
     zh: "去咖啡店",
     es: "Ir a la cafetería",
     vi: "Đến quán cà phê",
+    ru: "В кафе",
   },
 };
 
@@ -454,7 +487,7 @@ export const TO_CAFE: Line = {
 export const CARD_BTN: Line = {
   ko: "카드 꽂기",
   roman: "kadeu kkotgi",
-  mean: { en: "Insert card", de: "Karte einstecken", ja: "カードを入れる", zh: "插卡", es: "Insertar tarjeta", vi: "Cắm thẻ" },
+  mean: { en: "Insert card", de: "Karte einstecken", ja: "カードを入れる", zh: "插卡", es: "Insertar tarjeta", vi: "Cắm thẻ", ru: "Вставить карту" },
 };
 
 // 🧩 블록 안내 (카페의 "주문을 만들어요" 대신 편의점은 "대답을 만들어요")
@@ -465,4 +498,5 @@ export const BLOCKS_HINT: Tr = {
   zh: "点积木，组成你的回答。",
   es: "Toca los bloques para formar tu respuesta.",
   vi: "Chạm vào các khối từ để tạo câu trả lời.",
+  ru: "Нажимайте на блоки, чтобы составить ответ.",
 };

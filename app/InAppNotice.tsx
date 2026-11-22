@@ -20,6 +20,7 @@ const MSG: Record<LangCode, { title: string; how: string; chrome: string; novoic
   zh: { title: "🔇 没有声音？", how: "点 ⋯ →“在浏览器中打开”(Chrome / Safari)。", chrome: "用 Chrome 打开", novoice: "这个浏览器没有韩语语音。请试试 Chrome 或 Safari。" },
   es: { title: "🔇 ¿No hay sonido?", how: "Toca ⋯ → «Abrir en el navegador» (Chrome / Safari).", chrome: "Abrir en Chrome", novoice: "Este navegador no tiene voz en coreano. Prueba con Chrome o Safari." },
   vi: { title: "🔇 Không có tiếng?", how: "Chạm ⋯ → “Mở bằng trình duyệt” (Chrome / Safari).", chrome: "Mở bằng Chrome", novoice: "Trình duyệt này không có giọng tiếng Hàn. Hãy thử Chrome hoặc Safari." },
+  ru: { title: "🔇 Нет звука?", how: "Нажмите ⋯ → „Открыть в браузере“ (Chrome / Safari).", chrome: "Открыть в Chrome", novoice: "В этом браузере нет корейского голоса. Попробуйте Chrome или Safari." },
 };
 
 // 어느 앱 안에서 열었는지 (휴대폰이 알려 주는 이름표 user agent로 본다)

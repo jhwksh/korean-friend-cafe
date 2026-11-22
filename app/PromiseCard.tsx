@@ -23,6 +23,7 @@ const ASK: Line = {
     zh: "今天玩得开心吧？下次我们真的在韩国一起喝咖啡吧！",
     es: "Hoy fue divertido, ¿verdad? ¡La próxima vez tomemos un café juntos en Corea de verdad!",
     vi: "Hôm nay vui nhỉ? Lần sau chúng ta cùng uống cà phê thật ở Hàn Quốc nhé!",
+    ru: "Сегодня было весело, правда? В следующий раз выпьем кофе вместе в настоящей Корее!",
   },
 };
 
@@ -36,6 +37,7 @@ const YES: Line = {
     zh: "好呀，说定了！",
     es: "¡Claro, lo prometo!",
     vi: "Được, hứa nhé!",
+    ru: "Хорошо, обещаю!",
   },
 };
 
@@ -49,6 +51,7 @@ const YES_REPLY: Line = {
     zh: "拉勾勾，再盖个章！🤙",
     es: "¡Promesa con el meñique y sello con el pulgar! 🤙",
     vi: "Móc ngoéo rồi đóng dấu bằng ngón cái nhé! 🤙",
+    ru: "Мизинчик за мизинчик и печать большим пальцем! 🤙",
   },
 };
 
@@ -62,6 +65,7 @@ const UNSURE: Line = {
     zh: "嗯……我还不太确定。",
     es: "Mmm… todavía no estoy seguro.",
     vi: "Ừm… mình vẫn chưa chắc lắm.",
+    ru: "Хм… пока не знаю.",
   },
 };
 
@@ -75,6 +79,7 @@ const UNSURE_REPLY: Line = {
     zh: "没关系！慢慢想就好 😊",
     es: "¡No pasa nada! Tómate tu tiempo 😊",
     vi: "Không sao đâu! Cứ từ từ suy nghĩ nhé 😊",
+    ru: "Ничего страшного! Подумай спокойно 😊",
   },
 };
 

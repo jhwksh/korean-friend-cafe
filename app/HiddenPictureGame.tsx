@@ -30,10 +30,10 @@ const FRAMES: Record<FrameId, [number, number, number, number]> = {
   rb3: [84.3, 55.7, 10.8, 29.9],
 };
 
-const L = (ko: string, roman: string, en: string, de: string, ja: string, zh: string, es: string, vi: string): Line => ({
+const L = (ko: string, roman: string, en: string, de: string, ja: string, zh: string, es: string, vi: string, ru: string): Line => ({
   ko,
   roman,
-  mean: { en, de, ja, zh, es, vi },
+  mean: { en, de, ja, zh, es, vi, ru },
 });
 
 type Q = { id: string; frame: FrameId; ask: Line; name: string };
@@ -43,37 +43,37 @@ const QUESTIONS: Q[] = [
     id: "butterfly",
     frame: "lb1",
     name: "나비",
-    ask: L("어? 나비다! 나비 그림 어디 있는지 보여요?", "eo? nabida! nabi geurim eodi inneunji boyeoyo?", "Oh? A butterfly! Can you see where the butterfly picture is?", "Oh? Ein Schmetterling! Siehst du, wo das Schmetterlingsbild ist?", "あれ？蝶だ！蝶の絵、どこにあるか見える？", "咦？是蝴蝶！你看到蝴蝶的画在哪儿吗？", "¿Eh? ¡Una mariposa! ¿Ves dónde está el cuadro de la mariposa?", "Ơ? Con bướm kìa! Bạn thấy bức tranh con bướm ở đâu không?"),
+    ask: L("어? 나비다! 나비 그림 어디 있는지 보여요?", "eo? nabida! nabi geurim eodi inneunji boyeoyo?", "Oh? A butterfly! Can you see where the butterfly picture is?", "Oh? Ein Schmetterling! Siehst du, wo das Schmetterlingsbild ist?", "あれ？蝶だ！蝶の絵、どこにあるか見える？", "咦？是蝴蝶！你看到蝴蝶的画在哪儿吗？", "¿Eh? ¡Una mariposa! ¿Ves dónde está el cuadro de la mariposa?", "Ơ? Con bướm kìa! Bạn thấy bức tranh con bướm ở đâu không?", "Ой? Бабочка! Видишь, где картина с бабочкой?"),
   },
   {
     id: "pinkFlower",
     frame: "lt2",
     name: "분홍 꽃",
-    ask: L("와, 분홍 꽃 예쁘다… 어느 그림이에요?", "wa, bunhong kkot yeppeuda… eoneu geurimieyo?", "Wow, the pink flowers are pretty… which picture is it?", "Wow, die rosa Blumen sind hübsch… welches Bild ist es?", "わあ、ピンクの花きれい…どの絵？", "哇，粉色的花好漂亮……是哪幅画？", "Vaya, las flores rosas son bonitas… ¿cuál es el cuadro?", "Oa, hoa hồng đẹp quá… là bức tranh nào vậy?"),
+    ask: L("와, 분홍 꽃 예쁘다… 어느 그림이에요?", "wa, bunhong kkot yeppeuda… eoneu geurimieyo?", "Wow, the pink flowers are pretty… which picture is it?", "Wow, die rosa Blumen sind hübsch… welches Bild ist es?", "わあ、ピンクの花きれい…どの絵？", "哇，粉色的花好漂亮……是哪幅画？", "Vaya, las flores rosas son bonitas… ¿cuál es el cuadro?", "Oa, hoa hồng đẹp quá… là bức tranh nào vậy?", "Вау, розовые цветы такие красивые… на какой картине?"),
   },
   {
     id: "redBird",
     frame: "rt3",
     name: "빨간 새",
-    ask: L("빨간 새가 있었는데… 어디 있지? 찾아 줄래요?", "ppalgan saega isseonneunde… eodi itji? chaja jullaeyo?", "There was a red bird… where is it? Can you find it?", "Da war ein roter Vogel… wo ist er? Findest du ihn?", "赤い鳥がいたんだけど…どこだろう？探してくれる？", "刚才有只红色的鸟……在哪儿呢？帮我找找？", "Había un pájaro rojo… ¿dónde está? ¿Me ayudas a encontrarlo?", "Có một con chim đỏ… ở đâu nhỉ? Tìm giúp mình nhé?"),
+    ask: L("빨간 새가 있었는데… 어디 있지? 찾아 줄래요?", "ppalgan saega isseonneunde… eodi itji? chaja jullaeyo?", "There was a red bird… where is it? Can you find it?", "Da war ein roter Vogel… wo ist er? Findest du ihn?", "赤い鳥がいたんだけど…どこだろう？探してくれる？", "刚才有只红色的鸟……在哪儿呢？帮我找找？", "Había un pájaro rojo… ¿dónde está? ¿Me ayudas a encontrarlo?", "Có một con chim đỏ… ở đâu nhỉ? Tìm giúp mình nhé?", "Тут была красная птица… где же она? Найдёшь?"),
   },
   {
     id: "greenBird",
     frame: "rb1",
     name: "초록 새",
-    ask: L("초록색 새는 어디 있을까요?", "chorokssaek saeneun eodi isseulkkayo?", "Where could the green bird be?", "Wo könnte der grüne Vogel sein?", "緑の鳥はどこにいるかな？", "绿色的鸟会在哪儿呢？", "¿Dónde estará el pájaro verde?", "Con chim xanh lá ở đâu nhỉ?"),
+    ask: L("초록색 새는 어디 있을까요?", "chorokssaek saeneun eodi isseulkkayo?", "Where could the green bird be?", "Wo könnte der grüne Vogel sein?", "緑の鳥はどこにいるかな？", "绿色的鸟会在哪儿呢？", "¿Dónde estará el pájaro verde?", "Con chim xanh lá ở đâu nhỉ?", "Где же зелёная птица?"),
   },
   {
     id: "blueEgg",
     frame: "rb2",
     name: "파란 알",
-    ask: L("헐, 둥지에 파란 알 있다! 어느 그림인지 알아요?", "heol, dungjie paran al itda! eoneu geuriminji arayo?", "Whoa, there are blue eggs in a nest! Do you know which picture?", "Krass, blaue Eier im Nest! Weißt du, welches Bild?", "えっ、巣に青い卵がある！どの絵かわかる？", "天哪，鸟窝里有蓝色的蛋！你知道是哪幅画吗？", "¡Hala, hay huevos azules en un nido! ¿Sabes en qué cuadro?", "Trời, trong tổ có trứng màu xanh! Bạn biết bức nào không?"),
+    ask: L("헐, 둥지에 파란 알 있다! 어느 그림인지 알아요?", "heol, dungjie paran al itda! eoneu geuriminji arayo?", "Whoa, there are blue eggs in a nest! Do you know which picture?", "Krass, blaue Eier im Nest! Weißt du, welches Bild?", "えっ、巣に青い卵がある！どの絵かわかる？", "天哪，鸟窝里有蓝色的蛋！你知道是哪幅画吗？", "¡Hala, hay huevos azules en un nido! ¿Sabes en qué cuadro?", "Trời, trong tổ có trứng màu xanh! Bạn biết bức nào không?", "Ого, в гнезде синие яйца! Знаешь, на какой картине?"),
   },
   {
     id: "twoBirds",
     frame: "rt1",
     name: "새 두 마리",
-    ask: L("새 두 마리가 같이 앉아 있는 그림은요?", "sae du mariga gachi anja inneun geurimeunyo?", "And the picture with two birds sitting together?", "Und das Bild mit zwei Vögeln, die zusammen sitzen?", "鳥が二羽いっしょにとまっている絵は？", "那两只鸟坐在一起的画呢？", "¿Y el cuadro con dos pájaros sentados juntos?", "Còn bức có hai con chim đậu cạnh nhau thì sao?"),
+    ask: L("새 두 마리가 같이 앉아 있는 그림은요?", "sae du mariga gachi anja inneun geurimeunyo?", "And the picture with two birds sitting together?", "Und das Bild mit zwei Vögeln, die zusammen sitzen?", "鳥が二羽いっしょにとまっている絵は？", "那两只鸟坐在一起的画呢？", "¿Y el cuadro con dos pájaros sentados juntos?", "Còn bức có hai con chim đậu cạnh nhau thì sao?", "А картина, где две птицы сидят вместе?"),
   },
 ];
 
@@ -81,16 +81,16 @@ const BONUS: Q = {
   id: "cage",
   frame: "cage",
   name: "새장",
-  ask: L("근데… 새장도 있는 거 알아요? 어디게요?", "geunde… saejangdo inneun geo arayo? eodigeyo?", "By the way… did you know there's a birdcage too? Guess where?", "Übrigens… wusstest du, dass es auch einen Vogelkäfig gibt? Rate mal, wo?", "ところで…鳥かごもあるの知ってる？どこでしょう？", "对了……你知道这里还有个鸟笼吗？猜猜在哪儿？", "Por cierto… ¿sabías que también hay una jaula? ¿Adivinas dónde?", "Mà này… bạn biết ở đây còn có cái lồng chim không? Đoán xem ở đâu?"),
+  ask: L("근데… 새장도 있는 거 알아요? 어디게요?", "geunde… saejangdo inneun geo arayo? eodigeyo?", "By the way… did you know there's a birdcage too? Guess where?", "Übrigens… wusstest du, dass es auch einen Vogelkäfig gibt? Rate mal, wo?", "ところで…鳥かごもあるの知ってる？どこでしょう？", "对了……你知道这里还有个鸟笼吗？猜猜在哪儿？", "Por cierto… ¿sabías que también hay una jaula? ¿Adivinas dónde?", "Mà này… bạn biết ở đây còn có cái lồng chim không? Đoán xem ở đâu?", "Кстати… здесь есть ещё и клетка для птиц! Угадай где?"),
 };
 
-const HELLO = L("와, 위층 분위기 좋다! 같이 둘러봐요.", "wa, wicheung bunwigi jota! gachi dulleobwayo.", "Wow, it's so nice upstairs! Let's look around together.", "Wow, oben ist es richtig schön! Lass uns zusammen umschauen.", "わあ、上の階いい雰囲気！一緒に見て回ろう。", "哇，楼上氛围真好！一起逛逛吧。", "¡Vaya, qué buen ambiente arriba! Miremos juntos.", "Oa, tầng trên không khí thích quá! Cùng đi xem nhé.");
-const WRONG = L("음… 그건 아닌 것 같아요. 다시 들어 볼래요?", "eum… geugeon anin geot gatayo. dasi deureo bollaeyo?", "Hmm… I don't think that's it. Want to listen again?", "Hmm… das ist es wohl nicht. Willst du nochmal hören?", "うーん…それじゃないみたい。もう一回聞いてみる？", "嗯……好像不是那个。要再听一遍吗？", "Mmm… creo que no es ese. ¿Quieres escuchar otra vez?", "Ừm… hình như không phải cái đó. Nghe lại nhé?");
-const HINT = L("아, 여기다! 반짝이는 거 봐요.", "a, yeogida! banjjagineun geo bwayo.", "Ah, here it is! Look at the one that's sparkling.", "Ah, hier ist es! Schau, das funkelnde.", "あ、ここだ！キラキラしてるの見て。", "啊，在这儿！看那个闪闪发光的。", "¡Ah, aquí está! Mira el que brilla.", "À, đây rồi! Nhìn cái đang lấp lánh kìa.");
+const HELLO = L("와, 위층 분위기 좋다! 같이 둘러봐요.", "wa, wicheung bunwigi jota! gachi dulleobwayo.", "Wow, it's so nice upstairs! Let's look around together.", "Wow, oben ist es richtig schön! Lass uns zusammen umschauen.", "わあ、上の階いい雰囲気！一緒に見て回ろう。", "哇，楼上氛围真好！一起逛逛吧。", "¡Vaya, qué buen ambiente arriba! Miremos juntos.", "Oa, tầng trên không khí thích quá! Cùng đi xem nhé.", "Вау, наверху такая классная атмосфера! Давай осмотримся вместе.");
+const WRONG = L("음… 그건 아닌 것 같아요. 다시 들어 볼래요?", "eum… geugeon anin geot gatayo. dasi deureo bollaeyo?", "Hmm… I don't think that's it. Want to listen again?", "Hmm… das ist es wohl nicht. Willst du nochmal hören?", "うーん…それじゃないみたい。もう一回聞いてみる？", "嗯……好像不是那个。要再听一遍吗？", "Mmm… creo que no es ese. ¿Quieres escuchar otra vez?", "Ừm… hình như không phải cái đó. Nghe lại nhé?", "Хм… кажется, не то. Хочешь послушать ещё раз?");
+const HINT = L("아, 여기다! 반짝이는 거 봐요.", "a, yeogida! banjjagineun geo bwayo.", "Ah, here it is! Look at the one that's sparkling.", "Ah, hier ist es! Schau, das funkelnde.", "あ、ここだ！キラキラしてるの見て。", "啊，在这儿！看那个闪闪发光的。", "¡Ah, aquí está! Mira el que brilla.", "À, đây rồi! Nhìn cái đang lấp lánh kìa.", "А, вот оно! Посмотри, как блестит.");
 // 다 찾으면 두 가지 칭찬 중 하나를 무작위로 한다
 const DONES: Line[] = [
-  L("대박, 다 찾았네! 나보다 잘 찾는다 👏", "daebak, da chajanne! naboda jal channeunda", "Awesome, you found them all! You're better at this than me 👏", "Wahnsinn, du hast alle gefunden! Du bist besser darin als ich 👏", "すごい、全部見つけたね！私より見つけるの上手だね 👏", "太厉害了，全找到了！你比我还会找 👏", "¡Increíble, los encontraste todos! Encuentras mejor que yo 👏", "Đỉnh thật, tìm hết rồi! Bạn tìm giỏi hơn cả mình 👏"),
-  L("대박, 다 찾았네! 진짜 잘 찾는다 👏", "daebak, da chajanne! jinjja jal channeunda", "Awesome, you found them all! You're really good at finding things 👏", "Wahnsinn, du hast alle gefunden! Du findest echt gut 👏", "すごい、全部見つけたね！本当に見つけるの上手だね 👏", "太厉害了，全找到了！你真会找 👏", "¡Increíble, los encontraste todos! Se te da genial encontrar cosas 👏", "Đỉnh thật, tìm hết rồi! Bạn tìm giỏi thật đấy 👏"),
+  L("대박, 다 찾았네! 나보다 잘 찾는다 👏", "daebak, da chajanne! naboda jal channeunda", "Awesome, you found them all! You're better at this than me 👏", "Wahnsinn, du hast alle gefunden! Du bist besser darin als ich 👏", "すごい、全部見つけたね！私より見つけるの上手だね 👏", "太厉害了，全找到了！你比我还会找 👏", "¡Increíble, los encontraste todos! Encuentras mejor que yo 👏", "Đỉnh thật, tìm hết rồi! Bạn tìm giỏi hơn cả mình 👏", "Круто, все нашлись! Ты ищешь лучше меня 👏"),
+  L("대박, 다 찾았네! 진짜 잘 찾는다 👏", "daebak, da chajanne! jinjja jal channeunda", "Awesome, you found them all! You're really good at finding things 👏", "Wahnsinn, du hast alle gefunden! Du findest echt gut 👏", "すごい、全部見つけたね！本当に見つけるの上手だね 👏", "太厉害了，全找到了！你真会找 👏", "¡Increíble, los encontraste todos! Se te da genial encontrar cosas 👏", "Đỉnh thật, tìm hết rồi! Bạn tìm giỏi thật đấy 👏", "Круто, все нашлись! Ты правда хорошо ищешь 👏"),
 ];
 
 function right(q: Q): Line {
@@ -106,7 +106,7 @@ function right(q: Q): Line {
   // 받침이 있으면 "이에요", 없으면 "예요"
   const last = q.name.charCodeAt(q.name.length - 1) - 0xac00;
   const ending = last % 28 === 0 ? "예요" : "이에요";
-  return L(`맞아요! 그거 ${q.name}${ending}.`, roman[q.id], "That's right!", "Richtig!", "そう！", "对了！", "¡Correcto!", "Đúng rồi!");
+  return L(`맞아요! 그거 ${q.name}${ending}.`, roman[q.id], "That's right!", "Richtig!", "そう！", "对了！", "¡Correcto!", "Đúng rồi!", "Верно!");
 }
 
 function pick3(): Q[] {

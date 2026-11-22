@@ -22,7 +22,7 @@ export const missions: Mission[] = [
     emoji: "🧑‍🍳",
     ko: "안녕하세요!",
     roman: "annyeonghaseyo!",
-    names: { en: "Hello!", de: "Hallo!", ja: "こんにちは！", zh: "你好！", es: "¡Hola!", vi: "Xin chào!" },
+    names: { en: "Hello!", de: "Hallo!", ja: "こんにちは！", zh: "你好！", es: "¡Hola!", vi: "Xin chào!", ru: "Здравствуйте!" },
   },
   {
     id: "order",
@@ -37,6 +37,7 @@ export const missions: Mission[] = [
       zh: "请给我一杯冰美式。",
       es: "Un americano con hielo, por favor.",
       vi: "Cho tôi một ly americano đá.",
+      ru: "Один айс-американо, пожалуйста.",
     },
   },
   {
@@ -45,7 +46,7 @@ export const missions: Mission[] = [
     emoji: "🍰",
     ko: "이거 뭐예요?",
     roman: "igeo mwoyeyo?",
-    names: { en: "What is this?", de: "Was ist das?", ja: "これは何ですか？", zh: "这是什么？", es: "¿Qué es esto?", vi: "Cái này là gì?" },
+    names: { en: "What is this?", de: "Was ist das?", ja: "これは何ですか？", zh: "这是什么？", es: "¿Qué es esto?", vi: "Cái này là gì?", ru: "Что это?" },
   },
   {
     id: "card",
@@ -60,6 +61,7 @@ export const missions: Mission[] = [
       zh: "我用卡支付。",
       es: "Pago con tarjeta.",
       vi: "Tôi trả bằng thẻ.",
+      ru: "Я оплачу картой.",
     },
   },
   {
@@ -75,6 +77,7 @@ export const missions: Mission[] = [
       zh: "大海真漂亮。",
       es: "El mar es precioso.",
       vi: "Biển đẹp quá.",
+      ru: "Какое красивое море!",
     },
   },
   {
@@ -90,6 +93,7 @@ export const missions: Mission[] = [
       zh: "可以扔在这里吗？",
       es: "¿Puedo tirarlo aquí?",
       vi: "Tôi bỏ vào đây được không?",
+      ru: "Можно выбросить сюда?",
     },
   },
   {
@@ -106,6 +110,7 @@ export const missions: Mission[] = [
       zh: "我可以坐这里吗？",
       es: "¿Me puedo sentar aquí?",
       vi: "Tôi ngồi đây được không?",
+      ru: "Можно здесь сесть?",
     },
   },
   {
@@ -122,6 +127,7 @@ export const missions: Mission[] = [
       zh: "有一只鸟。",
       es: "Hay un pájaro.",
       vi: "Có một con chim.",
+      ru: "Смотри, птичка!",
     },
   },
   {
@@ -138,6 +144,7 @@ export const missions: Mission[] = [
       zh: "洗手间在哪里？",
       es: "¿Dónde está el baño?",
       vi: "Nhà vệ sinh ở đâu?",
+      ru: "Где туалет?",
     },
   },
   {
@@ -147,7 +154,7 @@ export const missions: Mission[] = [
     emoji: "🚪",
     ko: "안녕히 계세요!",
     roman: "annyeonghi gyeseyo!",
-    names: { en: "Goodbye!", de: "Auf Wiedersehen!", ja: "さようなら！", zh: "再见！", es: "¡Adiós!", vi: "Tạm biệt!" },
+    names: { en: "Goodbye!", de: "Auf Wiedersehen!", ja: "さようなら！", zh: "再见！", es: "¡Adiós!", vi: "Tạm biệt!", ru: "До свидания!" },
   },
 ];
 

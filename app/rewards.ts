@@ -18,6 +18,7 @@ export const rewards: { goal: number; kind: RewardKind; emoji: string; ko: strin
       zh: "免费升杯",
       es: "Tamaño más grande gratis",
       vi: "Nâng size miễn phí",
+      ru: "Бесплатное увеличение размера",
     },
   },
   {
@@ -32,6 +33,7 @@ export const rewards: { goal: number; kind: RewardKind; emoji: string; ko: strin
       zh: "免费冰美式一杯",
       es: "Un americano con hielo gratis",
       vi: "Miễn phí 1 ly americano đá",
+      ru: "Один айс-американо бесплатно",
     },
   },
 ];

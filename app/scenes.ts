@@ -36,6 +36,7 @@ const cafe: Scene = {
       zh: "欢迎！你想吃点什么？我来帮你。可以点下面的菜单按钮，也可以直接打字。",
       es: "¡Bienvenido! ¿Qué te apetece? Te ayudo. Puedes tocar los botones del menú de abajo o escribir si quieres.",
       vi: "Chào bạn! Bạn muốn ăn uống gì? Mình sẽ giúp bạn. Bạn có thể bấm nút menu bên dưới, hoặc viết cũng được.",
+      ru: "Привет! Что хочешь поесть или выпить? Я помогу. Можешь нажать на кнопки меню ниже или написать.",
     },
   },
   items: menu,

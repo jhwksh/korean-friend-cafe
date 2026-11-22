@@ -34,7 +34,7 @@ const DOSIRAK: BasketItem = {
   line: {
     ko: "도시락",
     roman: "dosirak",
-    mean: { en: "lunch box", de: "Lunchbox", ja: "お弁当", zh: "便当", es: "fiambrera", vi: "cơm hộp" },
+    mean: { en: "lunch box", de: "Lunchbox", ja: "お弁当", zh: "便当", es: "fiambrera", vi: "cơm hộp", ru: "ланч-бокс" },
   },
   price: 4900,
 };
@@ -43,7 +43,7 @@ const BANANA_MILK: BasketItem = {
   line: {
     ko: "바나나우유",
     roman: "bananauyu",
-    mean: { en: "banana milk", de: "Bananenmilch", ja: "バナナ牛乳", zh: "香蕉牛奶", es: "leche de plátano", vi: "sữa chuối" },
+    mean: { en: "banana milk", de: "Bananenmilch", ja: "バナナ牛乳", zh: "香蕉牛奶", es: "leche de plátano", vi: "sữa chuối", ru: "банановое молоко" },
   },
   price: 1700,
 };
@@ -59,6 +59,7 @@ const TRIANGLE_KIMBAP: BasketItem = {
       zh: "三角饭团",
       es: "triángulo de arroz",
       vi: "cơm nắm tam giác",
+      ru: "треугольный кимбап",
     },
   },
   price: 1500,
@@ -68,7 +69,7 @@ const CUP_NOODLES: BasketItem = {
   line: {
     ko: "컵라면",
     roman: "keomnamyeon",
-    mean: { en: "cup noodles", de: "Instantnudeln im Becher", ja: "カップラーメン", zh: "杯面", es: "fideos instantáneos", vi: "mì ly" },
+    mean: { en: "cup noodles", de: "Instantnudeln im Becher", ja: "カップラーメン", zh: "杯面", es: "fideos instantáneos", vi: "mì ly", ru: "лапша в стакане" },
   },
   price: 1300,
 };
@@ -77,7 +78,7 @@ const SNACKS: BasketItem = {
   line: {
     ko: "과자",
     roman: "gwaja",
-    mean: { en: "snacks", de: "Snacks", ja: "お菓子", zh: "零食", es: "aperitivos", vi: "bánh snack" },
+    mean: { en: "snacks", de: "Snacks", ja: "お菓子", zh: "零食", es: "aperitivos", vi: "bánh snack", ru: "снеки" },
   },
   price: 1800,
 };
@@ -86,7 +87,7 @@ const COLA: BasketItem = {
   line: {
     ko: "콜라",
     roman: "kolla",
-    mean: { en: "cola", de: "Cola", ja: "コーラ", zh: "可乐", es: "cola", vi: "nước ngọt cola" },
+    mean: { en: "cola", de: "Cola", ja: "コーラ", zh: "可乐", es: "cola", vi: "nước ngọt cola", ru: "кола" },
   },
   price: 2000,
 };
