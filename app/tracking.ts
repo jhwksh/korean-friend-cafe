@@ -32,6 +32,10 @@ export const EVENTS = {
   lang: "lang",
   surprise: "surprise",
   hidden_picture: "game",
+  store_visit: "visit",
+  store_start: "funnel",
+  store_done: "funnel",
+  store_stars: "route",
 } as const satisfies Record<string, keyof typeof TRACK>;
 export type EventName = keyof typeof EVENTS;
 
