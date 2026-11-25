@@ -48,17 +48,22 @@ function Bars({ data, label }: { data: Record<string, number>; label?: (k: strin
 export default function StatsPage() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [failed, setFailed] = useState(false);
+  const [why, setWhy] = useState("");
 
   useEffect(() => {
     let alive = true;
     async function load() {
       if (!supabase) {
-        if (alive) setFailed(true);
+        if (alive) {
+          setWhy("Supabase 연결값이 이 배포에 없어요");
+          setFailed(true);
+        }
         return;
       }
       const { data, error } = await supabase.rpc("cafe_stats");
       if (!alive) return;
       if (error || !data) {
+        setWhy(error ? error.message : "빈 응답");
         setFailed(true);
         return;
       }
@@ -78,6 +83,7 @@ export default function StatsPage() {
       <main className="mx-auto max-w-2xl px-4 py-10 text-stone-800">
         <h1 className="text-2xl font-bold">📊 카페 기록 현황</h1>
         <p className="mt-4 text-stone-600">숫자를 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.</p>
+        <p className="mt-2 text-xs text-stone-400">이유: {why}</p>
       </main>
     );
   }
