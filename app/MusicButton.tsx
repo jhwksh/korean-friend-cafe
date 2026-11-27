@@ -28,15 +28,11 @@ export default function MusicButton() {
 
   // 🎵 카페에 들어와서 처음 아무 데나 누르면 음악이 켜진다 (진짜 카페처럼 늘 음악이 흐르게).
   // 브라우저는 한 번도 누르지 않았는데 소리 내는 것을 막아서, "들어오자마자"가 아니라 "처음 누를 때"다.
-  // 음악 버튼을 직접 누른 거면 버튼이 알아서 하게 둔다. 전에 음악을 끈 사람은 다음에도 저절로 켜지 않는다.
+  // 음악 버튼을 직접 누른 거면 버튼이 알아서 하게 둔다. 전에 껐어도 다음에 들어오면 다시 저절로 켜진다.
   // 📱 휴대폰(갤럭시 등)은 손가락을 "뗄 때"만 누른 것으로 인정한다 (누르기 시작할 때는 소리를 막는다).
   // 그래서 누를 때·뗄 때·키보드 모두 시도하고, 막히면 다음 터치에서 다시 시도한다. 한 번 켜지면 그만 듣는다
   useEffect(() => {
-    let off = false;
-    try {
-      off = localStorage.getItem("kfc-music-off") === "1";
-    } catch {}
-    if (off) return;
+    // 전에 음악을 껐어도 다음에 들어오면 다시 저절로 켜진다 (끈 기억은 더 이상 쓰지 않는다)
     const kinds = ["pointerdown", "pointerup", "touchend", "keydown"] as const;
     const stop = () => kinds.forEach((k) => document.removeEventListener(k, onTap, true));
     function onTap(e: Event) {
